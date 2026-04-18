@@ -67,7 +67,7 @@ export function LandingSidebar({ fullPathname }: { fullPathname: string }) {
                 width={24}
                 className="dark:invert"
               />
-              <span>Shadboard</span>
+              <span>shiro.dev</span>
             </Link>
             <Link
               href={ensureLocalizedPathname("/register", locale)}

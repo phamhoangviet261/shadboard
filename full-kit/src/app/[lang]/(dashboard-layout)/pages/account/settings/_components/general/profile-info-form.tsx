@@ -337,6 +337,7 @@ export function ProfileInfoForm({ user }: { user: UserType }) {
                   <SelectContent>
                     {[
                       "English",
+                      "Vietnamese",
                       "Spanish",
                       "French",
                       "German",

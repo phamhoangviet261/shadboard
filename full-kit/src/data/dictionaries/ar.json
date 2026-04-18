@@ -131,8 +131,9 @@
     "customers": "العملاء",
     "language": {
       "language": "اللغة",
-      "english": "الإنجليزية",
-      "arabic": "العربية"
+      "english": "English",
+      "arabic": "العربية",
+      "vietnamese": "Tiếng Việt"
     },
     "mode": {
       "mode": "الوضع",

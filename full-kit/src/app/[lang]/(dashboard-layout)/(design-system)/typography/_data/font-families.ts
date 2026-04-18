@@ -11,4 +11,10 @@ export const fontFamiliesData = [
     language: "English",
     example: "Hello World",
   },
+  {
+    name: "Lato",
+    class: "font-lato",
+    language: "Vietnamese",
+    example: "Xin chào",
+  },
 ]

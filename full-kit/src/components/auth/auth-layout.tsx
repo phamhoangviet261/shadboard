@@ -51,7 +51,7 @@ export function Auth({
               width={24}
               className="dark:invert"
             />
-            <span>Shadboard</span>
+            <span>shiro.dev</span>
           </Link>
           <LanguageDropdown dictionary={dictionary} />
         </div>
