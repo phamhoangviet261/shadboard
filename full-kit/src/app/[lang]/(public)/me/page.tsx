@@ -75,7 +75,7 @@ export default function MePage() {
             </Button>
 
             <Button variant="outline" asChild>
-              <Link href="/projects">Projects</Link>
+              <Link href="/projects">My Projects</Link>
             </Button>
           </div>
         </CardContent>
