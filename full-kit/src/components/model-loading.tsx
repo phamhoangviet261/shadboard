@@ -15,7 +15,7 @@ export default function ModelLoadingOverlay({
   text = "Loading...",
   errorText = "Không tải được model",
 }: Props) {
-  const modelRef = useRef<any>(null)
+  const modelRef = useRef<HTMLDivElement>(null)
 
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(loading)
@@ -36,13 +36,11 @@ export default function ModelLoadingOverlay({
     if (!el) return
 
     const handleLoad = () => {
-      console.log("✅ Model loaded:", modelSrc)
       setModelLoaded(true)
       setModelError(null)
     }
 
-    const handleError = (event: any) => {
-      console.error("❌ Model failed:", modelSrc, event)
+    const handleError = () => {
       setModelLoaded(false)
       setModelError("Load fail")
     }

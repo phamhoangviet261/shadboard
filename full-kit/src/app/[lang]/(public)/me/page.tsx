@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -68,13 +69,13 @@ export default function MePage() {
 
           <div className="mt-4 flex gap-3">
             <Button asChild>
-              <a href="https://github.com/phamhoangviet261" target="_blank">
+              <Link href="https://github.com/phamhoangviet261" target="_blank">
                 GitHub
-              </a>
+              </Link>
             </Button>
 
             <Button variant="outline" asChild>
-              <a href="/projects">Projects</a>
+              <Link href="/projects">Projects</Link>
             </Button>
           </div>
         </CardContent>
