@@ -1,46 +1,72 @@
 "use client"
 
+import { useEffect, useState } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import ModelLoadingOverlay from "@/components/model-loading"
 
 export default function MePage() {
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setIsLoading(false)
+    }, 5000)
+
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4 py-10">
+        <ModelLoadingOverlay
+          loading={isLoading}
+          modelSrc="/models/chibi_battle_bat_xayah.glb"
+        />
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10">
-      <Card className="w-full max-w-xl shadow-xl rounded-2xl">
-        <CardContent className="flex flex-col items-center text-center gap-4 p-8">
-          {/* Avatar */}
-          <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden">
+    <div
+      className="flex min-h-screen items-center justify-center px-4 py-10"
+      style={{
+        backgroundImage: "url(/images/bg.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <Card className="w-full max-w-xl rounded-2xl shadow-xl">
+        <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
+          <div className="h-24 w-24 overflow-hidden rounded-full bg-gray-200">
             <img
               src="https://i.pravatar.cc/150"
               alt="avatar"
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             />
           </div>
 
-          {/* Name */}
           <h1 className="text-2xl font-bold">Viet Pham</h1>
 
-          {/* Bio */}
-          <p className="text-muted-foreground text-sm max-w-md">
+          <p className="max-w-md text-sm text-muted-foreground">
             Frontend Developer. Building modern web apps with Next.js,
             TailwindCSS & shadcn/ui.
           </p>
 
-          {/* Tech stack */}
-          <div className="flex gap-2 flex-wrap justify-center mt-2">
+          <div className="mt-2 flex flex-wrap justify-center gap-2">
             {["Next.js", "TypeScript", "Tailwind", "Redux"].map((tech) => (
               <span
                 key={tech}
-                className="px-3 py-1 text-xs rounded-full bg-muted"
+                className="rounded-full bg-muted px-3 py-1 text-xs"
               >
                 {tech}
               </span>
             ))}
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3 mt-4">
+          <div className="mt-4 flex gap-3">
             <Button asChild>
               <a href="https://github.com/phamhoangviet261" target="_blank">
                 GitHub
@@ -53,12 +79,6 @@ export default function MePage() {
           </div>
         </CardContent>
       </Card>
-
-      <ModelLoadingOverlay
-        loading={true}
-        modelSrc="/models/chibi_battle_bat_xayah.glb"
-        text="Đang vào trang..."
-      />
     </div>
   )
 }
