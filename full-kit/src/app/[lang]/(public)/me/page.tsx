@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+
 import { experiences, projects, technologies } from "./_data/portfolio"
 import { getAchievementStats } from "./_data/portfolio-derivatives"
 
@@ -11,6 +13,10 @@ import { ProfileProjects } from "./_components/profile-projects"
 import { ProfileSideProjects } from "./_components/profile-side-projects"
 import { ProfileStats } from "./_components/profile-stats"
 import { ProfileTechnologies } from "./_components/profile-technologies"
+
+export const metadata: Metadata = {
+  title: "Me",
+}
 
 export default function MePage() {
   const achievementStats = getAchievementStats(
