@@ -1,0 +1,3 @@
+- Do NOT run build commands automatically
+- Do NOT execute npm/pnpm/yarn build unless explicitly asked
+- Focus only on code changes

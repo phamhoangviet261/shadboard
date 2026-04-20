@@ -6,6 +6,7 @@ import { ProfileCta } from "./_components/profile-cta"
 import { ProfileExperiences } from "./_components/profile-experiences"
 import { ProfileFeaturedProjects } from "./_components/profile-featured-projects"
 import { ProfileHero } from "./_components/profile-hero"
+import { ProfileModeToggle } from "./_components/profile-mode-toggle"
 import { ProfileProjects } from "./_components/profile-projects"
 import { ProfileSideProjects } from "./_components/profile-side-projects"
 import { ProfileStats } from "./_components/profile-stats"
@@ -31,11 +32,16 @@ export default function MePage() {
       />
 
       <div className="relative container flex flex-col gap-24 py-8 sm:gap-28 sm:py-12 lg:gap-32 lg:py-16">
-        <ProfileHero
-          technologies={technologies}
-          experiences={experiences}
-          projects={projects}
-        />
+        <div className="flex flex-col gap-6">
+          <div className="flex justify-end">
+            <ProfileModeToggle />
+          </div>
+          <ProfileHero
+            technologies={technologies}
+            experiences={experiences}
+            projects={projects}
+          />
+        </div>
         <ProfileAbout
           technologies={technologies}
           experiences={experiences}
