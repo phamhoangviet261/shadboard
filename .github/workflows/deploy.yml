@@ -38,11 +38,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
-          source: |
-            .next/**
-            public/**
+          source: ".next"
           target: /home/shiro/app
-          strip_components: 0
           rm: true
 
       # Restart app trên VPS
