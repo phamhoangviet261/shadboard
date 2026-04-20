@@ -145,14 +145,14 @@ function FeaturedProjectCard({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.35),transparent_24%),radial-gradient(circle_at_0%_100%,rgba(15,23,42,0.45),transparent_40%)]" />
       <Image
         src={artwork}
-        alt=""
+        alt="artwork"
         fill
         sizes="(max-width: 1280px) 100vw, 720px"
         className="pointer-events-none object-contain object-bottom-right opacity-70 transition-transform duration-500 group-hover:scale-105"
       />
 
       <div
-        className={`relative flex h-full flex-col justify-between gap-10 p-7 sm:p-8 ${
+        className={`relative flex h-full flex-col justify-between gap-10 p-7 sm:p-8 backdrop-blur-[2px] ${
           large ? "min-h-[28rem]" : "min-h-[20rem]"
         }`}
       >
@@ -161,7 +161,7 @@ function FeaturedProjectCard({
             {kicker}
           </span>
           {host ? (
-            <span className="inline-flex items-center rounded-full border border-white/[0.15] bg-black/[0.15] px-4 py-1.5 text-xs font-medium text-white/80 backdrop-blur">
+            <span className="inline-flex items-center rounded-full border border-white/[0.15] bg-black/[0.15] px-4 py-1.5 text-xs font-medium text-white/80 backdrop-blur cursor-pointer">
               {host}
             </span>
           ) : null}
@@ -181,7 +181,7 @@ function FeaturedProjectCard({
             </h3>
           </div>
 
-          <p className="max-w-2xl text-sm leading-7 text-white/80 sm:text-base">
+          <p className="max-w-2xl text-2xl leading-7 text-white sm:text-lg">
             {project.description || "Project details will be added soon."}
           </p>
 
@@ -195,7 +195,7 @@ function FeaturedProjectCard({
               return (
                 <span
                   key={`${project.name}-${tag.name}`}
-                  className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold ${getProjectBadgeTone(tag.color)}`}
+                  className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold ${getProjectBadgeTone(tag.name)}`}
                 >
                   <Icon className="size-3.5" />
                   {tag.name}

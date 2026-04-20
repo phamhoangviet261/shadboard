@@ -75,7 +75,7 @@ export function ProfileHero({
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/75" />
                 <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
               </span>
-              Premium frontend profile
+              Frontend Developer
             </div>
           </PortfolioReveal>
 
@@ -168,7 +168,7 @@ export function ProfileHero({
           <Card className="relative overflow-hidden rounded-[2rem] border-white/10 bg-slate-950 text-white shadow-[0_40px_120px_-60px_rgba(14,165,233,0.75)]">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.36),transparent_34%),radial-gradient(circle_at_100%_0%,rgba(236,72,153,0.22),transparent_32%),radial-gradient(circle_at_60%_100%,rgba(16,185,129,0.16),transparent_28%)]" />
             <Image
-              src="/images/illustrations/scenes/scene-04.svg"
+              src="/images/avatars/viet-avt-1.jfif"
               alt=""
               fill
               sizes="(max-width: 1024px) 100vw, 480px"

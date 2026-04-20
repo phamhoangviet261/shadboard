@@ -45,11 +45,11 @@ export function ProfileCta({ technologies }: ProfileCtaProps) {
         <Card className="relative overflow-hidden rounded-[2.5rem] border-border/60 bg-slate-950 px-7 py-8 text-white shadow-[0_45px_140px_-80px_rgba(14,165,233,0.75)] sm:px-8 sm:py-10 lg:px-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.34),transparent_32%),radial-gradient(circle_at_100%_0%,rgba(236,72,153,0.2),transparent_28%),radial-gradient(circle_at_40%_100%,rgba(16,185,129,0.14),transparent_34%)]" />
           <Image
-            src="/images/illustrations/scenes/scene-04.svg"
+            src="/images/avatars/viet-avt-1.jfif"
             alt=""
             fill
             sizes="(max-width: 1280px) 100vw, 1000px"
-            className="pointer-events-none object-contain object-bottom-right opacity-30"
+            className="pointer-events-none object-contain object-bottom-right opacity-30 scale-150"
           />
 
           <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
@@ -60,8 +60,8 @@ export function ProfileCta({ technologies }: ProfileCtaProps) {
 
               <div className="space-y-4">
                 <h2 className="max-w-3xl text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
-                  {publicProfileContent.name} builds interfaces where visual
-                  quality and frontend engineering reinforce each other.
+                  I builds interfaces where visual quality and frontend
+                  engineering reinforce each other.
                 </h2>
                 <p className="max-w-2xl text-base leading-8 text-white/75">
                   {publicProfileContent.tagline}{" "}

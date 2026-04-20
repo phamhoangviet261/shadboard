@@ -195,14 +195,14 @@ export function getFeaturedProjectHighlights(
 ): FeaturedProjectHighlight[] {
   const highlightMeta = [
     {
-      kicker: "Flagship Platform",
+      kicker: "Real Estate Platform",
       accent: "from-cyan-500 via-sky-600 to-blue-700",
-      artwork: "/images/illustrations/scenes/scene-03.svg",
+      artwork: "/images/illustrations/scenes/mogul.png",
     },
     {
       kicker: "Deep Data Layer",
       accent: "from-fuchsia-500 via-pink-600 to-rose-700",
-      artwork: "/images/illustrations/scenes/scene-02.svg",
+      artwork: "/images/illustrations/scenes/datasuite.png",
     },
   ]
 

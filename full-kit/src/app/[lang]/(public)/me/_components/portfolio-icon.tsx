@@ -29,6 +29,8 @@ import {
 
 import type { IconType as AppIconType } from "@/types"
 
+import { TagName } from "../_data/portfolio"
+
 function normalize(value?: string) {
   return value?.toLowerCase().replace(/\s+/g, "").replace(/[._-]/g, "")
 }
@@ -158,17 +160,29 @@ export function getProjectAccent(index: number) {
   return accents[index % accents.length]
 }
 
-export function getProjectBadgeTone(color?: string) {
-  switch (color) {
-    case "blue-text-gradient":
-      return "border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-200"
-    case "green-text-gradient":
-      return "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-200"
-    case "pink-text-gradient":
-      return "border-fuchsia-500/20 bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-200"
-    default:
-      return "border-border/60 bg-background/70 text-muted-foreground"
-  }
+const badgeToneMap: Record<string, string> = {
+  react: "border-cyan-500 bg-cyan-500/30 text-cyan-900",
+  nextjs: "border-zinc-600 bg-white/80 text-zinc-900",
+  tailwind: "border-sky-500 bg-sky-500/30 text-sky-900",
+  typescript: "border-blue-600 bg-blue-600/30 text-blue-900",
+  node: "border-green-600 bg-green-600/30 text-green-900",
+  postgresql: "border-indigo-600 bg-indigo-600/30 text-indigo-900",
+  aws: "border-amber-500 bg-amber-500/30 text-amber-900",
+  docker: "border-blue-500 bg-blue-500/30 text-blue-900",
+  git: "border-rose-500 bg-rose-500/30 text-rose-900",
+  figma: "border-pink-500 bg-pink-500/30 text-pink-900",
+
+  vuejs: "border-emerald-600 bg-emerald-600/30 text-emerald-900",
+  restapi: "border-orange-500 bg-orange-500/30 text-orange-900",
+  scss: "border-fuchsia-500 bg-fuchsia-500/30 text-fuchsia-900",
+  supabase: "border-lime-600 bg-lime-600/30 text-lime-900",
+  css: "border-blue-700 bg-blue-700/30 text-blue-900",
+}
+
+export function getProjectBadgeTone(tag: string) {
+  return (
+    badgeToneMap[tag] || "border-border bg-background text-muted-foreground"
+  )
 }
 
 export function getDisplayHost(url?: string) {

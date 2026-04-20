@@ -123,25 +123,65 @@ Implement features for internal company use.`,
   },
 ]
 
+export type TagName =
+  | "react"
+  | "nextjs"
+  | "tailwind"
+  | "typescript"
+  | "node"
+  | "postgresql"
+  | "aws"
+  | "docker"
+  | "git"
+  | "figma"
+  | "vuejs"
+  | "restapi"
+  | "scss"
+  | "supabase"
+  | "css"
+
+const tagColors: Record<TagName, string> = {
+  react: "text-cyan-400",
+  nextjs: "text-neutral-900",
+  tailwind: "text-sky-400",
+  typescript: "text-blue-500",
+  node: "text-green-600",
+  postgresql: "text-indigo-500",
+  aws: "text-orange-400",
+  docker: "text-blue-400",
+  git: "text-red-500",
+  figma: "text-pink-500",
+
+  vuejs: "text-emerald-500",
+  restapi: "text-rose-400",
+  scss: "text-pink-400",
+  supabase: "text-green-400",
+  css: "text-blue-600",
+}
+
+const withColors = (tags: TagName[]) =>
+  tags.map((tag) => ({
+    name: tag,
+    color: tagColors[tag],
+  }))
+
 export const projects: Project[] = [
   {
     name: "MOGUL",
     description:
       "MOGUL.sg is a cutting-edge Real Estate platform harnessing geospatial technology to digitally enable home buyers, home renters, property sellers and Property agents in Singapore to search and sell in a SMART and hassle-free manner.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "nextjs",
-        color: "green-text-gradient",
-      },
-      {
-        name: "tailwind",
-        color: "pink-text-gradient",
-      },
-    ],
+    tags: withColors([
+      "react",
+      "nextjs",
+      "tailwind",
+      "typescript",
+      "node",
+      "postgresql",
+      "aws",
+      "docker",
+      "git",
+      "figma",
+    ]),
     image: "mogul",
     source_code_link: "https://github.com/",
     url: "https://www.mogul.sg/",
@@ -149,21 +189,8 @@ export const projects: Project[] = [
   {
     name: "Datasuite",
     description:
-      "The Mogul DataSuite is a one-stop search solution powered by Hyperlocal Intelligence. It is designed to make your property search experience not only easier, but faster. Using keyword stacking, our DataSuite then aggregates info, utilising cutting edge tech like Geospatial Analysis to provide you with the best search results.",
-    tags: [
-      {
-        name: "vuejs",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "restapi",
-        color: "green-text-gradient",
-      },
-      {
-        name: "scss",
-        color: "pink-text-gradient",
-      },
-    ],
+      "The Mogul DataSuite is a one-stop search solution powered by Hyperlocal Intelligence. It is designed to make your property search experience not only easier, but faster.",
+    tags: withColors(["vuejs", "restapi", "scss", "supabase", "git", "figma"]),
     image: "datasuite",
     source_code_link: "https://github.com/",
     url: "https://www.mogul.sg/datasuite",
@@ -171,21 +198,8 @@ export const projects: Project[] = [
   {
     name: "VNG Job site",
     description:
-      "The page at VNG Career - Tìm kiếm việc làm is VNG Corporation's official job search platform. It allows users to explore a wide range of job opportunities across different departments, including technology, operations, marketing, and more. The platform provides detailed job listings with descriptions, requirements, and the application process for roles within VNG, one of Vietnam's leading technology companies. Applicants can filter jobs by category, location, or keywords, making it easier to find suitable positions. It also features career development insights and company culture highlights.",
-    tags: [
-      {
-        name: "nextjs",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "supabase",
-        color: "green-text-gradient",
-      },
-      {
-        name: "css",
-        color: "pink-text-gradient",
-      },
-    ],
+      "Official job search platform of VNG Corporation, allowing users to explore job opportunities across multiple departments with filtering and detailed job listings.",
+    tags: withColors(["nextjs", "typescript", "css", "git", "figma"]),
     image: "vng",
     source_code_link: "https://github.com/",
     url: "https://career.vng.com.vn/vi/tim-kiem-viec-lam",

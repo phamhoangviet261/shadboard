@@ -25,7 +25,7 @@ export const publicProfileContent: PublicProfileContent = {
     "Frontend Developer focused on building modern, performant, and visually engaging web experiences.",
   yearsExperience: 4,
   heroHeadline:
-    "Viet Pham builds modern, performant, and visually engaging web experiences.",
+    "I builds modern, performant, and visually engaging web experiences.",
   heroSummary:
     "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and TailwindCSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
   aboutIntro:

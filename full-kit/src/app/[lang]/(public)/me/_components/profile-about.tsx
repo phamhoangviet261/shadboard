@@ -47,7 +47,7 @@ export function ProfileAbout({
           <Card className="relative overflow-hidden rounded-[2rem] border-border/60 bg-background/75 p-7 shadow-[0_35px_120px_-80px_rgba(15,23,42,0.65)] backdrop-blur-xl sm:p-8">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_30%),radial-gradient(circle_at_100%_0%,rgba(236,72,153,0.12),transparent_28%)]" />
             <Image
-              src="/images/illustrations/scenes/scene-01.svg"
+              src="/images/illustrations/scenes/fe-dev.jpg"
               alt=""
               fill
               sizes="(max-width: 1280px) 100vw, 720px"
