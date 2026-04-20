@@ -24,7 +24,9 @@ export const metadata: Metadata = {
     default: "shiro.dev",
   },
   description: "",
-  metadataBase: new URL((process.env.BASE_URL as string) || "/en"),
+  metadataBase: new URL(
+    (process.env.BASE_URL as string) || "https://vietpham.io.vn/"
+  ),
 }
 
 // Define fonts for the application
