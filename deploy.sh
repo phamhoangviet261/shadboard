@@ -1,16 +1,37 @@
 #!/usr/bin/env bash
-set -e
+set -Eeuo pipefail
 
-cd /home/shiro/shadboard/full-kit
+APP_DIR="/home/shiro/shadboard"
+LOCK_FILE="/tmp/shadboard-deploy.lock"
+
+exec 9>"$LOCK_FILE"
+flock -n 9 || {
+  echo "==> Another deploy is already running"
+  exit 1
+}
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+cd "$APP_DIR"
+
+echo "==> Environment"
+echo "USER: $(whoami)"
+echo "PWD: $(pwd)"
+echo "NODE: $(which node || true)"
+echo "PNPM: $(which pnpm || true)"
+node -v
+pnpm -v
 
 echo "==> Pull latest code"
-git pull origin master
+git fetch origin master
+git reset --hard origin/master
 
 echo "==> Install dependencies"
 pnpm install --frozen-lockfile
 
 echo "==> Build"
-pnpm build
+NODE_OPTIONS="--max-old-space-size=2048" pnpm build
 
 echo "==> Reload PM2"
 pm2 reload ecosystem.config.cjs --only shadboard
