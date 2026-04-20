@@ -38,10 +38,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
-          source: |
-            .next/standalone/**
-            .next/static/**
-            public/**
+          source: ".next,public"
           target: /home/shiro/app
           strip_components: 0
 
