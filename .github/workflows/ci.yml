@@ -5,14 +5,12 @@ on:
   push:
     branches:
       - master
+      - develop
+      - dev
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./
 
     steps:
       - name: Checkout
@@ -24,12 +22,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: pnpm
-          cache-dependency-path: ./pnpm-lock.yaml
 
       - name: Install
         run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build
+        env:
+          HOME_PATHNAME: /en
