@@ -82,11 +82,11 @@ export default function ModelLoadingOverlay({
       }`}
     >
       <div className="relative h-[220px] w-[220px] pointer-events-none translate-x-[-10px]">
-        {!modelLoaded && !modelError && (
+        {/* {!modelLoaded && !modelError && (
           <div className="absolute inset-0 flex items-center justify-center text-sm text-black/60">
             Đang tải model...
           </div>
-        )}
+        )} */}
 
         {/* @ts-expect-error custom element */}
         <model-viewer

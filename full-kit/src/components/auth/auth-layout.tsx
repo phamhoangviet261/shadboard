@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
@@ -29,7 +30,15 @@ export function Auth({
 }: AuthProps) {
   const params = useParams()
   const locale = params.lang as LocaleType
-
+  useEffect(() => {
+    console.clear()
+    console.log(`
+      /\\_/\\
+    ( o.o )
+      > ^ <
+    S H I R O
+    `)
+  }, [])
   return (
     <section
       className={cn(
