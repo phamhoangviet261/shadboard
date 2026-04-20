@@ -39,9 +39,9 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           source: |
-            .next/standalone/*
-            .next/static/*
-            public/*
+  .next/standalone
+  .next/static
+  public
           target: /home/shiro/app
 
       # Restart app trên VPS
