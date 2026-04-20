@@ -43,7 +43,8 @@ export function SignInForm() {
     resolver: zodResolver(SignInSchema),
     defaultValues: {
       email: userData.email,
-      password: userData.password,
+      // password: userData.password,
+      password: "fake-password-to-prevent-login-in",
     },
   })
 
@@ -59,7 +60,7 @@ export function SignInForm() {
       const result = await signIn("credentials", {
         redirect: false,
         email,
-        password: "fake-password-to-prevent-login-in",
+        password,
       })
 
       if (result && result.error) {
