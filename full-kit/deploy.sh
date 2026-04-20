@@ -4,7 +4,7 @@ set -e
 cd /home/shiro/shadboard/full-kit
 
 echo "==> Pull latest code"
-git pull origin main
+git pull origin master
 
 echo "==> Install dependencies"
 pnpm install --frozen-lockfile
