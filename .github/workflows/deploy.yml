@@ -50,8 +50,9 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
             cd /home/shiro/app
-            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
-            pm2 restart shadboard || \
-            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
-            pm2 start .next/standalone/server.js --name shadboard --cwd /home/shiro/app
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} pm2 restart shadboard || \
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} pm2 start .next/standalone/server.js --name shadboard --cwd /home/shiro/app
