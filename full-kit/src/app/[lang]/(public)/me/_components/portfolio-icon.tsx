@@ -29,8 +29,6 @@ import {
 
 import type { IconType as AppIconType } from "@/types"
 
-import { TagName } from "../_data/portfolio"
-
 function normalize(value?: string) {
   return value?.toLowerCase().replace(/\s+/g, "").replace(/[._-]/g, "")
 }

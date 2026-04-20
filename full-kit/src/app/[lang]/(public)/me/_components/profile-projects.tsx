@@ -83,7 +83,7 @@ export function ProfileProjects({ projects }: ProfileProjectsProps) {
                           key={`${project.name}-${tag.name}`}
                           className={cn(
                             "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold",
-                            getProjectBadgeTone(tag.color)
+                            getProjectBadgeTone(tag.name)
                           )}
                         >
                           <Icon className="size-3.5" />
