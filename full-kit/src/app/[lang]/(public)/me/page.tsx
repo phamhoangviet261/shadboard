@@ -22,13 +22,13 @@ export const metadata: Metadata = {
     title: "Pham Hoang Viet",
     description:
       "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and TailwindCSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
-    images: ["https://vietpham.io.vn/images/avatars/icon.ico"],
+    images: ["https://vietpham.io.vn/images/avatars/viet-avt.jfif"],
   },
   twitter: {
     title: "Pham Hoang Viet",
     description:
       "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and TailwindCSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
-    images: ["https://vietpham.io.vn/images/avatars/icon.ico"],
+    images: ["https://vietpham.io.vn/images/avatars/viet-avt.jfif"],
   },
 }
 
