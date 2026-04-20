@@ -12,7 +12,7 @@ import { RegisterForm } from "./register-form"
 export function Register({ dictionary }: { dictionary: DictionaryType }) {
   return (
     <Auth
-      imgSrc="/images/illustrations/misc/welcome.svg"
+      imgSrc="/images/illustrations/misc/welcome.jpg"
       dictionary={dictionary}
     >
       <AuthHeader>
