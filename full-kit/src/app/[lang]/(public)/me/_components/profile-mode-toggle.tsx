@@ -4,6 +4,7 @@ import { useCallback } from "react"
 import { MoonStar, Sun } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+
 import { useIsDarkMode } from "@/hooks/use-mode"
 import { useSettings } from "@/hooks/use-settings"
 import { Switch } from "@/components/ui/switch"
