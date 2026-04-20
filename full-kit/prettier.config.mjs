@@ -17,7 +17,6 @@ const config = {
   tailwindFunctions: ["cn", "clsx"],
   importOrder: [
     "<BUILTIN_MODULES>",
-    "",
     "^(react/(.*)$)|^(react$)",
     "^(react-dom/(.*)$)|^(react-dom$)",
     "^(next/(.*)$)|^(next$)",
