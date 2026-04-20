@@ -1,6 +1,5 @@
 import { dirname, resolve } from "path"
 import { fileURLToPath } from "url"
-
 import { includeIgnoreFile } from "@eslint/compat"
 import { FlatCompat } from "@eslint/eslintrc"
 
