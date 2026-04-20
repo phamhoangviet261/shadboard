@@ -54,6 +54,24 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
             cd /home/shiro/app
-            export $(grep -v '^#' .env | xargs)
 
-            pm2 restart shadboard || pm2 start .next/standalone/server.js --name shadboard --cwd /home/shiro/app
+            cat > ecosystem.config.cjs <<'EOF'
+            module.exports = {
+              apps: [
+                {
+                  name: "shadboard",
+                  script: ".next/standalone/server.js",
+                  cwd: "/home/shiro/app",
+                  env: {
+                    NODE_ENV: "production",
+                    NEXTAUTH_SECRET: "${{ secrets.NEXTAUTH_SECRET }}",
+                    NEXTAUTH_URL: "${{ secrets.NEXTAUTH_URL }}",
+                    DATABASE_URL: "${{ secrets.DATABASE_URL }}",
+                    BASE_URL: "${{ secrets.BASE_URL }}"
+                  }
+                }
+              ]
+            }
+            EOF
+
+            pm2 startOrReload ecosystem.config.cjs --update-env
