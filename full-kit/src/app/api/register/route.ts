@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
 import { Prisma } from "@prisma/client"
 
-import { db } from "@/lib/prisma"
-import { hashPassword } from "@/lib/password"
 import { RegisterSchema } from "@/schemas/register-schema"
+
+import { hashPassword } from "@/lib/password"
+import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 
@@ -128,7 +129,9 @@ export async function POST(req: Request) {
       error.code === "P2002"
     ) {
       return NextResponse.json(
-        createUniqueConstraintIssues(error.meta?.target as string[] | undefined),
+        createUniqueConstraintIssues(
+          error.meta?.target as string[] | undefined
+        ),
         { status: 409 }
       )
     }
