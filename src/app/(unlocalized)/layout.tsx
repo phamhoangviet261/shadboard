@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     default: "shiro.dev",
   },
   description: "",
-  metadataBase: new URL((process.env.BASE_URL as string) || "/"),
+  metadataBase: new URL((process.env.BASE_URL as string) || "/en"),
 }
 
 // Define fonts for the application
