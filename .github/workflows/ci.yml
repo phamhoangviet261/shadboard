@@ -5,12 +5,14 @@ on:
   push:
     branches:
       - master
-      - develop
-      - dev
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./full-kit
 
     steps:
       - name: Checkout
@@ -18,14 +20,13 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
+          cache-dependency-path: ./full-kit/pnpm-lock.yaml
 
       - name: Install
         run: pnpm install --frozen-lockfile
