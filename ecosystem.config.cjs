@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "shadboard",
-      cwd: "/home/shiro/shadboard/full-kit",
+      cwd: "/home/shiro/shadboard",
       script: "node_modules/next/dist/bin/next",
       args: "start -p 3000",
       exec_mode: "cluster",
