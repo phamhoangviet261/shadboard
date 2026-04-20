@@ -12,7 +12,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./full-kit
+        working-directory: ./
 
     steps:
       - name: Checkout
@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: ./full-kit/pnpm-lock.yaml
+          cache-dependency-path: ./pnpm-lock.yaml
 
       - name: Install
         run: pnpm install --frozen-lockfile
