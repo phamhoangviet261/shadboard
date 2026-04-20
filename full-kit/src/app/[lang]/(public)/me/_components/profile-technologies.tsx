@@ -215,7 +215,7 @@ export function ProfileTechnologies({
           </Card>
         </PortfolioReveal>
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-3 grid-cols-2 xl:grid-cols-3">
           {filteredTechnologies.map((technology, index) => {
             const isSelected = technology.name === selectedTechnology?.name
             const technologyIndex = technologies.findIndex(
@@ -228,6 +228,7 @@ export function ProfileTechnologies({
               <PortfolioReveal
                 key={`${technology.name}-${technology.icon}`}
                 delay={120 + index * 35}
+                className="w-full flex md:block justify-center items-center"
               >
                 <button
                   type="button"

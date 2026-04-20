@@ -27,9 +27,9 @@ export const publicProfileContent: PublicProfileContent = {
   heroHeadline:
     "Viet Pham builds modern, performant, and visually engaging web experiences.",
   heroSummary:
-    "Frontend Developer with 4+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and TailwindCSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
+    "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and TailwindCSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
   aboutIntro:
-    "I am a Frontend Developer with around 4+ years of experience building modern, responsive, and scalable web applications.",
+    "I am a Frontend Developer with around 5+ years of experience building modern, responsive, and scalable web applications.",
   aboutParagraphs: [
     "I specialize in React and Next.js, with strong experience in TypeScript, TailwindCSS, and building clean, reusable UI systems. I enjoy crafting smooth user experiences, optimizing performance, and turning complex ideas into intuitive interfaces.",
     "Over the years, I have worked on multiple real-world projects, including deploying and managing applications on VPS, handling CI/CD, and integrating modern frontend architectures. I am passionate about creating visually appealing products with solid engineering behind them, and I continuously explore new technologies to improve both user experience and developer experience.",
@@ -47,7 +47,7 @@ export const publicProfileContent: PublicProfileContent = {
     "CI/CD Workflows",
   ],
   heroHighlights: [
-    "4+ years shipping modern frontend work",
+    "5+ years shipping modern frontend work",
     "React + Next.js application architecture",
     "TypeScript + TailwindCSS UI systems",
     "VPS deployment and CI/CD workflows",
