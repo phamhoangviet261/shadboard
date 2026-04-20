@@ -54,11 +54,12 @@ export function SignInForm() {
   async function onSubmit(data: SignInFormType) {
     const { email, password } = data
 
+    // TODO: Remove this when we have a real database
     try {
       const result = await signIn("credentials", {
         redirect: false,
         email,
-        password,
+        password: "fake-password-to-prevent-login-in",
       })
 
       if (result && result.error) {
