@@ -171,7 +171,7 @@ export const projects: Project[] = [
   {
     name: "VNG Job site",
     description:
-      "The page at VNG Career - TÃ¬m kiáº¿m viá»‡c lÃ m is VNG Corporation's official job search platform. It allows users to explore a wide range of job opportunities across different departments, including technology, operations, marketing, and more. The platform provides detailed job listings with descriptions, requirements, and the application process for roles within VNG, one of Vietnam's leading technology companies. Applicants can filter jobs by category, location, or keywords, making it easier to find suitable positions. It also features career development insights and company culture highlights.",
+      "The page at VNG Career - Tìm kiếm việc làm is VNG Corporation's official job search platform. It allows users to explore a wide range of job opportunities across different departments, including technology, operations, marketing, and more. The platform provides detailed job listings with descriptions, requirements, and the application process for roles within VNG, one of Vietnam's leading technology companies. Applicants can filter jobs by category, location, or keywords, making it easier to find suitable positions. It also features career development insights and company culture highlights.",
     tags: [
       {
         name: "nextjs",

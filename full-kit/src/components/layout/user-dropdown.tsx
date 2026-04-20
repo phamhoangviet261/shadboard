@@ -29,6 +29,11 @@ export function UserDropdown({
   dictionary: DictionaryType
   locale: LocaleType
 }) {
+  const userMeta =
+    userData?.email && !userData.email.includes("example.com")
+      ? userData.email
+      : userData.role
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -55,9 +60,9 @@ export function UserDropdown({
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden">
-            <p className="text-sm font-medium truncate">John Doe</p>
+            <p className="text-sm font-medium truncate">{userData?.name}</p>
             <p className="text-xs text-muted-foreground font-semibold truncate">
-              {userData?.email}
+              {userMeta}
             </p>
           </div>
         </DropdownMenuLabel>

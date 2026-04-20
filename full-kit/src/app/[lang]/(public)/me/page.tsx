@@ -1,36 +1,22 @@
-"use client"
-
-import { useEffect, useState } from "react"
-
 import { experiences, projects, technologies } from "./_data/portfolio"
+import { getAchievementStats } from "./_data/portfolio-derivatives"
 
+import { ProfileAbout } from "./_components/profile-about"
+import { ProfileCta } from "./_components/profile-cta"
 import { ProfileExperiences } from "./_components/profile-experiences"
+import { ProfileFeaturedProjects } from "./_components/profile-featured-projects"
 import { ProfileHero } from "./_components/profile-hero"
 import { ProfileProjects } from "./_components/profile-projects"
+import { ProfileSideProjects } from "./_components/profile-side-projects"
+import { ProfileStats } from "./_components/profile-stats"
 import { ProfileTechnologies } from "./_components/profile-technologies"
-import ModelLoadingOverlay from "@/components/model-loading"
 
 export default function MePage() {
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setIsLoading(false)
-    }, 5000)
-
-    return () => window.clearTimeout(timer)
-  }, [])
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center px-4 py-10">
-        <ModelLoadingOverlay
-          loading={isLoading}
-          modelSrc="/models/chibi_battle_bat_xayah.glb"
-        />
-      </div>
-    )
-  }
+  const achievementStats = getAchievementStats(
+    technologies,
+    experiences,
+    projects
+  )
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background">
@@ -50,9 +36,18 @@ export default function MePage() {
           experiences={experiences}
           projects={projects}
         />
-        <ProfileTechnologies technologies={technologies} />
+        <ProfileAbout
+          technologies={technologies}
+          experiences={experiences}
+          projects={projects}
+        />
+        <ProfileStats stats={achievementStats} />
+        <ProfileTechnologies technologies={technologies} projects={projects} />
         <ProfileExperiences experiences={experiences} />
+        <ProfileFeaturedProjects projects={projects} />
+        <ProfileSideProjects technologies={technologies} projects={projects} />
         <ProfileProjects projects={projects} />
+        <ProfileCta technologies={technologies} />
       </div>
     </div>
   )

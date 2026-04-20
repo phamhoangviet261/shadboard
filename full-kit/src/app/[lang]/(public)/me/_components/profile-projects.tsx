@@ -1,5 +1,4 @@
-import Image from "next/image"
-import { ArrowUpRight, Github } from "lucide-react"
+import { ArrowUpRight, Github, Layers3 } from "lucide-react"
 
 import type { Project } from "../_data/portfolio"
 
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
   getDisplayHost,
-  getProjectAccent,
   getProjectBadgeTone,
   getProjectTagIcon,
   isUsefulExternalLink,
@@ -21,28 +19,20 @@ interface ProfileProjectsProps {
   projects: Project[]
 }
 
-const artworkPaths = [
-  "/images/illustrations/scenes/scene-03.svg",
-  "/images/illustrations/scenes/scene-02.svg",
-  "/images/illustrations/misc/welcome.svg",
-]
-
 export function ProfileProjects({ projects }: ProfileProjectsProps) {
   return (
     <section id="projects" className="scroll-mt-12 space-y-8">
       <PortfolioReveal>
         <PortfolioSectionHeading
           eyebrow="Projects"
-          title="Selected builds presented as the portfolio’s visual centerpiece."
-          description="These cards reuse the existing project dataset and elevate it with stronger presentation, layered artwork, and cleaner calls to action."
+          title="The full project archive, kept cleaner and more scannable after the featured showcase."
+          description="This section intentionally shifts from cinematic highlights to a sharper archive view, so every project is easy to compare without repeating the same visual treatment."
           align="center"
         />
       </PortfolioReveal>
 
-      <div className="grid gap-6 xl:grid-cols-12">
+      <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
         {projects.map((project, index) => {
-          const isFeaturedProject = index === 0
-          const ProjectTagIcon = getProjectTagIcon(project.tags?.[0]?.name)
           const host = getDisplayHost(project.url)
           const liveUrl = isUsefulExternalLink(project.url)
             ? project.url
@@ -54,77 +44,32 @@ export function ProfileProjects({ projects }: ProfileProjectsProps) {
             : undefined
 
           return (
-            <PortfolioReveal
-              key={project.name}
-              delay={index * 120}
-              className={cn(
-                isFeaturedProject
-                  ? "xl:col-span-7 xl:row-span-2"
-                  : "xl:col-span-5"
-              )}
-            >
-              <Card className="group h-full overflow-hidden rounded-[2rem] border-border/60 bg-background/75 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_40px_120px_-75px_rgba(59,130,246,0.7)]">
-                <div
-                  className={cn(
-                    "relative overflow-hidden border-b border-white/10 p-6 text-white",
-                    isFeaturedProject
-                      ? "min-h-[20rem] sm:min-h-[24rem]"
-                      : "min-h-[16rem] sm:min-h-[18rem]"
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "absolute inset-0 bg-gradient-to-br",
-                      getProjectAccent(index)
-                    )}
-                  />
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.35),transparent_28%),radial-gradient(circle_at_20%_80%,rgba(15,23,42,0.4),transparent_38%)]" />
-                  <Image
-                    src={artworkPaths[index % artworkPaths.length]}
-                    alt=""
-                    fill
-                    sizes="(max-width: 1280px) 100vw, 720px"
-                    className="pointer-events-none object-contain object-bottom-right opacity-70 transition-transform duration-500 group-hover:scale-105"
-                  />
+            <PortfolioReveal key={project.name} delay={index * 90}>
+              <Card className="group relative flex h-full flex-col overflow-hidden rounded-[1.9rem] border-border/60 bg-background/80 p-6 shadow-[0_25px_90px_-70px_rgba(15,23,42,0.65)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_35px_90px_-70px_rgba(14,165,233,0.6)]">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-500 via-fuchsia-500 to-emerald-500" />
 
-                  <div className="relative flex h-full flex-col justify-between gap-8">
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="inline-flex items-center rounded-full border border-white/[0.15] bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-white/[0.85] backdrop-blur">
-                        {project.image || "project"}
+                <div className="flex h-full flex-col gap-5 pt-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                      <Layers3 className="size-3.5" />
+                      Project {String(index + 1).padStart(2, "0")}
+                    </div>
+                    {host ? (
+                      <span className="inline-flex items-center rounded-full border border-border/60 bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+                        {host}
                       </span>
-                      {host ? (
-                        <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.15] bg-black/[0.15] px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
-                          <ProjectTagIcon className="size-3.5" />
-                          {host}
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <div className="space-y-3">
-                      <p className="text-sm font-semibold uppercase tracking-[0.32em] text-white/[0.65]">
-                        {isFeaturedProject
-                          ? "Featured Build"
-                          : "Portfolio Build"}
-                      </p>
-                      <h3
-                        className={cn(
-                          "max-w-xl font-black tracking-tight",
-                          isFeaturedProject
-                            ? "text-3xl sm:text-4xl"
-                            : "text-2xl sm:text-3xl"
-                        )}
-                      >
-                        {project.name || "Untitled project"}
-                      </h3>
-                    </div>
+                    ) : null}
                   </div>
-                </div>
 
-                <div className="flex h-full flex-col gap-5 p-6 sm:p-7">
-                  <p className="text-sm leading-7 text-muted-foreground">
-                    {project.description ||
-                      "Project details will be added soon."}
-                  </p>
+                  <div className="space-y-3">
+                    <h3 className="text-2xl font-black tracking-tight">
+                      {project.name || "Untitled project"}
+                    </h3>
+                    <p className="text-sm leading-7 text-muted-foreground">
+                      {project.description ||
+                        "Project details will be added soon."}
+                    </p>
+                  </div>
 
                   <div className="flex flex-wrap gap-2">
                     {(project.tags?.length
@@ -148,7 +93,7 @@ export function ProfileProjects({ projects }: ProfileProjectsProps) {
                     })}
                   </div>
 
-                  <div className="mt-auto flex flex-wrap gap-3">
+                  <div className="mt-auto flex flex-wrap gap-3 pt-2">
                     {liveUrl ? (
                       <Button asChild className="rounded-full px-5">
                         <a

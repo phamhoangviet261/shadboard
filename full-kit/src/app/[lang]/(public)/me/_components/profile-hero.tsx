@@ -1,12 +1,22 @@
 import Image from "next/image"
-import { ArrowDownRight, Building2, Mail, MapPin, Phone } from "lucide-react"
+import {
+  ArrowDownRight,
+  Building2,
+  Sparkles,
+  Workflow,
+  Wrench,
+} from "lucide-react"
 
 import type { Experience, Project, Technology } from "../_data/portfolio"
 
+import {
+  isPlaceholderContactValue,
+  publicProfileContent,
+} from "../_data/profile-content"
 import { socialLinksData } from "@/data/social-links"
 import { userData } from "@/data/user"
 
-import { formatNumberToCompact, getInitials } from "@/lib/utils"
+import { getInitials } from "@/lib/utils"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -30,12 +40,11 @@ export function ProfileHero({
   const socialLinks = socialLinksData.filter(({ href }) =>
     /^https?:\/\//.test(href)
   )
-  const location = [userData.state, userData.country].filter(Boolean).join(", ")
   const featuredTechnologies = technologies.slice(0, 6)
   const focusCards = [
     {
-      label: "Technologies",
-      value: String(technologies.length),
+      label: "Years Experience",
+      value: `${publicProfileContent.yearsExperience}+`,
     },
     {
       label: "Experience Chapters",
@@ -73,18 +82,13 @@ export function ProfileHero({
           <div className="space-y-5">
             <PortfolioReveal delay={120}>
               <h1 className="max-w-4xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
-                {userData.name} builds product interfaces that feel polished
-                from the first frame.
+                {publicProfileContent.heroHeadline}
               </h1>
             </PortfolioReveal>
 
             <PortfolioReveal delay={200}>
               <p className="max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
-                {userData.role} based in {location || "Remote"}, blending
-                performance-minded engineering with a design-first eye. The
-                current portfolio spans {technologies.length} technologies,{" "}
-                {experiences.length} experience chapters, and {projects.length}{" "}
-                featured product builds.
+                {publicProfileContent.heroSummary}
               </p>
             </PortfolioReveal>
           </div>
@@ -92,8 +96,8 @@ export function ProfileHero({
           <PortfolioReveal delay={260}>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" className="rounded-full px-6">
-                <a href={`mailto:${userData.email}`}>
-                  Start a Conversation
+                <a href="#featured-projects">
+                  Explore Featured Work
                   <ArrowDownRight className="ms-2 size-4" />
                 </a>
               </Button>
@@ -103,7 +107,7 @@ export function ProfileHero({
                 size="lg"
                 className="rounded-full border-border/60 bg-background/70 px-6 backdrop-blur"
               >
-                <a href="#projects">View Featured Projects</a>
+                <a href="#about">Read Tech Philosophy</a>
               </Button>
             </div>
           </PortfolioReveal>
@@ -111,16 +115,16 @@ export function ProfileHero({
           <PortfolioReveal delay={320}>
             <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
               <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-2 backdrop-blur">
-                <MapPin className="size-4 text-sky-500" />
-                <span>{location || "Location not provided"}</span>
+                <Sparkles className="size-4 text-sky-500" />
+                <span>{publicProfileContent.heroHighlights[0]}</span>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-2 backdrop-blur">
-                <Mail className="size-4 text-fuchsia-500" />
-                <span>{userData.email}</span>
+                <Workflow className="size-4 text-fuchsia-500" />
+                <span>{publicProfileContent.heroHighlights[1]}</span>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-2 backdrop-blur">
-                <Phone className="size-4 text-emerald-500" />
-                <span>{userData.phoneNumber}</span>
+                <Wrench className="size-4 text-emerald-500" />
+                <span>{publicProfileContent.heroHighlights[3]}</span>
               </div>
             </div>
           </PortfolioReveal>
@@ -198,9 +202,11 @@ export function ProfileHero({
 
                 <div className="space-y-1">
                   <h2 className="text-2xl font-black tracking-tight">
-                    {userData.name}
+                    {publicProfileContent.name}
                   </h2>
-                  <p className="text-sm text-white/70">{userData.role}</p>
+                  <p className="text-sm text-white/70">
+                    {publicProfileContent.tagline}
+                  </p>
                   <div className="inline-flex items-center gap-2 text-sm text-white/60">
                     <Building2 className="size-4" />
                     <span>
@@ -225,14 +231,14 @@ export function ProfileHero({
 
                 <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4 backdrop-blur">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/[0.45]">
-                    Community Signal
+                    Current Focus
                   </p>
                   <div className="mt-3 space-y-1">
                     <p className="text-lg font-semibold">
-                      {formatNumberToCompact(userData.followers)} followers
+                      {publicProfileContent.role}
                     </p>
                     <p className="text-sm text-white/[0.65]">
-                      {formatNumberToCompact(userData.connections)} connections
+                      {publicProfileContent.currentFocus}
                     </p>
                   </div>
                 </div>
@@ -265,6 +271,17 @@ export function ProfileHero({
                   })}
                 </div>
               </div>
+
+              {!isPlaceholderContactValue(userData.email) ? (
+                <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4 backdrop-blur">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/[0.45]">
+                    Contact
+                  </p>
+                  <p className="mt-3 text-sm text-white/[0.8]">
+                    {userData.email}
+                  </p>
+                </div>
+              ) : null}
             </div>
           </Card>
         </PortfolioReveal>
