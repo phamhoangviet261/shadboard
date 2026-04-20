@@ -54,5 +54,6 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
             cd /home/shiro/app
-            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} pm2 restart shadboard || \
-            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} pm2 start .next/standalone/server.js --name shadboard --cwd /home/shiro/app
+            export $(grep -v '^#' .env | xargs)
+
+            pm2 restart shadboard || pm2 start .next/standalone/server.js --name shadboard --cwd /home/shiro/app
