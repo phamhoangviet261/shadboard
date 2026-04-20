@@ -12,7 +12,7 @@ type Props = {
 export default function ModelLoadingOverlay({
   modelSrc,
   loading,
-  text = "Loading...",
+  text = "",
   errorText = "Không tải được model",
 }: Props) {
   const modelRef = useRef<HTMLDivElement>(null)
@@ -81,7 +81,7 @@ export default function ModelLoadingOverlay({
         loading ? "opacity-100" : "opacity-0"
       }`}
     >
-      <div className="relative h-[220px] w-[220px] pointer-events-none translate-x-[-10px]">
+      <div className="relative h-[220px] w-[220px] pointer-events-none translate-x-[10px]">
         {/* {!modelLoaded && !modelError && (
           <div className="absolute inset-0 flex items-center justify-center text-sm text-black/60">
             Đang tải model...
