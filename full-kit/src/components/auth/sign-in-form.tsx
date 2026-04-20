@@ -8,8 +8,6 @@ import { useForm } from "react-hook-form"
 
 import type { LocaleType, SignInFormType } from "@/types"
 
-import { userData } from "@/data/user"
-
 import { SignInSchema } from "@/schemas/sign-in-schema"
 
 import { ensureLocalizedPathname } from "@/lib/i18n"
@@ -42,9 +40,8 @@ export function SignInForm() {
   const form = useForm<SignInFormType>({
     resolver: zodResolver(SignInSchema),
     defaultValues: {
-      email: userData.email,
-      // password: userData.password,
-      password: "fake-password-to-prevent-login-in",
+      email: "",
+      password: "",
     },
   })
 
@@ -55,7 +52,6 @@ export function SignInForm() {
   async function onSubmit(data: SignInFormType) {
     const { email, password } = data
 
-    // TODO: Remove this when we have a real database
     try {
       const result = await signIn("credentials", {
         redirect: false,

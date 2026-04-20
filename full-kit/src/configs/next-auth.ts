@@ -3,7 +3,9 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import type { NextAuthOptions } from "next-auth"
 import type { Adapter } from "next-auth/adapters"
 
+import { authenticateCredentials } from "@/lib/authenticate-credentials"
 import { db } from "@/lib/prisma"
+import { SignInSchema } from "@/schemas/sign-in-schema"
 
 import CredentialsProvider from "next-auth/providers/credentials"
 
@@ -55,30 +57,20 @@ export const authOptions: NextAuthOptions = {
         if (!credentials) return null
 
         try {
-          // Authenticate the user by sending credentials to an external API
-          // Refer to the NextAuth.js documentation for handling custom sign-in flows:
-          // https://next-auth.js.org/providers/credentials
-          const res = await fetch(`${process.env.API_URL}/auth/sign-in`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
-          })
+          const parsedCredentials = SignInSchema.safeParse(credentials)
 
-          const payload = await res.json()
-
-          // Throw error if the response status indicates a failure
-          if (res.status >= 400) {
-            throw new Error(payload?.message ?? "An unknown error occurred.")
+          if (!parsedCredentials.success) {
+            throw new Error("Invalid email or password.")
           }
 
-          return payload // Return user data on successful authentication
+          const user = await authenticateCredentials(parsedCredentials.data)
+
+          if (!user) {
+            throw new Error("Invalid email or password.")
+          }
+
+          return user
         } catch (e: unknown) {
-          // Handle errors and provide appropriate error message
           throw new Error(
             e instanceof Error ? e.message : "An unknown error occurred."
           )
@@ -116,7 +108,7 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name
         session.user.avatar = token.avatar
         session.user.email = token.email
-        token.status = token.status
+        session.user.status = token.status
       }
 
       return session
