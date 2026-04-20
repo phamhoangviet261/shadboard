@@ -1,5 +1,5 @@
-import { db } from "@/lib/prisma"
 import { verifyPassword } from "@/lib/password"
+import { db } from "@/lib/prisma"
 
 export type AuthenticatedUser = {
   id: string

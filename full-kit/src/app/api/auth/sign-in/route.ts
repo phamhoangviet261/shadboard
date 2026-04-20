@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 
-import { authenticateCredentials } from "@/lib/authenticate-credentials"
 import { SignInSchema } from "@/schemas/sign-in-schema"
+
+import { authenticateCredentials } from "@/lib/authenticate-credentials"
 
 export const runtime = "nodejs"
 
@@ -39,9 +40,6 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error signing in:", error)
 
-    return NextResponse.json(
-      { message: "Unable to sign in." },
-      { status: 500 }
-    )
+    return NextResponse.json({ message: "Unable to sign in." }, { status: 500 })
   }
 }

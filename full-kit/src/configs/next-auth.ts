@@ -3,9 +3,10 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import type { NextAuthOptions } from "next-auth"
 import type { Adapter } from "next-auth/adapters"
 
+import { SignInSchema } from "@/schemas/sign-in-schema"
+
 import { authenticateCredentials } from "@/lib/authenticate-credentials"
 import { db } from "@/lib/prisma"
-import { SignInSchema } from "@/schemas/sign-in-schema"
 
 import CredentialsProvider from "next-auth/providers/credentials"
 
