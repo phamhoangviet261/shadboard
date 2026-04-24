@@ -18,6 +18,25 @@ export const navigationsData: NavigationType[] = [
         title: "eCommerce",
         href: "/dashboards/ecommerce",
         iconName: "ShoppingCart",
+    ],
+  },
+  {
+    title: "Lensora Admin",
+    items: [
+      {
+        title: "Products",
+        href: "/admin/products",
+        iconName: "Glasses",
+      },
+      {
+        title: "Collections",
+        href: "/admin/collections",
+        iconName: "Layers",
+      },
+      {
+        title: "AI Writer",
+        href: "/admin/ai-writer",
+        iconName: "Sparkles",
       },
     ],
   },

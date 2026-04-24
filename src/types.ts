@@ -167,3 +167,83 @@ export type SignInFormType = z.infer<typeof SignInSchema>
 export type VerifyEmailFormType = z.infer<typeof VerifyEmailSchema>
 
 export type ComingSoonFormType = z.infer<typeof ComingSoonSchema>
+
+// ─── Lensora Eyewear Types ───────────────────────────────────────────────────
+
+export type ProductStatus = "draft" | "published" | "archived"
+
+export type FrameShape =
+  | "round"
+  | "square"
+  | "rectangle"
+  | "cat-eye"
+  | "aviator"
+  | "oval"
+  | "geometric"
+
+export type FrameMaterial = "acetate" | "titanium" | "stainless-steel" | "tr90" | "wood"
+
+export type LensType = "single-vision" | "progressive" | "bifocal" | "blue-light" | "sunglasses"
+
+export type FaceFit = "narrow" | "medium" | "wide"
+
+export type Gender = "men" | "women" | "unisex"
+
+export type ProductSize = "XS" | "S" | "M" | "L" | "XL"
+
+export interface ColorVariant {
+  name: string
+  hex: string
+}
+
+export interface ProductSpecs {
+  lensWidth: number  // mm
+  bridgeWidth: number // mm
+  templeLength: number // mm
+  totalWidth: number // mm
+  weight?: number // g
+}
+
+export interface ProductImage {
+  url: string
+  alt: string
+}
+
+export interface ProductType {
+  id: string
+  name: string
+  slug: string
+  description: string
+  price: number
+  compareAtPrice?: number
+  status: ProductStatus
+  collectionId: string
+  images: ProductImage[]
+  colors: ColorVariant[]
+  frameShape: FrameShape
+  frameMaterial: FrameMaterial
+  lensType: LensType
+  faceFit: FaceFit
+  gender: Gender
+  size: ProductSize[]
+  stock: number
+  sku: string
+  isFeatured: boolean
+  specs: ProductSpecs
+  seoTitle?: string
+  seoDescription?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CollectionType {
+  id: string
+  name: string
+  slug: string
+  description: string
+  coverImage: string
+  status: ProductStatus
+  isFeatured: boolean
+  createdAt: string
+  updatedAt: string
+}
