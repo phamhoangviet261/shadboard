@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function AdminEditProductPage(props: {
   params: Promise<{ lang: LocaleType; id: string }>
 }) {
-  const { id } = await props.params
+  const { lang, id } = await props.params
   const product = productsData.find((p) => p.id === id)
 
   if (!product) {
@@ -26,7 +26,7 @@ export default async function AdminEditProductPage(props: {
         <h2 className="text-3xl font-bold tracking-tight">Edit Product</h2>
       </div>
 
-      <ProductForm initialData={product} />
+      <ProductForm initialData={product} lang={lang} />
     </div>
   )
 }

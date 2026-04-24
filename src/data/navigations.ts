@@ -18,6 +18,7 @@ export const navigationsData: NavigationType[] = [
         title: "eCommerce",
         href: "/dashboards/ecommerce",
         iconName: "ShoppingCart",
+      },
     ],
   },
   {

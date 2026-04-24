@@ -2,11 +2,13 @@ import Link from "next/link"
 import { Glasses } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import type { DictionaryType } from "@/lib/get-dictionary"
 
 import { ModeDropdown } from "@/components/mode-dropdown"
 
 interface StorefrontHeaderProps {
   lang: string
+  dictionary: DictionaryType
   className?: string
 }
 
@@ -15,7 +17,11 @@ const navLinks = [
   { label: "Collections", href: "/shop/collections" },
 ]
 
-export function StorefrontHeader({ lang, className }: StorefrontHeaderProps) {
+export function StorefrontHeader({
+  lang,
+  dictionary,
+  className,
+}: StorefrontHeaderProps) {
   return (
     <header
       className={cn(
@@ -55,7 +61,7 @@ export function StorefrontHeader({ lang, className }: StorefrontHeaderProps) {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <ModeDropdown />
+          <ModeDropdown dictionary={dictionary} />
         </div>
       </div>
     </header>
