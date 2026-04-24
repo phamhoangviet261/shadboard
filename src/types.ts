@@ -181,9 +181,19 @@ export type FrameShape =
   | "oval"
   | "geometric"
 
-export type FrameMaterial = "acetate" | "titanium" | "stainless-steel" | "tr90" | "wood"
+export type FrameMaterial =
+  | "acetate"
+  | "titanium"
+  | "stainless-steel"
+  | "tr90"
+  | "wood"
 
-export type LensType = "single-vision" | "progressive" | "bifocal" | "blue-light" | "sunglasses"
+export type LensType =
+  | "single-vision"
+  | "progressive"
+  | "bifocal"
+  | "blue-light"
+  | "sunglasses"
 
 export type FaceFit = "narrow" | "medium" | "wide"
 
@@ -197,7 +207,7 @@ export interface ColorVariant {
 }
 
 export interface ProductSpecs {
-  lensWidth: number  // mm
+  lensWidth: number // mm
   bridgeWidth: number // mm
   templeLength: number // mm
   totalWidth: number // mm

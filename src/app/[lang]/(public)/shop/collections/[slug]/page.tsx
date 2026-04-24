@@ -1,8 +1,8 @@
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import type { Metadata } from "next"
 
 import type { LocaleType } from "@/types"
+import type { Metadata } from "next"
 
 import { collectionsData } from "@/data/lensora/collections"
 import { productsData } from "@/data/lensora/products"

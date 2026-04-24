@@ -4,8 +4,9 @@ import { ArrowRight } from "lucide-react"
 
 import type { CollectionType } from "@/types"
 
-import { cn } from "@/lib/utils"
 import { productsData } from "@/data/lensora/products"
+
+import { cn } from "@/lib/utils"
 
 interface CollectionCardProps {
   collection: CollectionType

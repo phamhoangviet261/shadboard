@@ -41,7 +41,11 @@ export function FrameSpecs({
   ]
 
   return (
-    <Accordion type="multiple" defaultValue={["measurements"]} className="w-full">
+    <Accordion
+      type="multiple"
+      defaultValue={["measurements"]}
+      className="w-full"
+    >
       <AccordionItem value="measurements">
         <AccordionTrigger className="text-sm font-medium">
           Frame Measurements
@@ -86,13 +90,24 @@ export function FrameSpecs({
         <AccordionContent>
           <div className="space-y-3 pt-1 text-sm text-muted-foreground leading-relaxed">
             <p>
-              <strong className="text-foreground">Total Width {specs.totalWidth}mm</strong> — measure your
-              current frame or the width of your face just below your temples.
+              <strong className="text-foreground">
+                Total Width {specs.totalWidth}mm
+              </strong>{" "}
+              — measure your current frame or the width of your face just below
+              your temples.
             </p>
             <div className="grid grid-cols-3 gap-2 text-center">
               {[
-                { fit: "Narrow", range: "120–133mm", active: faceFit === "narrow" },
-                { fit: "Medium", range: "134–144mm", active: faceFit === "medium" },
+                {
+                  fit: "Narrow",
+                  range: "120–133mm",
+                  active: faceFit === "narrow",
+                },
+                {
+                  fit: "Medium",
+                  range: "134–144mm",
+                  active: faceFit === "medium",
+                },
                 { fit: "Wide", range: "145mm+", active: faceFit === "wide" },
               ].map(({ fit, range, active }) => (
                 <div

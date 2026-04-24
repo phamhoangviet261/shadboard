@@ -1,7 +1,5 @@
 "use client"
 
-import { useState } from "react"
-
 import type { ProductSize } from "@/types"
 
 import { cn } from "@/lib/utils"
@@ -12,11 +10,7 @@ interface SizeSelectorProps {
   onSelect: (size: ProductSize) => void
 }
 
-export function SizeSelector({
-  sizes,
-  selected,
-  onSelect,
-}: SizeSelectorProps) {
+export function SizeSelector({ sizes, selected, onSelect }: SizeSelectorProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {sizes.map((size) => {

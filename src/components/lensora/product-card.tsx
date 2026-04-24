@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-
 import { ProductQuickView } from "./product-quick-view"
 
 interface ProductCardProps {
@@ -75,9 +74,7 @@ export function ProductCard({ product, lang }: ProductCardProps) {
           <div
             className={cn(
               "absolute inset-0 flex items-end justify-center gap-2 p-4 transition-all duration-300",
-              hovered
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-2"
+              hovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
             )}
           >
             <div className="flex gap-2 w-full">

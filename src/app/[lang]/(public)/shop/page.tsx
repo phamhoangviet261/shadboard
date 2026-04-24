@@ -1,9 +1,9 @@
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import type { Metadata } from "next"
 
 import type { LocaleType } from "@/types"
+import type { Metadata } from "next"
 
 import { collectionsData } from "@/data/lensora/collections"
 import { productsData } from "@/data/lensora/products"
@@ -30,10 +30,6 @@ export default async function ShopPage(props: {
   const featuredCollections = collectionsData
     .filter((c) => c.isFeatured && c.status === "published")
     .slice(0, 3)
-
-  const heroCollection = collectionsData.find(
-    (c) => c.slug === "classics" && c.status === "published"
-  )
 
   return (
     <div className="space-y-20 pb-20">

@@ -1,17 +1,16 @@
-import { notFound } from "next/navigation"
 import Link from "next/link"
-import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
 import type { LocaleType } from "@/types"
+import type { Metadata } from "next"
 
 import { productsData } from "@/data/lensora/products"
 
 import { Badge } from "@/components/ui/badge"
-import { ProductCard } from "@/components/lensora/product-card"
-
-import { ProductGallery } from "./_components/product-gallery"
 import { ProductDetailsForm } from "./_components/product-details-form"
+import { ProductGallery } from "./_components/product-gallery"
 import { FrameSpecs } from "@/components/lensora/frame-specs"
+import { ProductCard } from "@/components/lensora/product-card"
 
 interface Props {
   params: Promise<{ lang: LocaleType; slug: string }>

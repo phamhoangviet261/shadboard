@@ -10,35 +10,34 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export type SortOption =
-  | "featured"
-  | "newest"
-  | "price-asc"
-  | "price-desc"
+export type SortOption = "featured" | "newest" | "price-asc" | "price-desc"
 
-const sortOptions: { value: SortOption; label: string; icon: React.ReactNode }[] =
-  [
-    {
-      value: "featured",
-      label: "Featured",
-      icon: <Sparkles className="size-3.5" />,
-    },
-    {
-      value: "newest",
-      label: "Newest",
-      icon: <TrendingUp className="size-3.5" />,
-    },
-    {
-      value: "price-asc",
-      label: "Price: Low to High",
-      icon: <ArrowDownAZ className="size-3.5" />,
-    },
-    {
-      value: "price-desc",
-      label: "Price: High to Low",
-      icon: <ArrowUpAZ className="size-3.5" />,
-    },
-  ]
+const sortOptions: {
+  value: SortOption
+  label: string
+  icon: React.ReactNode
+}[] = [
+  {
+    value: "featured",
+    label: "Featured",
+    icon: <Sparkles className="size-3.5" />,
+  },
+  {
+    value: "newest",
+    label: "Newest",
+    icon: <TrendingUp className="size-3.5" />,
+  },
+  {
+    value: "price-asc",
+    label: "Price: Low to High",
+    icon: <ArrowDownAZ className="size-3.5" />,
+  },
+  {
+    value: "price-desc",
+    label: "Price: High to Low",
+    icon: <ArrowUpAZ className="size-3.5" />,
+  },
+]
 
 interface ProductSortProps {
   value: SortOption

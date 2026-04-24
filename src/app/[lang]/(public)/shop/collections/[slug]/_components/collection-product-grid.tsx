@@ -3,16 +3,17 @@
 import { useMemo, useState } from "react"
 import { Search } from "lucide-react"
 
+import type { FilterState } from "@/components/lensora/product-filters"
+import type { SortOption } from "@/components/lensora/product-sort"
 import type { ProductType } from "@/types"
 
 import { Input } from "@/components/ui/input"
-import {
-  defaultFilters,
-  FilterState,
-  ProductFilters,
-} from "@/components/lensora/product-filters"
 import { ProductCard } from "@/components/lensora/product-card"
-import { ProductSort, SortOption } from "@/components/lensora/product-sort"
+import {
+  ProductFilters,
+  defaultFilters,
+} from "@/components/lensora/product-filters"
+import { ProductSort } from "@/components/lensora/product-sort"
 
 interface CollectionProductGridProps {
   products: ProductType[]

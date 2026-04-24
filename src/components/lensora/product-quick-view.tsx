@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import type { ProductType } from "@/types"
 
@@ -17,7 +17,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-
 import { ColorSwatch } from "./color-swatch"
 
 interface ProductQuickViewProps {
@@ -97,9 +96,7 @@ export function ProductQuickView({
                   onClick={() => setCurrentImageIndex(i)}
                   className={cn(
                     "size-1.5 rounded-full transition-all",
-                    i === currentImageIndex
-                      ? "bg-white w-3"
-                      : "bg-white/50"
+                    i === currentImageIndex ? "bg-white w-3" : "bg-white/50"
                   )}
                   aria-label={`Image ${i + 1}`}
                 />
@@ -145,7 +142,8 @@ export function ProductQuickView({
           {/* Color */}
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-2">
-              Color — <span className="text-foreground">{selectedColor.name}</span>
+              Color —{" "}
+              <span className="text-foreground">{selectedColor.name}</span>
             </p>
             <ColorSwatch
               colors={product.colors}

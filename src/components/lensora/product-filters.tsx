@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { SlidersHorizontal, X } from "lucide-react"
 
 import type {
@@ -16,7 +15,6 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Slider } from "@/components/ui/slider"
 import {
   Sheet,
   SheetContent,
@@ -24,6 +22,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { Slider } from "@/components/ui/slider"
 
 export interface FilterState {
   frameShapes: FrameShape[]
@@ -114,10 +113,7 @@ function FilterGroup<T extends string>({
   )
 }
 
-function FiltersPanel({
-  filters,
-  onChange,
-}: ProductFiltersProps) {
+function FiltersPanel({ filters, onChange }: ProductFiltersProps) {
   const activeCount =
     filters.frameShapes.length +
     filters.frameMaterials.length +
