@@ -183,7 +183,6 @@ export const projects: Project[] = [
       "figma",
     ]),
     image: "mogul",
-    source_code_link: "https://github.com/",
     url: "https://www.mogul.sg/",
   },
   {
@@ -192,7 +191,6 @@ export const projects: Project[] = [
       "The Mogul DataSuite is a one-stop search solution powered by Hyperlocal Intelligence. It is designed to make your property search experience not only easier, but faster.",
     tags: withColors(["vuejs", "restapi", "scss", "supabase", "git", "figma"]),
     image: "datasuite",
-    source_code_link: "https://github.com/",
     url: "https://www.mogul.sg/datasuite",
   },
   {
@@ -201,7 +199,6 @@ export const projects: Project[] = [
       "Official job search platform of VNG Corporation, allowing users to explore job opportunities across multiple departments with filtering and detailed job listings.",
     tags: withColors(["nextjs", "typescript", "css", "git", "figma"]),
     image: "vng",
-    source_code_link: "https://github.com/",
     url: "https://career.vng.com.vn/vi/tim-kiem-viec-lam",
   },
 ]

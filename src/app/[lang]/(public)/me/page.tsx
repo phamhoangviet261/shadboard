@@ -17,17 +17,17 @@ import { ProfileTechnologies } from "./_components/profile-technologies"
 export const metadata: Metadata = {
   title: "Pham Hoang Viet",
   description:
-    "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and TailwindCSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
+    "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and Tailwind CSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
   openGraph: {
     title: "Pham Hoang Viet",
     description:
-      "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and TailwindCSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
+      "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and Tailwind CSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
     images: ["https://vietpham.io.vn/images/avatars/viet-avt.jfif"],
   },
   twitter: {
     title: "Pham Hoang Viet",
     description:
-      "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and TailwindCSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
+      "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and Tailwind CSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
     images: ["https://vietpham.io.vn/images/avatars/viet-avt.jfif"],
   },
 }
@@ -41,7 +41,8 @@ export default function MePage() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.12),transparent_35%),radial-gradient(circle_at_top_right,rgba(236,72,153,0.08),transparent_28%),radial-gradient(circle_at_bottom,rgba(59,130,246,0.08),transparent_30%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,rgba(14,165,233,0.12),transparent_24%,rgba(16,185,129,0.1)_56%,transparent_74%),radial-gradient(circle_at_top_right,rgba(236,72,153,0.1),transparent_28%),radial-gradient(circle_at_bottom,rgba(59,130,246,0.08),transparent_30%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.04)_1px,transparent_1px)] bg-[size:48px_48px] dark:bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)]" />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.05]"
         style={{

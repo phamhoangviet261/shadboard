@@ -1,7 +1,9 @@
 import Image from "next/image"
 import {
   ArrowDownRight,
+  ArrowUpRight,
   Building2,
+  Mail,
   Sparkles,
   Workflow,
   Wrench,
@@ -37,10 +39,14 @@ export function ProfileHero({
   projects,
 }: ProfileHeroProps) {
   const currentExperience = experiences.at(-1)
-  const socialLinks = socialLinksData.filter(({ href }) =>
-    /^https?:\/\//.test(href)
-  )
+  const contactLinks = socialLinksData.filter(({ href }) => !href.endsWith("#"))
   const featuredTechnologies = technologies.slice(0, 6)
+  const navLinks = [
+    { href: "#about", label: "About" },
+    { href: "#technologies", label: "Stack" },
+    { href: "#featured-projects", label: "Work" },
+    { href: "#contact", label: "Contact" },
+  ]
   const focusCards = [
     {
       label: "Years Experience",
@@ -57,17 +63,42 @@ export function ProfileHero({
   ]
 
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-background/[0.65] px-6 py-8 shadow-[0_40px_120px_-60px_rgba(14,165,233,0.45)] backdrop-blur-xl sm:px-8 sm:py-10 lg:px-10 lg:py-12">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_34%),radial-gradient(circle_at_85%_15%,rgba(236,72,153,0.18),transparent_30%),radial-gradient(circle_at_50%_100%,rgba(59,130,246,0.14),transparent_35%)]" />
+    <section className="relative overflow-hidden rounded-[2.25rem] border border-white/30 bg-background/[0.68] px-5 py-5 shadow-[0_40px_140px_-70px_rgba(14,165,233,0.55)] backdrop-blur-2xl dark:border-white/10 sm:px-7 sm:py-7 lg:px-8 lg:py-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.24),transparent_32%),radial-gradient(circle_at_84%_12%,rgba(244,114,182,0.22),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(16,185,129,0.16),transparent_34%)]" />
+      <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent dark:via-white/20" />
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.08]"
+        className="pointer-events-none absolute inset-0 opacity-[0.06] mix-blend-multiply dark:mix-blend-screen"
         style={{
           backgroundImage: "url('/images/bg.jpg')",
           backgroundPosition: "center",
           backgroundSize: "cover",
         }}
       />
-      <div className="relative grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_30rem]">
+      <div className="relative mb-8 flex flex-wrap items-center justify-between gap-3 rounded-full border border-border/60 bg-background/55 p-2 backdrop-blur-xl">
+        <a
+          href="#"
+          className="inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-bold text-background shadow-lg"
+        >
+          <span className="size-2 rounded-full bg-emerald-400" />
+          {publicProfileContent.name}
+        </a>
+        <nav
+          aria-label="Portfolio sections"
+          className="flex flex-1 flex-wrap justify-end gap-1"
+        >
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="rounded-full px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      <div className="relative grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_31rem]">
         <div className="space-y-8">
           <PortfolioReveal delay={50}>
             <div className="inline-flex items-center gap-3 rounded-full border border-border/60 bg-background/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground backdrop-blur">
@@ -82,7 +113,10 @@ export function ProfileHero({
           <div className="space-y-5">
             <PortfolioReveal delay={120}>
               <h1 className="max-w-4xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
-                {publicProfileContent.heroHeadline}
+                <span>{publicProfileContent.heroHeadline}</span>
+                <span className="block bg-gradient-to-r from-cyan-500 via-sky-500 to-emerald-500 bg-clip-text text-transparent">
+                  Frontend with product-grade polish.
+                </span>
               </h1>
             </PortfolioReveal>
 
@@ -101,6 +135,19 @@ export function ProfileHero({
                   <ArrowDownRight className="ms-2 size-4" />
                 </a>
               </Button>
+              {!isPlaceholderContactValue(userData.email) ? (
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full border-sky-500/25 bg-sky-500/10 px-6 text-sky-700 backdrop-blur hover:bg-sky-500/15 dark:text-sky-200"
+                >
+                  <a href={`mailto:${userData.email}`}>
+                    Start a Conversation
+                    <Mail className="ms-2 size-4" />
+                  </a>
+                </Button>
+              ) : null}
               <Button
                 asChild
                 variant="outline"
@@ -144,19 +191,27 @@ export function ProfileHero({
             ))}
           </div>
 
-          {socialLinks.length > 0 ? (
+          {contactLinks.length > 0 ? (
             <PortfolioReveal delay={560}>
               <div className="flex flex-wrap items-center gap-3">
-                {socialLinks.map(({ href, label, icon: Icon }) => (
+                <span className="text-sm font-semibold text-muted-foreground">
+                  Connect
+                </span>
+                {contactLinks.map(({ href, label, icon: Icon }) => (
                   <a
                     key={label}
                     href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex size-11 items-center justify-center rounded-full border border-border/60 bg-background/70 text-foreground transition-transform duration-300 hover:-translate-y-1 hover:border-sky-500/40 hover:text-sky-500"
+                    target={href.startsWith("http") ? "_blank" : undefined}
+                    rel={
+                      href.startsWith("http")
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                    className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-2 text-sm font-medium text-foreground transition-all duration-300 hover:-translate-y-1 hover:border-sky-500/40 hover:text-sky-500"
                     aria-label={label}
                   >
                     <Icon className="size-4" />
+                    <span>{label}</span>
                   </a>
                 ))}
               </div>
@@ -165,14 +220,16 @@ export function ProfileHero({
         </div>
 
         <PortfolioReveal delay={180}>
-          <Card className="relative overflow-hidden rounded-[2rem] border-white/10 bg-slate-950 text-white shadow-[0_40px_120px_-60px_rgba(14,165,233,0.75)]">
+          <Card className="relative overflow-hidden rounded-[2rem] border-white/10 bg-slate-950 text-white shadow-[0_40px_120px_-60px_rgba(14,165,233,0.75)] transition-transform duration-500 hover:-rotate-1 hover:scale-[1.01]">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.36),transparent_34%),radial-gradient(circle_at_100%_0%,rgba(236,72,153,0.22),transparent_32%),radial-gradient(circle_at_60%_100%,rgba(16,185,129,0.16),transparent_28%)]" />
+            <div className="pointer-events-none absolute -right-20 top-20 size-52 rounded-full border border-white/10" />
+            <div className="pointer-events-none absolute -right-8 top-32 size-32 rounded-full border border-white/10" />
             <Image
               src="/images/avatars/viet-avt-1.jfif"
               alt=""
               fill
               sizes="(max-width: 1024px) 100vw, 480px"
-              className="pointer-events-none object-contain object-bottom-right opacity-35"
+              className="pointer-events-none object-contain object-right-bottom opacity-35"
             />
 
             <div className="relative flex h-full flex-col gap-6 p-6 sm:p-7">
@@ -277,9 +334,13 @@ export function ProfileHero({
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/[0.45]">
                     Contact
                   </p>
-                  <p className="mt-3 text-sm text-white/[0.8]">
+                  <a
+                    href={`mailto:${userData.email}`}
+                    className="mt-3 inline-flex items-center gap-2 text-sm text-white/[0.8] transition-colors hover:text-white"
+                  >
                     {userData.email}
-                  </p>
+                    <ArrowUpRight className="size-3.5" />
+                  </a>
                 </div>
               ) : null}
             </div>

@@ -63,8 +63,9 @@ export function ProfileFeaturedProjects({
           ) : null}
 
           <PortfolioReveal delay={220}>
-            <Card className="rounded-[2rem] border-border/60 bg-background/75 p-7 backdrop-blur-xl">
-              <div className="space-y-6">
+            <Card className="relative overflow-hidden rounded-[2rem] border-border/60 bg-background/75 p-7 backdrop-blur-xl">
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(14,165,233,0.1),transparent_42%),radial-gradient(circle_at_100%_0%,rgba(16,185,129,0.12),transparent_30%)]" />
+              <div className="relative space-y-6">
                 <div className="space-y-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
                     Archive Preview
@@ -145,10 +146,10 @@ function FeaturedProjectCard({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.35),transparent_24%),radial-gradient(circle_at_0%_100%,rgba(15,23,42,0.45),transparent_40%)]" />
       <Image
         src={artwork}
-        alt="artwork"
+        alt=""
         fill
         sizes="(max-width: 1280px) 100vw, 720px"
-        className="pointer-events-none object-contain object-bottom-right opacity-70 transition-transform duration-500 group-hover:scale-105"
+        className="pointer-events-none object-contain object-right-bottom opacity-70 transition-transform duration-500 group-hover:scale-105"
       />
 
       <div
@@ -181,7 +182,7 @@ function FeaturedProjectCard({
             </h3>
           </div>
 
-          <p className="max-w-2xl text-2xl leading-7 text-white sm:text-lg">
+          <p className="max-w-2xl text-base leading-8 text-white/85 sm:text-lg">
             {project.description || "Project details will be added soon."}
           </p>
 

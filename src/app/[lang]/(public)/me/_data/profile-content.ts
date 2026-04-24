@@ -22,16 +22,16 @@ export const publicProfileContent: PublicProfileContent = {
   name: "Viet Pham",
   role: "Frontend Developer",
   tagline:
-    "Frontend Developer focused on building modern, performant, and visually engaging web experiences.",
-  yearsExperience: 4,
+    "Frontend Developer building polished product interfaces with React, Next.js, TypeScript, and Tailwind CSS.",
+  yearsExperience: 5,
   heroHeadline:
-    "I builds modern, performant, and visually engaging web experiences.",
+    "I design and build frontend systems that feel fast, sharp, and production-ready.",
   heroSummary:
-    "Frontend Developer with 5+ years of experience building modern, responsive, and scalable applications using React, Next.js, TypeScript, and TailwindCSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
+    "Frontend Developer with 5+ years of experience building responsive, scalable applications using React, Next.js, TypeScript, and Tailwind CSS. The focus stays on smooth UX, reusable UI systems, and solid engineering behind every visual detail.",
   aboutIntro:
     "I am a Frontend Developer with around 5+ years of experience building modern, responsive, and scalable web applications.",
   aboutParagraphs: [
-    "I specialize in React and Next.js, with strong experience in TypeScript, TailwindCSS, and building clean, reusable UI systems. I enjoy crafting smooth user experiences, optimizing performance, and turning complex ideas into intuitive interfaces.",
+    "I specialize in React and Next.js, with strong experience in TypeScript, Tailwind CSS, and building clean, reusable UI systems. I enjoy crafting smooth user experiences, optimizing performance, and turning complex ideas into intuitive interfaces.",
     "Over the years, I have worked on multiple real-world projects, including deploying and managing applications on VPS, handling CI/CD, and integrating modern frontend architectures. I am passionate about creating visually appealing products with solid engineering behind them, and I continuously explore new technologies to improve both user experience and developer experience.",
   ],
   currentFocus:
@@ -40,7 +40,7 @@ export const publicProfileContent: PublicProfileContent = {
     "React",
     "Next.js",
     "TypeScript",
-    "TailwindCSS",
+    "Tailwind CSS",
     "Reusable UI Systems",
     "Performance Optimization",
     "VPS Deployment",
@@ -49,7 +49,7 @@ export const publicProfileContent: PublicProfileContent = {
   heroHighlights: [
     "5+ years shipping modern frontend work",
     "React + Next.js application architecture",
-    "TypeScript + TailwindCSS UI systems",
+    "TypeScript + Tailwind CSS UI systems",
     "VPS deployment and CI/CD workflows",
   ],
   philosophyPillars: [

@@ -51,7 +51,7 @@ export function ProfileAbout({
               alt=""
               fill
               sizes="(max-width: 1280px) 100vw, 720px"
-              className="pointer-events-none object-contain object-bottom-right opacity-30"
+              className="pointer-events-none object-contain object-right-bottom opacity-30"
             />
 
             <div className="relative space-y-6">
