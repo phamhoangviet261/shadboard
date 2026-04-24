@@ -3,47 +3,14 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Install deps
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma
-        run: pnpm prisma generate
-
-      - name: Build
-        run: pnpm build
-
-      # Copy artifact sang VPS
-      - name: Copy to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT }}
-          source: ".next"
-          target: /home/shiro/app
-          rm: true
-
-      # Restart app trên VPS
-      - name: Restart app
+      - name: SSH Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -51,28 +18,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
             cd /home/shiro/app
-
-            cat > ecosystem.config.cjs <<'EOF'
-            module.exports = {
-              apps: [
-                {
-                  name: "shadboard",
-                  script: ".next/standalone/server.js",
-                  cwd: "/home/shiro/app",
-                  env: {
-                    NODE_ENV: "production",
-                    NEXTAUTH_SECRET: "${{ secrets.NEXTAUTH_SECRET }}",
-                    NEXTAUTH_URL: "${{ secrets.NEXTAUTH_URL }}",
-                    DATABASE_URL: "${{ secrets.DATABASE_URL }}",
-                    BASE_URL: "${{ secrets.BASE_URL }}"
-                  }
-                }
-              ]
-            }
-            EOF
-
-            pm2 startOrReload ecosystem.config.cjs --update-env
+            git pull origin main
+            pnpm install --frozen-lockfile
+            pnpm build
+            pm2 restart shadboard
