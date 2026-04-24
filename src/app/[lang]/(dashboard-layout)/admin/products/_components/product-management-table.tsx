@@ -5,7 +5,12 @@ import Image from "next/image"
 import Link from "next/link"
 import { MoreHorizontal, Search } from "lucide-react"
 
-import type { CollectionType, LocaleType, ProductStatus, ProductType } from "@/types"
+import type {
+  CollectionType,
+  LocaleType,
+  ProductStatus,
+  ProductType,
+} from "@/types"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -39,7 +44,10 @@ interface ProductManagementTableProps {
   lang: LocaleType
 }
 
-const statusVariant: Record<ProductStatus, "default" | "secondary" | "outline"> = {
+const statusVariant: Record<
+  ProductStatus,
+  "default" | "secondary" | "outline"
+> = {
   published: "default",
   draft: "secondary",
   archived: "outline",
@@ -126,7 +134,11 @@ export function ProductManagementTable({
                     <TableCell>
                       <div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted">
                         <Image
-                          src={product.images[0]?.url || collection?.coverImage || ""}
+                          src={
+                            product.images[0]?.url ||
+                            collection?.coverImage ||
+                            ""
+                          }
                           alt={product.images[0]?.alt || product.name}
                           fill
                           className="object-cover"
@@ -154,7 +166,9 @@ export function ProductManagementTable({
                       )}
                     </TableCell>
                     <TableCell>
-                      <span className={product.stock < 15 ? "text-destructive" : ""}>
+                      <span
+                        className={product.stock < 15 ? "text-destructive" : ""}
+                      >
                         {product.stock} in stock
                       </span>
                     </TableCell>
@@ -169,12 +183,16 @@ export function ProductManagementTable({
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem asChild>
-                            <Link href={`/${lang}/admin/products/${product.id}/edit`}>
+                            <Link
+                              href={`/${lang}/admin/products/${product.id}/edit`}
+                            >
                               Edit product
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href={`/${lang}/shop/products/${product.slug}`}>
+                            <Link
+                              href={`/${lang}/shop/products/${product.slug}`}
+                            >
                               View on storefront
                             </Link>
                           </DropdownMenuItem>

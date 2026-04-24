@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation"
-import type { Metadata } from "next"
 
 import type { LocaleType } from "@/types"
+import type { Metadata } from "next"
 
 import { productsData } from "@/data/lensora/products"
+
 import { ProductForm } from "../../_components/product-form"
 
 export const metadata: Metadata = {

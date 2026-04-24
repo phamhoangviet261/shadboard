@@ -4,7 +4,13 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { GripVertical, ImagePlus, Plus, Sparkles, Trash2 } from "lucide-react"
 
-import type { ColorVariant, FileType, LocaleType, ProductSize, ProductType } from "@/types"
+import type {
+  ColorVariant,
+  FileType,
+  LocaleType,
+  ProductSize,
+  ProductType,
+} from "@/types"
 
 import { collectionsData } from "@/data/lensora/collections"
 
@@ -193,7 +199,10 @@ export function ProductForm({ lang, initialData }: ProductFormProps) {
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 {colors.map((color, index) => (
-                  <div key={`${color.name}-${index}`} className="grid gap-3 sm:grid-cols-[1fr_8rem_auto]">
+                  <div
+                    key={`${color.name}-${index}`}
+                    className="grid gap-3 sm:grid-cols-[1fr_8rem_auto]"
+                  >
                     <Input
                       value={color.name}
                       aria-label="Color name"
@@ -516,7 +525,11 @@ export function ProductForm({ lang, initialData }: ProductFormProps) {
           Cancel
         </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? "Saving..." : initialData ? "Save Changes" : "Create Product"}
+          {loading
+            ? "Saving..."
+            : initialData
+              ? "Save Changes"
+              : "Create Product"}
         </Button>
       </div>
     </form>

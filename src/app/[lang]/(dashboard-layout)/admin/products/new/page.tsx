@@ -1,6 +1,5 @@
-import type { Metadata } from "next"
-
 import type { LocaleType } from "@/types"
+import type { Metadata } from "next"
 
 import { ProductForm } from "../_components/product-form"
 

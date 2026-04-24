@@ -1,8 +1,9 @@
 import Link from "next/link"
 import { Glasses } from "lucide-react"
 
-import { cn } from "@/lib/utils"
 import type { DictionaryType } from "@/lib/get-dictionary"
+
+import { cn } from "@/lib/utils"
 
 import { ModeDropdown } from "@/components/mode-dropdown"
 

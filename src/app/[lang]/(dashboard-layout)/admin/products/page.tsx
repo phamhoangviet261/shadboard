@@ -1,11 +1,11 @@
 import Link from "next/link"
 import { Plus } from "lucide-react"
-import type { Metadata } from "next"
 
 import type { LocaleType } from "@/types"
+import type { Metadata } from "next"
 
-import { productsData } from "@/data/lensora/products"
 import { collectionsData } from "@/data/lensora/collections"
+import { productsData } from "@/data/lensora/products"
 
 import { Button } from "@/components/ui/button"
 import { ProductManagementTable } from "./_components/product-management-table"
