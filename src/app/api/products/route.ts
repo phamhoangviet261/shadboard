@@ -151,8 +151,23 @@ export async function POST(req: Request) {
       return NextResponse.json(parsed.error, { status: 400 })
     }
 
+    const data = parsed.data as Prisma.ProductUncheckedCreateInput & {
+      images?: { url: string; alt?: string }[]
+    }
+    if (
+      !data.images ||
+      (Array.isArray(data.images) && data.images.length === 0)
+    ) {
+      data.images = [
+        {
+          url: "/images/products/no-image.webp",
+          alt: "No image available",
+        },
+      ]
+    }
+
     const product = await db.product.create({
-      data: parsed.data as Prisma.ProductUncheckedCreateInput,
+      data: data as Prisma.ProductUncheckedCreateInput,
     })
 
     await logProductActivity({

@@ -92,6 +92,12 @@ export function generateSampleProductData(): Partial<ProductCreateInput> {
       { name: "Midnight Black", hex: "#111111" },
       { name: "Honey Tortoise", hex: "#8B5E3C" },
     ],
+    images: [
+      {
+        url: "/images/products/no-image.webp",
+        alt: "No image available",
+      },
+    ],
     seoTitle: `${name} | Premium Eyewear - Lensora`,
     seoDescription: `Shop the ${name} eyewear collection at Lensora. Handcrafted frames with premium lenses. Free shipping and returns.`,
   }
