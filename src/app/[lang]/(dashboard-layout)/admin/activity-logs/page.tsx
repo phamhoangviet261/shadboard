@@ -12,6 +12,9 @@ import {
   Search,
 } from "lucide-react"
 
+import { usePermission } from "@/hooks/use-permission"
+import { UnauthorizedState } from "@/components/auth/unauthorized-state"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -52,6 +55,9 @@ interface ActivityLogsResponse {
 }
 
 export default function ActivityLogPage() {
+  const { can, isLoading: isPermissionLoading } = usePermission()
+  const canView = can("activityLog:view")
+
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -142,6 +148,10 @@ export default function ActivityLogPage() {
       default:
         return <History className="h-4 w-4 text-muted-foreground" />
     }
+  }
+
+  if (!isPermissionLoading && !canView) {
+    return <UnauthorizedState />
   }
 
   return (

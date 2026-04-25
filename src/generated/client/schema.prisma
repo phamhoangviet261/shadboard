@@ -8,6 +8,13 @@ generator client {
   output   = "../src/generated/client"
 }
 
+enum UserRole {
+  ADMIN
+  MANAGER
+  EDITOR
+  VIEWER
+}
+
 model User {
   id                   String          @id @default(uuid())
   name                 String
@@ -21,6 +28,7 @@ model User {
   avatar               String?
   profileBackground    String?
   status               String          @default("ONLINE")
+  role                 UserRole        @default(VIEWER)
   preferences          UserPreference?
   accounts             Account[]
   sessions             Session[]
@@ -28,7 +36,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([name, username, status, createdAt])
+  @@index([name, username, status, role, createdAt])
 }
 
 model UserPreference {
@@ -163,6 +171,7 @@ model ActivityLog {
   entityName String?
   actorId    String?
   actorEmail String?
+  actorRole  String?
   metadata   Json?
   before     Json?
   after      Json?

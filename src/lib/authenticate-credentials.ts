@@ -7,6 +7,7 @@ export type AuthenticatedUser = {
   email: string | null
   avatar: string | null
   status: string
+  role: string
 }
 
 export async function authenticateCredentials({
@@ -24,6 +25,7 @@ export async function authenticateCredentials({
       email: true,
       avatar: true,
       status: true,
+      role: true,
       password: true,
     },
   })

@@ -135,6 +135,7 @@ exports.Prisma.UserScalarFieldEnum = {
   avatar: 'avatar',
   profileBackground: 'profileBackground',
   status: 'status',
+  role: 'role',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -240,6 +241,7 @@ exports.Prisma.ActivityLogScalarFieldEnum = {
   entityName: 'entityName',
   actorId: 'actorId',
   actorEmail: 'actorEmail',
+  actorRole: 'actorRole',
   metadata: 'metadata',
   before: 'before',
   after: 'after',
@@ -273,7 +275,12 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
-
+exports.UserRole = exports.$Enums.UserRole = {
+  ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
+  EDITOR: 'EDITOR',
+  VIEWER: 'VIEWER'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',

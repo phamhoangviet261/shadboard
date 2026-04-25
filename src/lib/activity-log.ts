@@ -15,6 +15,7 @@ export interface ActivityLogInput {
   entityName?: string
   actorId?: string
   actorEmail?: string
+  actorRole?: string
   metadata?: Record<string, unknown>
   before?: unknown
   after?: unknown
@@ -40,7 +41,13 @@ export async function createActivityLog(input: ActivityLogInput) {
 
     const log = await db.activityLog.create({
       data: {
-        ...input,
+        action: input.action,
+        entityType: input.entityType,
+        entityId: input.entityId,
+        entityName: input.entityName,
+        actorId: input.actorId,
+        actorEmail: input.actorEmail,
+        actorRole: input.actorRole,
         metadata: input.metadata
           ? JSON.parse(JSON.stringify(input.metadata))
           : undefined,
@@ -76,7 +83,7 @@ export async function logProductActivity({
 }: {
   action: string
   product: { id: string; name: string }
-  actor?: { id: string; email: string }
+  actor?: { id: string; email: string; role?: string }
   before?: unknown
   after?: unknown
   metadata?: Record<string, unknown>
@@ -88,6 +95,7 @@ export async function logProductActivity({
     entityName: product.name,
     actorId: actor?.id,
     actorEmail: actor?.email,
+    actorRole: actor?.role,
     before,
     after,
     metadata,
@@ -107,7 +115,7 @@ export async function logCollectionActivity({
 }: {
   action: string
   collection: { id: string; name: string }
-  actor?: { id: string; email: string }
+  actor?: { id: string; email: string; role?: string }
   before?: unknown
   after?: unknown
   metadata?: Record<string, unknown>
@@ -119,6 +127,7 @@ export async function logCollectionActivity({
     entityName: collection.name,
     actorId: actor?.id,
     actorEmail: actor?.email,
+    actorRole: actor?.role,
     before,
     after,
     metadata,
@@ -138,7 +147,7 @@ export async function logInventoryActivity({
 }: {
   action: string
   product: { id: string; name: string }
-  actor?: { id: string; email: string }
+  actor?: { id: string; email: string; role?: string }
   before?: unknown
   after?: unknown
   metadata?: Record<string, unknown>
@@ -150,6 +159,7 @@ export async function logInventoryActivity({
     entityName: product.name,
     actorId: actor?.id,
     actorEmail: actor?.email,
+    actorRole: actor?.role,
     before,
     after,
     metadata,
@@ -169,7 +179,7 @@ export async function logBulkProductActivity({
   action: string
   ids: string[]
   count: number
-  actor?: { id: string; email: string }
+  actor?: { id: string; email: string; role?: string }
   metadata?: Record<string, unknown>
 }) {
   return createActivityLog({
@@ -178,6 +188,7 @@ export async function logBulkProductActivity({
     entityName: `${count} products affected`,
     actorId: actor?.id,
     actorEmail: actor?.email,
+    actorRole: actor?.role,
     metadata: {
       ...metadata,
       affectedIds: ids,

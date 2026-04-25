@@ -11,6 +11,7 @@ import { db } from "@/lib/prisma"
 
 import { Button } from "@/components/ui/button"
 import { ProductManagementTable } from "./_components/product-management-table"
+import { PermissionGate } from "@/components/auth/permission-gate"
 
 export const metadata: Metadata = {
   title: "Products — Lensora Admin",
@@ -96,12 +97,14 @@ export default async function AdminProductsPage(props: {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Products</h2>
         <div className="flex items-center space-x-2">
-          <Button asChild>
-            <Link href={`/${lang}/admin/products/new`}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Product
-            </Link>
-          </Button>
+          <PermissionGate permission="product:create">
+            <Button asChild>
+              <Link href={`/${lang}/admin/products/new`}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Product
+              </Link>
+            </Button>
+          </PermissionGate>
         </div>
       </div>
 

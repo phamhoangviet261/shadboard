@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-
 import type { Prisma } from "@/generated/client"
 
+import { authenticateUser } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -61,15 +61,17 @@ function getPrismaErrorCode(error: unknown) {
 }
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const pageParam = Number.parseInt(searchParams.get("page") || "1", 10)
-  const limitParam = Number.parseInt(searchParams.get("limit") || "20", 10)
-  const page = Number.isFinite(pageParam) ? Math.max(1, pageParam) : 1
-  const limit = Number.isFinite(limitParam)
-    ? Math.min(100, Math.max(1, limitParam))
-    : 20
-
   try {
+    await authenticateUser("activityLog:view")
+    
+    const { searchParams } = new URL(req.url)
+    const pageParam = Number.parseInt(searchParams.get("page") || "1", 10)
+    const limitParam = Number.parseInt(searchParams.get("limit") || "20", 10)
+    const page = Number.isFinite(pageParam) ? Math.max(1, pageParam) : 1
+    const limit = Number.isFinite(limitParam)
+      ? Math.min(100, Math.max(1, limitParam))
+      : 20
+
     if (!db.activityLog) {
       return NextResponse.json(getPaginationResponse({ page, limit }))
     }
@@ -123,7 +125,11 @@ export async function GET(req: Request) {
     return NextResponse.json(
       getPaginationResponse({ data: logs, page, limit, total })
     )
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message?.includes("Forbidden") || error?.message?.includes("Unauthorized")) {
+      return NextResponse.json({ message: error.message }, { status: error.message.includes("Forbidden") ? 403 : 401 })
+    }
+    
     console.error("Error fetching activity logs:", error)
 
     const errorCode = getPrismaErrorCode(error)
@@ -133,7 +139,10 @@ export async function GET(req: Request) {
       errorCode === "P2021" ||
       errorCode === "P2022"
     ) {
-      return NextResponse.json(getPaginationResponse({ page, limit }))
+      // Return empty results instead of crashing if table doesn't exist
+      // We don't have a reliable way to get page/limit if parsing fails, 
+      // but in this catch block they are defined if it got past parsing.
+      return NextResponse.json(getPaginationResponse({ page: 1, limit: 20 }))
     }
 
     return NextResponse.json(

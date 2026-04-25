@@ -4,7 +4,8 @@ import type { CollectionType, LocaleType, ProductType } from "@/types"
 import type { Metadata } from "next"
 
 import { db } from "@/lib/prisma"
-
+import { authenticateUser } from "@/lib/auth"
+import { UnauthorizedState } from "@/components/auth/unauthorized-state"
 import { ProductForm } from "../../_components/product-form"
 
 export const metadata: Metadata = {
@@ -15,6 +16,12 @@ export default async function AdminEditProductPage(props: {
   params: Promise<{ lang: LocaleType; id: string }>
 }) {
   const { lang, id } = await props.params
+
+  try {
+    await authenticateUser("product:update")
+  } catch (error) {
+    return <UnauthorizedState />
+  }
 
   const [product, collections] = await Promise.all([
     db.product.findFirst({

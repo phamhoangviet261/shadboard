@@ -8,6 +8,7 @@ import type { ProductBulkActionInput } from "@/schemas/product-schema"
 import type { CollectionType } from "@/types"
 
 import { api } from "@/lib/api-client"
+import { usePermission } from "@/hooks/use-permission"
 
 import {
   AlertDialog,
@@ -46,6 +47,10 @@ export function ProductBulkActionsToolbar({
   const [loading, setLoading] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [tagsInput, setTagsInput] = useState("")
+  const { can } = usePermission()
+
+  const canBulkUpdate = can("product:bulkUpdate")
+  const canBulkDelete = can("product:bulkDelete")
 
   const count = selectedIds.length
 
@@ -123,7 +128,7 @@ export function ProductBulkActionsToolbar({
         <Separator orientation="vertical" className="hidden h-6 sm:block" />
 
         <div className="flex flex-wrap items-center gap-2">
-          <Select onValueChange={handleUpdateStatus} disabled={loading}>
+          <Select onValueChange={handleUpdateStatus} disabled={loading || !canBulkUpdate}>
             <SelectTrigger className="h-8 w-[130px]">
               <SelectValue placeholder="Set Status" />
             </SelectTrigger>
@@ -134,7 +139,7 @@ export function ProductBulkActionsToolbar({
             </SelectContent>
           </Select>
 
-          <Select onValueChange={handleAssignCollection} disabled={loading}>
+          <Select onValueChange={handleAssignCollection} disabled={loading || !canBulkUpdate}>
             <SelectTrigger className="h-8 w-[160px]">
               <SelectValue placeholder="Assign Collection" />
             </SelectTrigger>
@@ -154,7 +159,7 @@ export function ProductBulkActionsToolbar({
               onChange={(e) => setTagsInput(e.target.value)}
               placeholder="tags (comma separated)"
               className="h-8 w-[160px]"
-              disabled={loading}
+              disabled={loading || !canBulkUpdate}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleAddTags()
               }}
@@ -164,7 +169,7 @@ export function ProductBulkActionsToolbar({
               size="sm"
               className="h-8 px-2"
               onClick={handleAddTags}
-              disabled={loading || !tagsInput.trim()}
+              disabled={loading || !canBulkUpdate || !tagsInput.trim()}
               title="Add tags"
             >
               Add
@@ -174,7 +179,7 @@ export function ProductBulkActionsToolbar({
               size="sm"
               className="h-8 px-2 text-destructive hover:text-destructive"
               onClick={handleRemoveTags}
-              disabled={loading || !tagsInput.trim()}
+              disabled={loading || !canBulkUpdate || !tagsInput.trim()}
               title="Remove tags"
             >
               Remove
@@ -186,7 +191,7 @@ export function ProductBulkActionsToolbar({
             size="sm"
             className="h-8"
             onClick={() => setIsDeleteDialogOpen(true)}
-            disabled={loading}
+            disabled={loading || !canBulkDelete}
           >
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

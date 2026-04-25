@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import { ProductStockAdjustmentSchema } from "@/schemas/product-schema"
 
 import { logInventoryActivity } from "@/lib/activity-log"
+import { authenticateUser } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -12,6 +13,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await authenticateUser("inventory:adjust")
     const { id } = await params
     let body: unknown
     try {
@@ -67,16 +69,17 @@ export async function POST(
     await logInventoryActivity({
       action: `stock_${type === "set" ? "set" : type === "increase" ? "increased" : "decreased"}`,
       product: { id: updatedProduct.id, name: updatedProduct.name },
+      actor: { id: user.id, email: user.email ?? "", role: (user as any).role },
       before: { stockQuantity: product.stockQuantity },
       after: { stockQuantity: updatedProduct.stockQuantity },
       metadata: { adjustment: quantity, type },
     })
 
-    // If there was an InventoryAdjustment table, we would also create a record here using db.$transaction.
-    // For now, updating the product is sufficient based on the schema.
-
     return NextResponse.json(updatedProduct, { status: 201 })
   } catch (error) {
+    if ((error as any)?.message?.includes("Forbidden") || (error as any)?.message?.includes("Unauthorized")) {
+      return NextResponse.json({ message: (error as any).message }, { status: (error as any).message.includes("Forbidden") ? 403 : 401 })
+    }
     console.error("Error adjusting stock:", error)
     return NextResponse.json(
       { message: "Unable to adjust stock." },

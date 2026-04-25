@@ -7,6 +7,7 @@ import {
 } from "@/schemas/product-schema"
 
 import { logProductActivity } from "@/lib/activity-log"
+import { authenticateUser } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -135,6 +136,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const user = await authenticateUser("product:create")
     let body: unknown
 
     try {
@@ -173,11 +175,12 @@ export async function POST(req: Request) {
     await logProductActivity({
       action: "product_created",
       product: { id: product.id, name: product.name },
+      actor: { id: user.id, email: user.email ?? "" },
       after: product,
     })
 
     return NextResponse.json(product, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
@@ -187,6 +190,11 @@ export async function POST(req: Request) {
         { status: 409 }
       )
     }
+    
+    if (error?.message?.includes("Forbidden") || error?.message?.includes("Unauthorized")) {
+      return NextResponse.json({ message: error.message }, { status: error.message.includes("Forbidden") ? 403 : 401 })
+    }
+
     console.error("Error creating product:", error)
     return NextResponse.json(
       { message: "Unable to create product." },

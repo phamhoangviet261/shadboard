@@ -4,6 +4,7 @@ import { AnalyticsSummaryCards } from "./_components/analytics-summary-cards"
 import { CollectionInsights } from "./_components/collection-insights"
 import { LowStockAlerts } from "./_components/low-stock-alerts"
 import { TopStockProducts } from "./_components/top-stock-products"
+import { PermissionGate } from "@/components/auth/permission-gate"
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | Lensora",
@@ -19,15 +20,23 @@ export default function AdminDashboardPage() {
         </p>
       </div>
 
-      <AnalyticsSummaryCards />
+      <PermissionGate permission="analytics:view">
+        <AnalyticsSummaryCards />
+      </PermissionGate>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
         <div className="col-span-1 lg:col-span-4 space-y-6">
-          <TopStockProducts />
-          <CollectionInsights />
+          <PermissionGate permission="product:view">
+            <TopStockProducts />
+          </PermissionGate>
+          <PermissionGate permission="analytics:view">
+            <CollectionInsights />
+          </PermissionGate>
         </div>
         <div className="col-span-1 lg:col-span-3">
-          <LowStockAlerts />
+          <PermissionGate permission="inventory:view">
+            <LowStockAlerts />
+          </PermissionGate>
         </div>
       </div>
     </div>

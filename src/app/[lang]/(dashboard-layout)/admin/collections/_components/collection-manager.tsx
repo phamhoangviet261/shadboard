@@ -15,6 +15,7 @@ import type { CollectionType, LocaleType } from "@/types"
 import { CollectionCreateSchema } from "@/schemas/collection-schema"
 
 import { api } from "@/lib/api-client"
+import { usePermission } from "@/hooks/use-permission"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -69,6 +70,9 @@ export function CollectionManager({
   lang,
 }: CollectionManagerProps) {
   const router = useRouter()
+  const { can } = usePermission()
+  const canManage = can("collection:manage")
+
   const [query, setQuery] = useState("")
   const [loading, setLoading] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -161,10 +165,12 @@ export function CollectionManager({
             placeholder="Search collections"
           />
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Collection
-        </Button>
+        {canManage && (
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Collection
+          </Button>
+        )}
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
@@ -225,11 +231,13 @@ export function CollectionManager({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem
-                            onClick={() => openEdit(collection)}
-                          >
-                            Edit collection
-                          </DropdownMenuItem>
+                          {canManage && (
+                            <DropdownMenuItem
+                              onClick={() => openEdit(collection)}
+                            >
+                              Edit collection
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem asChild>
                             <Link
                               href={`/${lang}/shop/collections/${collection.slug}`}

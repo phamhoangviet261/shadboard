@@ -53,6 +53,7 @@ import { ProductBulkActionsToolbar } from "./product-bulk-actions-toolbar"
 import { ProductDeleteDialog } from "./product-delete-dialog"
 import { ProductDuplicateDialog } from "./product-duplicate-dialog"
 import { ProductStockAdjustmentDialog } from "./product-stock-adjustment-dialog"
+import { usePermission } from "@/hooks/use-permission"
 
 interface ProductManagementTableProps {
   products: ProductType[]
@@ -79,6 +80,13 @@ export function ProductManagementTable({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { can, canAny } = usePermission()
+
+  const canUpdate = can("product:update")
+  const canDelete = can("product:delete")
+  const canDuplicate = can("product:duplicate")
+  const canAdjustStock = can("inventory:adjust")
+  const canBulk = canAny(["product:bulkUpdate", "product:bulkDelete"])
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "")
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm)
@@ -141,12 +149,14 @@ export function ProductManagementTable({
 
   return (
     <div className="space-y-4">
-      <ProductBulkActionsToolbar
-        selectedIds={selectedIds}
-        collections={collections}
-        onClearSelection={() => setSelectedIds([])}
-        onSuccess={() => router.refresh()}
-      />
+      {canBulk && (
+        <ProductBulkActionsToolbar
+          selectedIds={selectedIds}
+          collections={collections}
+          onClearSelection={() => setSelectedIds([])}
+          onSuccess={() => router.refresh()}
+        />
+      )}
       <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-sm sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -334,13 +344,15 @@ export function ProductManagementTable({
                               View details
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link
-                              href={`/${lang}/admin/products/${product.id}/edit`}
-                            >
-                              Edit product
-                            </Link>
-                          </DropdownMenuItem>
+                          {canUpdate && (
+                            <DropdownMenuItem asChild>
+                              <Link
+                                href={`/${lang}/admin/products/${product.id}/edit`}
+                              >
+                                Edit product
+                              </Link>
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem asChild>
                             <Link
                               href={`/${lang}/shop/products/${product.slug}`}
@@ -349,38 +361,44 @@ export function ProductManagementTable({
                               View on storefront
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              setProductToDuplicate({
-                                id: product.id,
-                                name: product.name,
-                              })
-                            }
-                          >
-                            Duplicate product
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              setProductToAdjustStock({
-                                id: product.id,
-                                name: product.name,
-                                currentStock: product.stockQuantity,
-                              })
-                            }
-                          >
-                            Adjust stock
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() =>
-                              setProductToDelete({
-                                id: product.id,
-                                name: product.name,
-                              })
-                            }
-                          >
-                            Delete product
-                          </DropdownMenuItem>
+                          {canDuplicate && (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                setProductToDuplicate({
+                                  id: product.id,
+                                  name: product.name,
+                                })
+                              }
+                            >
+                              Duplicate product
+                            </DropdownMenuItem>
+                          )}
+                          {canAdjustStock && (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                setProductToAdjustStock({
+                                  id: product.id,
+                                  name: product.name,
+                                  currentStock: product.stockQuantity,
+                                })
+                              }
+                            >
+                              Adjust stock
+                            </DropdownMenuItem>
+                          )}
+                          {canDelete && (
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() =>
+                                setProductToDelete({
+                                  id: product.id,
+                                  name: product.name,
+                                })
+                              }
+                            >
+                              Delete product
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

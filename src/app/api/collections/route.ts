@@ -7,6 +7,7 @@ import {
 } from "@/schemas/collection-schema"
 
 import { logCollectionActivity } from "@/lib/activity-log"
+import { authenticateUser } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -69,6 +70,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const user = await authenticateUser("collection:manage")
     let body: unknown
 
     try {
@@ -92,11 +94,15 @@ export async function POST(req: Request) {
     await logCollectionActivity({
       action: "collection_created",
       collection: { id: collection.id, name: collection.name },
+      actor: { id: user.id, email: user.email ?? "", role: (user as any).role },
       after: collection,
     })
 
     return NextResponse.json(collection, { status: 201 })
   } catch (error) {
+    if ((error as any)?.message?.includes("Forbidden") || (error as any)?.message?.includes("Unauthorized")) {
+      return NextResponse.json({ message: (error as any).message }, { status: (error as any).message.includes("Forbidden") ? 403 : 401 })
+    }
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"

@@ -3,6 +3,9 @@
 import { useState } from "react"
 import { Sparkles } from "lucide-react"
 
+import { usePermission } from "@/hooks/use-permission"
+import { UnauthorizedState } from "@/components/auth/unauthorized-state"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,10 +14,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 
 export default function AdminAiWriterPage() {
+  const { can, isLoading: isPermissionLoading } = usePermission()
+  const canGenerate = can("aiContent:generate")
+
   const [productName, setProductName] = useState("")
   const [keySpecs, setKeySpecs] = useState("")
   const [output, setOutput] = useState("")
   const [loading, setLoading] = useState(false)
+
+  if (!isPermissionLoading && !canGenerate) {
+    return <UnauthorizedState />
+  }
 
   const handleGenerateDescription = async () => {
     setLoading(true)

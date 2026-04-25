@@ -3,15 +3,16 @@ import { NextResponse } from "next/server"
 import { ProductBulkActionSchema } from "@/schemas/product-schema"
 
 import { logBulkProductActivity } from "@/lib/activity-log"
+import { authenticateUser } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   try {
-    let body: unknown
+    let bodyJson: any
     try {
-      body = await req.json()
+      bodyJson = await req.json()
     } catch {
       return NextResponse.json(
         { message: "Invalid JSON request body." },
@@ -19,7 +20,11 @@ export async function POST(req: Request) {
       )
     }
 
-    const parsed = ProductBulkActionSchema.safeParse(body)
+    // Determine permission based on action
+    const permission = bodyJson.action === "delete" ? "product:bulkDelete" : "product:bulkUpdate"
+    const user = await authenticateUser(permission)
+
+    const parsed = ProductBulkActionSchema.safeParse(bodyJson)
     if (!parsed.success) {
       return NextResponse.json(parsed.error, { status: 400 })
     }
@@ -36,6 +41,7 @@ export async function POST(req: Request) {
           action: "product_bulk_status_updated",
           ids: data.ids,
           count: data.ids.length,
+          actor: { id: user.id, email: user.email ?? "", role: (user as any).role },
           metadata: { status: data.status },
         })
         break
@@ -48,6 +54,7 @@ export async function POST(req: Request) {
           action: "product_bulk_deleted",
           ids: data.ids,
           count: data.ids.length,
+          actor: { id: user.id, email: user.email ?? "", role: user.role },
         })
         break
       case "assignCollection":
@@ -59,13 +66,12 @@ export async function POST(req: Request) {
           action: "product_bulk_collection_assigned",
           ids: data.ids,
           count: data.ids.length,
+          actor: { id: user.id, email: user.email ?? "", role: user.role },
           metadata: { collectionId: data.collectionId },
         })
         break
       case "addTags":
       case "removeTags":
-        // Prisma doesn't support array push/remove directly on postgres scalar arrays via updateMany easily
-        // So we use a transaction to update individually
         await db.$transaction(async (tx) => {
           const products = await tx.product.findMany({
             where: { id: { in: data.ids } },
@@ -97,6 +103,7 @@ export async function POST(req: Request) {
               : "product_bulk_tags_removed",
           ids: data.ids,
           count: data.ids.length,
+          actor: { id: user.id, email: user.email ?? "", role: user.role },
           metadata: { tags: data.tags },
         })
         break
@@ -109,6 +116,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "Bulk action completed successfully." })
   } catch (error) {
+    if ((error as any)?.message?.includes("Forbidden") || (error as any)?.message?.includes("Unauthorized")) {
+      return NextResponse.json({ message: (error as any).message }, { status: (error as any).message.includes("Forbidden") ? 403 : 401 })
+    }
     console.error("Bulk action error:", error)
     return NextResponse.json(
       { message: "Unable to process bulk action." },

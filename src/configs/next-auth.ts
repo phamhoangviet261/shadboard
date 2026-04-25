@@ -12,7 +12,6 @@ import CredentialsProvider from "next-auth/providers/credentials"
 
 type PrismaAdapterClient = Parameters<typeof PrismaAdapter>[0]
 
-// Extend NextAuth's Session and User interfaces to include custom properties
 declare module "next-auth" {
   interface Session {
     user: {
@@ -21,6 +20,7 @@ declare module "next-auth" {
       name: string
       avatar: string | null
       status: string
+      role: string
     }
   }
 
@@ -30,8 +30,10 @@ declare module "next-auth" {
     name: string
     avatar: string | null
     status: string
+    role: string
   }
 }
+
 declare module "next-auth/jwt" {
   interface JWT {
     id: string
@@ -39,6 +41,7 @@ declare module "next-auth/jwt" {
     name: string
     avatar: string | null
     status: string
+    role: string
   }
 }
 
@@ -99,6 +102,7 @@ export const authOptions: NextAuthOptions = {
         token.avatar = user.avatar
         token.email = user.email
         token.status = user.status
+        token.role = user.role
       }
 
       return token
@@ -112,6 +116,7 @@ export const authOptions: NextAuthOptions = {
         session.user.avatar = token.avatar
         session.user.email = token.email
         session.user.status = token.status
+        session.user.role = token.role
       }
 
       return session
