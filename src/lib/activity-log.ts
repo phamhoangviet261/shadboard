@@ -7,6 +7,7 @@ export type ActivityEntityType =
   | "collection"
   | "inventory"
   | "bulk_action"
+  | "user"
 
 export interface ActivityLogInput {
   action: string
@@ -194,5 +195,37 @@ export async function logBulkProductActivity({
       affectedIds: ids,
       affectedCount: count,
     },
+  })
+}
+
+/**
+ * Helper to log user related activities
+ */
+export async function logUserActivity({
+  action,
+  user,
+  actor,
+  before,
+  after,
+  metadata,
+}: {
+  action: string
+  user: { id: string; name: string }
+  actor?: { id: string; email: string; role?: string }
+  before?: unknown
+  after?: unknown
+  metadata?: Record<string, unknown>
+}) {
+  return createActivityLog({
+    action,
+    entityType: "user",
+    entityId: user.id,
+    entityName: user.name,
+    actorId: actor?.id,
+    actorEmail: actor?.email,
+    actorRole: actor?.role,
+    before,
+    after,
+    metadata,
   })
 }

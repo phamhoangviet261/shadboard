@@ -1557,6 +1557,7 @@ export namespace Prisma {
     avatar: string | null
     profileBackground: string | null
     status: string | null
+    lastLoginAt: Date | null
     role: $Enums.UserRole | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1575,6 +1576,7 @@ export namespace Prisma {
     avatar: string | null
     profileBackground: string | null
     status: string | null
+    lastLoginAt: Date | null
     role: $Enums.UserRole | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1593,6 +1595,7 @@ export namespace Prisma {
     avatar: number
     profileBackground: number
     status: number
+    lastLoginAt: number
     role: number
     createdAt: number
     updatedAt: number
@@ -1613,6 +1616,7 @@ export namespace Prisma {
     avatar?: true
     profileBackground?: true
     status?: true
+    lastLoginAt?: true
     role?: true
     createdAt?: true
     updatedAt?: true
@@ -1631,6 +1635,7 @@ export namespace Prisma {
     avatar?: true
     profileBackground?: true
     status?: true
+    lastLoginAt?: true
     role?: true
     createdAt?: true
     updatedAt?: true
@@ -1649,6 +1654,7 @@ export namespace Prisma {
     avatar?: true
     profileBackground?: true
     status?: true
+    lastLoginAt?: true
     role?: true
     createdAt?: true
     updatedAt?: true
@@ -1740,6 +1746,7 @@ export namespace Prisma {
     avatar: string | null
     profileBackground: string | null
     status: string
+    lastLoginAt: Date | null
     role: $Enums.UserRole
     createdAt: Date
     updatedAt: Date
@@ -1775,6 +1782,7 @@ export namespace Prisma {
     avatar?: boolean
     profileBackground?: boolean
     status?: boolean
+    lastLoginAt?: boolean
     role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -1797,6 +1805,7 @@ export namespace Prisma {
     avatar?: boolean
     profileBackground?: boolean
     status?: boolean
+    lastLoginAt?: boolean
     role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -1815,6 +1824,7 @@ export namespace Prisma {
     avatar?: boolean
     profileBackground?: boolean
     status?: boolean
+    lastLoginAt?: boolean
     role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -1848,6 +1858,7 @@ export namespace Prisma {
       avatar: string | null
       profileBackground: string | null
       status: string
+      lastLoginAt: Date | null
       role: $Enums.UserRole
       createdAt: Date
       updatedAt: Date
@@ -2259,6 +2270,7 @@ export namespace Prisma {
     readonly avatar: FieldRef<"User", 'String'>
     readonly profileBackground: FieldRef<"User", 'String'>
     readonly status: FieldRef<"User", 'String'>
+    readonly lastLoginAt: FieldRef<"User", 'DateTime'>
     readonly role: FieldRef<"User", 'UserRole'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
@@ -9864,6 +9876,7 @@ export namespace Prisma {
     avatar: 'avatar',
     profileBackground: 'profileBackground',
     status: 'status',
+    lastLoginAt: 'lastLoginAt',
     role: 'role',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -10166,6 +10179,7 @@ export namespace Prisma {
     avatar?: StringNullableFilter<"User"> | string | null
     profileBackground?: StringNullableFilter<"User"> | string | null
     status?: StringFilter<"User"> | string
+    lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -10187,6 +10201,7 @@ export namespace Prisma {
     avatar?: SortOrderInput | SortOrder
     profileBackground?: SortOrderInput | SortOrder
     status?: SortOrder
+    lastLoginAt?: SortOrderInput | SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10211,6 +10226,7 @@ export namespace Prisma {
     avatar?: StringNullableFilter<"User"> | string | null
     profileBackground?: StringNullableFilter<"User"> | string | null
     status?: StringFilter<"User"> | string
+    lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -10232,6 +10248,7 @@ export namespace Prisma {
     avatar?: SortOrderInput | SortOrder
     profileBackground?: SortOrderInput | SortOrder
     status?: SortOrder
+    lastLoginAt?: SortOrderInput | SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10256,6 +10273,7 @@ export namespace Prisma {
     avatar?: StringNullableWithAggregatesFilter<"User"> | string | null
     profileBackground?: StringNullableWithAggregatesFilter<"User"> | string | null
     status?: StringWithAggregatesFilter<"User"> | string
+    lastLoginAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -10931,6 +10949,7 @@ export namespace Prisma {
     avatar?: string | null
     profileBackground?: string | null
     status?: string
+    lastLoginAt?: Date | string | null
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10952,6 +10971,7 @@ export namespace Prisma {
     avatar?: string | null
     profileBackground?: string | null
     status?: string
+    lastLoginAt?: Date | string | null
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10973,6 +10993,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10994,6 +11015,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11015,6 +11037,7 @@ export namespace Prisma {
     avatar?: string | null
     profileBackground?: string | null
     status?: string
+    lastLoginAt?: Date | string | null
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11033,6 +11056,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11051,6 +11075,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11928,6 +11953,7 @@ export namespace Prisma {
     avatar?: SortOrder
     profileBackground?: SortOrder
     status?: SortOrder
+    lastLoginAt?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11946,6 +11972,7 @@ export namespace Prisma {
     avatar?: SortOrder
     profileBackground?: SortOrder
     status?: SortOrder
+    lastLoginAt?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11964,6 +11991,7 @@ export namespace Prisma {
     avatar?: SortOrder
     profileBackground?: SortOrder
     status?: SortOrder
+    lastLoginAt?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13379,6 +13407,7 @@ export namespace Prisma {
     avatar?: string | null
     profileBackground?: string | null
     status?: string
+    lastLoginAt?: Date | string | null
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13399,6 +13428,7 @@ export namespace Prisma {
     avatar?: string | null
     profileBackground?: string | null
     status?: string
+    lastLoginAt?: Date | string | null
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13435,6 +13465,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13455,6 +13486,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13475,6 +13507,7 @@ export namespace Prisma {
     avatar?: string | null
     profileBackground?: string | null
     status?: string
+    lastLoginAt?: Date | string | null
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13495,6 +13528,7 @@ export namespace Prisma {
     avatar?: string | null
     profileBackground?: string | null
     status?: string
+    lastLoginAt?: Date | string | null
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13531,6 +13565,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13551,6 +13586,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13571,6 +13607,7 @@ export namespace Prisma {
     avatar?: string | null
     profileBackground?: string | null
     status?: string
+    lastLoginAt?: Date | string | null
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13591,6 +13628,7 @@ export namespace Prisma {
     avatar?: string | null
     profileBackground?: string | null
     status?: string
+    lastLoginAt?: Date | string | null
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13627,6 +13665,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13647,6 +13686,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     profileBackground?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

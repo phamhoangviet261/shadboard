@@ -27,7 +27,8 @@ model User {
   passwordResetExpires DateTime?
   avatar               String?
   profileBackground    String?
-  status               String          @default("ONLINE")
+  status               String          @default("ACTIVE")
+  lastLoginAt          DateTime?
   role                 UserRole        @default(VIEWER)
   preferences          UserPreference?
   accounts             Account[]

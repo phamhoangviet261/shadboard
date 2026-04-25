@@ -40,6 +40,11 @@ export const navigationsData: NavigationType[] = [
         iconName: "Sparkles",
       },
       {
+        title: "Users",
+        href: "/admin/users",
+        iconName: "Users",
+      },
+      {
         title: "Activity Logs",
         href: "/admin/activity-logs",
         iconName: "History",

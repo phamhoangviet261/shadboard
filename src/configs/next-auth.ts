@@ -122,4 +122,14 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
+  events: {
+    async signIn({ user }) {
+      if (user?.id) {
+        await db.user.update({
+          where: { id: user.id },
+          data: { lastLoginAt: new Date() },
+        })
+      }
+    },
+  },
 }
