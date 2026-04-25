@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState } from "react"
@@ -5,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { GripVertical, Plus, Sparkles, Trash2 } from "lucide-react"
+import { GripVertical, Loader2, Plus, Sparkles, Trash2 } from "lucide-react"
 
 import type { ProductCreateInput } from "@/schemas/product-schema"
 import type { CollectionType, FileType, LocaleType, ProductType } from "@/types"
@@ -13,6 +14,7 @@ import type { CollectionType, FileType, LocaleType, ProductType } from "@/types"
 import { ProductCreateSchema } from "@/schemas/product-schema"
 
 import { api } from "@/lib/api-client"
+import { generateSampleProductData } from "@/lib/sample-data"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -55,6 +57,7 @@ export function ProductForm({
 }: ProductFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const [files, setFiles] = useState<FileType[]>(
     initialData?.images?.map((image, index) => ({
       id: `${initialData.id}-image-${index}`,
@@ -156,14 +159,92 @@ export function ProductForm({
     }
   }
 
+  const onGenerateSample = async () => {
+    setGenerating(true)
+    try {
+      const sample = generateSampleProductData()
+
+      // Generate unique slug
+      const baseSlug =
+        sample.name
+          ?.toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^\w-]/g, "") || "sample-product"
+      let uniqueSlug = baseSlug
+      let isAvailable = false
+      let counter = 0
+
+      while (!isAvailable) {
+        const checkSlug = counter === 0 ? baseSlug : `${baseSlug}-${counter}`
+        const response = await api.get<{ available: boolean }>(
+          "/api/products/check-slug",
+          {
+            params: { slug: checkSlug },
+          }
+        )
+
+        if (response.available) {
+          uniqueSlug = checkSlug
+          isAvailable = true
+        } else {
+          counter++
+          // Safety break
+          if (counter > 50) {
+            uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`
+            isAvailable = true
+          }
+        }
+      }
+
+      // Update form values
+      Object.entries(sample).forEach(([key, value]) => {
+        if (value !== undefined) {
+          form.setValue(key as any, value)
+        }
+      })
+
+      form.setValue("slug", uniqueSlug)
+
+      // Randomly pick a collection if available
+      if (collections.length > 0 && !form.getValues("collectionId")) {
+        const randomCollection =
+          collections[Math.floor(Math.random() * collections.length)]
+        form.setValue("collectionId", randomCollection.id)
+      }
+
+      toast.success("Sample data generated")
+    } catch (error) {
+      console.error("Error generating sample data:", error)
+      toast.error("Failed to generate sample data")
+    } finally {
+      setGenerating(false)
+    }
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pb-10">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="md:col-span-2 space-y-8">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>General Information</CardTitle>
+                {!initialData && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onGenerateSample}
+                    disabled={generating}
+                  >
+                    {generating ? (
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-2 size-4" />
+                    )}
+                    Generate Sample Data
+                  </Button>
+                )}
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormField
