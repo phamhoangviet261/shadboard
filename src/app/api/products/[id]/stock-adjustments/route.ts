@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { ProductStockAdjustmentSchema } from "@/schemas/product-schema"
 
 import { logInventoryActivity } from "@/lib/activity-log"
-import { authenticateUser } from "@/lib/auth"
+import { authenticateUser, getAuthErrorResponse } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -69,7 +69,7 @@ export async function POST(
     await logInventoryActivity({
       action: `stock_${type === "set" ? "set" : type === "increase" ? "increased" : "decreased"}`,
       product: { id: updatedProduct.id, name: updatedProduct.name },
-      actor: { id: user.id, email: user.email ?? "", role: (user as any).role },
+      actor: { id: user.id, email: user.email ?? "", role: user.role },
       before: { stockQuantity: product.stockQuantity },
       after: { stockQuantity: updatedProduct.stockQuantity },
       metadata: { adjustment: quantity, type },
@@ -77,8 +77,12 @@ export async function POST(
 
     return NextResponse.json(updatedProduct, { status: 201 })
   } catch (error) {
-    if ((error as any)?.message?.includes("Forbidden") || (error as any)?.message?.includes("Unauthorized")) {
-      return NextResponse.json({ message: (error as any).message }, { status: (error as any).message.includes("Forbidden") ? 403 : 401 })
+    const authError = getAuthErrorResponse(error)
+    if (authError) {
+      return NextResponse.json(
+        { message: authError.message },
+        { status: authError.status }
+      )
     }
     console.error("Error adjusting stock:", error)
     return NextResponse.json(

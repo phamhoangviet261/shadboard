@@ -15,8 +15,8 @@ import type { CollectionType, LocaleType } from "@/types"
 import { CollectionCreateSchema } from "@/schemas/collection-schema"
 
 import { api } from "@/lib/api-client"
-import { usePermission } from "@/hooks/use-permission"
 
+import { usePermission } from "@/hooks/use-permission"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {

@@ -3,10 +3,11 @@ import { notFound } from "next/navigation"
 import type { CollectionType, LocaleType, ProductType } from "@/types"
 import type { Metadata } from "next"
 
-import { db } from "@/lib/prisma"
 import { authenticateUser } from "@/lib/auth"
-import { UnauthorizedState } from "@/components/auth/unauthorized-state"
+import { db } from "@/lib/prisma"
+
 import { ProductForm } from "../../_components/product-form"
+import { UnauthorizedState } from "@/components/auth/unauthorized-state"
 
 export const metadata: Metadata = {
   title: "Edit Product — Lensora Admin",
@@ -19,7 +20,7 @@ export default async function AdminEditProductPage(props: {
 
   try {
     await authenticateUser("product:update")
-  } catch (error) {
+  } catch {
     return <UnauthorizedState />
   }
 

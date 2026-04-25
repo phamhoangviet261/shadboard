@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { authenticateUser } from "@/lib/auth"
+import { authenticateUser, getAuthErrorResponse } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -17,7 +17,7 @@ interface CollectionSummary {
 export async function GET() {
   try {
     await authenticateUser("analytics:view")
-    
+
     const products = await db.product.findMany({
       where: { deletedAt: null },
       select: {
@@ -139,9 +139,13 @@ export async function GET() {
       topStockProducts: topStockProductsList,
       lowStockProducts: lowStockProductsList,
     })
-  } catch (error: any) {
-    if (error?.message?.includes("Forbidden") || error?.message?.includes("Unauthorized")) {
-      return NextResponse.json({ message: error.message }, { status: error.message.includes("Forbidden") ? 403 : 401 })
+  } catch (error) {
+    const authError = getAuthErrorResponse(error)
+    if (authError) {
+      return NextResponse.json(
+        { message: authError.message },
+        { status: authError.status }
+      )
     }
     console.error("Error fetching product analytics:", error)
     return NextResponse.json(

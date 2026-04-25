@@ -1,10 +1,11 @@
 import type { CollectionType, LocaleType } from "@/types"
 import type { Metadata } from "next"
 
-import { db } from "@/lib/prisma"
 import { authenticateUser } from "@/lib/auth"
-import { UnauthorizedState } from "@/components/auth/unauthorized-state"
+import { db } from "@/lib/prisma"
+
 import { ProductForm } from "../_components/product-form"
+import { UnauthorizedState } from "@/components/auth/unauthorized-state"
 
 export const metadata: Metadata = {
   title: "New Product — Lensora Admin",
@@ -17,7 +18,7 @@ export default async function AdminNewProductPage(props: {
 
   try {
     await authenticateUser("product:create")
-  } catch (error) {
+  } catch {
     return <UnauthorizedState />
   }
 

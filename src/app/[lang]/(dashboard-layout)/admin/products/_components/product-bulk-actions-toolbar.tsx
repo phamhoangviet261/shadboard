@@ -8,8 +8,8 @@ import type { ProductBulkActionInput } from "@/schemas/product-schema"
 import type { CollectionType } from "@/types"
 
 import { api } from "@/lib/api-client"
-import { usePermission } from "@/hooks/use-permission"
 
+import { usePermission } from "@/hooks/use-permission"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -128,7 +128,10 @@ export function ProductBulkActionsToolbar({
         <Separator orientation="vertical" className="hidden h-6 sm:block" />
 
         <div className="flex flex-wrap items-center gap-2">
-          <Select onValueChange={handleUpdateStatus} disabled={loading || !canBulkUpdate}>
+          <Select
+            onValueChange={handleUpdateStatus}
+            disabled={loading || !canBulkUpdate}
+          >
             <SelectTrigger className="h-8 w-[130px]">
               <SelectValue placeholder="Set Status" />
             </SelectTrigger>
@@ -139,7 +142,10 @@ export function ProductBulkActionsToolbar({
             </SelectContent>
           </Select>
 
-          <Select onValueChange={handleAssignCollection} disabled={loading || !canBulkUpdate}>
+          <Select
+            onValueChange={handleAssignCollection}
+            disabled={loading || !canBulkUpdate}
+          >
             <SelectTrigger className="h-8 w-[160px]">
               <SelectValue placeholder="Assign Collection" />
             </SelectTrigger>

@@ -13,8 +13,6 @@ import {
 } from "lucide-react"
 
 import { usePermission } from "@/hooks/use-permission"
-import { UnauthorizedState } from "@/components/auth/unauthorized-state"
-
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -34,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { UnauthorizedState } from "@/components/auth/unauthorized-state"
 
 interface LogEntry {
   id: string

@@ -3,14 +3,24 @@ import { NextResponse } from "next/server"
 import { ProductBulkActionSchema } from "@/schemas/product-schema"
 
 import { logBulkProductActivity } from "@/lib/activity-log"
-import { authenticateUser } from "@/lib/auth"
+import { authenticateUser, getAuthErrorResponse } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 
+function getRequestedAction(body: unknown) {
+  if (typeof body !== "object" || body === null || !("action" in body)) {
+    return null
+  }
+
+  const action = body.action
+
+  return typeof action === "string" ? action : null
+}
+
 export async function POST(req: Request) {
   try {
-    let bodyJson: any
+    let bodyJson: unknown
     try {
       bodyJson = await req.json()
     } catch {
@@ -21,7 +31,10 @@ export async function POST(req: Request) {
     }
 
     // Determine permission based on action
-    const permission = bodyJson.action === "delete" ? "product:bulkDelete" : "product:bulkUpdate"
+    const permission =
+      getRequestedAction(bodyJson) === "delete"
+        ? "product:bulkDelete"
+        : "product:bulkUpdate"
     const user = await authenticateUser(permission)
 
     const parsed = ProductBulkActionSchema.safeParse(bodyJson)
@@ -41,7 +54,11 @@ export async function POST(req: Request) {
           action: "product_bulk_status_updated",
           ids: data.ids,
           count: data.ids.length,
-          actor: { id: user.id, email: user.email ?? "", role: (user as any).role },
+          actor: {
+            id: user.id,
+            email: user.email ?? "",
+            role: user.role,
+          },
           metadata: { status: data.status },
         })
         break
@@ -116,8 +133,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "Bulk action completed successfully." })
   } catch (error) {
-    if ((error as any)?.message?.includes("Forbidden") || (error as any)?.message?.includes("Unauthorized")) {
-      return NextResponse.json({ message: (error as any).message }, { status: (error as any).message.includes("Forbidden") ? 403 : 401 })
+    const authError = getAuthErrorResponse(error)
+    if (authError) {
+      return NextResponse.json(
+        { message: authError.message },
+        { status: authError.status }
+      )
     }
     console.error("Bulk action error:", error)
     return NextResponse.json(

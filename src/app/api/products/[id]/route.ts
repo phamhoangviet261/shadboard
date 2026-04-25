@@ -4,7 +4,7 @@ import { Prisma } from "@/generated/client"
 import { ProductUpdateSchema } from "@/schemas/product-schema"
 
 import { logProductActivity } from "@/lib/activity-log"
-import { authenticateUser } from "@/lib/auth"
+import { authenticateUser, getAuthErrorResponse } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -95,7 +95,7 @@ export async function PATCH(
     await logProductActivity({
       action: "product_updated",
       product: { id: updatedProduct.id, name: updatedProduct.name },
-      actor: { id: user.id, email: user.email ?? "", role: (user as any).role },
+      actor: { id: user.id, email: user.email ?? "", role: user.role },
       before: product,
       after: updatedProduct,
     })
@@ -112,8 +112,12 @@ export async function PATCH(
       )
     }
 
-    if (error?.message?.includes("Forbidden") || error?.message?.includes("Unauthorized")) {
-      return NextResponse.json({ message: error.message }, { status: error.message.includes("Forbidden") ? 403 : 401 })
+    const authError = getAuthErrorResponse(error)
+    if (authError) {
+      return NextResponse.json(
+        { message: authError.message },
+        { status: authError.status }
+      )
     }
 
     console.error("Error updating product:", error)
@@ -154,13 +158,17 @@ export async function DELETE(
     await logProductActivity({
       action: "product_deleted",
       product: { id: product.id, name: product.name },
-      actor: { id: user.id, email: user.email ?? "", role: (user as any).role },
+      actor: { id: user.id, email: user.email ?? "", role: user.role },
     })
 
     return NextResponse.json({ message: "Product deleted successfully." })
   } catch (error) {
-    if (error?.message?.includes("Forbidden") || error?.message?.includes("Unauthorized")) {
-      return NextResponse.json({ message: error.message }, { status: error.message.includes("Forbidden") ? 403 : 401 })
+    const authError = getAuthErrorResponse(error)
+    if (authError) {
+      return NextResponse.json(
+        { message: authError.message },
+        { status: authError.status }
+      )
     }
 
     console.error("Error deleting product:", error)

@@ -1,8 +1,14 @@
 "use client"
 
 import { useSession } from "next-auth/react"
+
 import type { UserRole } from "@/generated/client"
-import { Permission, can as hasPermission, canAny as hasAnyPermission } from "@/lib/permissions"
+import type { Permission } from "@/lib/permissions"
+
+import {
+  canAny as hasAnyPermission,
+  can as hasPermission,
+} from "@/lib/permissions"
 
 /**
  * Hook to check permissions on the client side

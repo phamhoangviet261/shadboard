@@ -15,6 +15,7 @@ import type {
   ProductType,
 } from "@/types"
 
+import { usePermission } from "@/hooks/use-permission"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -53,7 +54,6 @@ import { ProductBulkActionsToolbar } from "./product-bulk-actions-toolbar"
 import { ProductDeleteDialog } from "./product-delete-dialog"
 import { ProductDuplicateDialog } from "./product-duplicate-dialog"
 import { ProductStockAdjustmentDialog } from "./product-stock-adjustment-dialog"
-import { usePermission } from "@/hooks/use-permission"
 
 interface ProductManagementTableProps {
   products: ProductType[]

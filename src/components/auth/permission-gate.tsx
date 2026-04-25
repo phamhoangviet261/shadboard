@@ -1,8 +1,10 @@
 "use client"
 
 import React from "react"
+
+import type { Permission } from "@/lib/permissions"
+
 import { usePermission } from "@/hooks/use-permission"
-import { Permission } from "@/lib/permissions"
 
 interface PermissionGateProps {
   permission?: Permission | Permission[]
@@ -20,7 +22,7 @@ export function PermissionGate({
   fallback = null,
   children,
 }: PermissionGateProps) {
-  const { can, canAny, isLoading } = usePermission()
+  const { canAny, isLoading } = usePermission()
 
   if (isLoading) return null
 
