@@ -12,7 +12,7 @@ import { SignInForm } from "./sign-in-form"
 export function SignIn({ dictionary }: { dictionary: DictionaryType }) {
   return (
     <Auth
-      imgSrc="/images/illustrations/misc/welcome.jpg"
+      imgSrc="/images/illustrations/misc/login_banner.png"
       dictionary={dictionary}
     >
       <AuthHeader>
