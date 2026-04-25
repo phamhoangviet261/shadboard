@@ -28,7 +28,7 @@ export function ProductDetailsForm({ product }: ProductDetailsFormProps) {
           </span>
         </div>
         <ColorSwatch
-          colors={product.colors}
+          colors={product.colors || []}
           selected={selectedColor}
           onSelect={setSelectedColor}
         />

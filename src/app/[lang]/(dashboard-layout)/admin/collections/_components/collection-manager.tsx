@@ -40,6 +40,13 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   Table,
   TableBody,
   TableCell,

@@ -622,14 +622,15 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                         {PRODUCT_SIZES.map((size) => (
                           <Label
                             key={size}
-                            className={`flex h-10 cursor-pointer items-center justify-center rounded-md border text-sm font-medium ${field.value.includes(size) ? "border-primary bg-primary text-primary-foreground" : ""}`}
+                            className={`flex h-10 cursor-pointer items-center justify-center rounded-md border text-sm font-medium ${field.value?.includes(size) ? "border-primary bg-primary text-primary-foreground" : ""}`}
                           >
                             <Checkbox
-                              checked={field.value.includes(size)}
+                              checked={field.value?.includes(size)}
                               onCheckedChange={() => {
-                                const newValue = field.value.includes(size)
-                                  ? field.value.filter(s => s !== size)
-                                  : [...field.value, size]
+                                const currentValues = field.value || []
+                                const newValue = currentValues.includes(size)
+                                  ? currentValues.filter(s => s !== size)
+                                  : [...currentValues, size as any]
                                 field.onChange(newValue)
                               }}
                               className="sr-only"

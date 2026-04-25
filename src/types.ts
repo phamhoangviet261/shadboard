@@ -171,6 +171,12 @@ export type ComingSoonFormType = z.infer<typeof ComingSoonSchema>
 // ─── Lensora Eyewear Types ───────────────────────────────────────────────────
 
 export type ProductStatus = "draft" | "published" | "archived"
+export type FrameShape = "round" | "square" | "rectangle" | "cat-eye" | "aviator" | "oval" | "geometric"
+export type FrameMaterial = "acetate" | "titanium" | "stainless-steel" | "tr90" | "wood"
+export type LensType = "single-vision" | "progressive" | "bifocal" | "blue-light" | "sunglasses"
+export type FaceFit = "narrow" | "medium" | "wide"
+export type Gender = "men" | "women" | "unisex"
+export type ProductSize = "XS" | "S" | "M" | "L" | "XL"
 
 export interface ColorVariant {
   name: string
@@ -212,12 +218,12 @@ export interface ProductType {
   
   // Eyewear specific
   colors: ColorVariant[] | null
-  frameShape: string | null
-  frameMaterial: string | null
-  lensType: string | null
-  faceFit: string | null
-  gender: string | null
-  size: string[]
+  frameShape: FrameShape | null
+  frameMaterial: FrameMaterial | null
+  lensType: LensType | null
+  faceFit: FaceFit | null
+  gender: Gender | null
+  size: ProductSize[]
   isFeatured: boolean
   specs: ProductSpecs | null
   seoTitle: string | null
