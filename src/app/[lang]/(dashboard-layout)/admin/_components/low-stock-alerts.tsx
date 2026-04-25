@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
+
+import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -16,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 
 export function LowStockAlerts() {
   const [products, setProducts] = useState<
@@ -81,7 +82,9 @@ export function LowStockAlerts() {
       <CardContent>
         {products.length === 0 ? (
           <div className="flex h-32 items-center justify-center rounded-md border border-dashed border-muted-foreground/20">
-            <p className="text-sm text-muted-foreground">All inventory levels healthy</p>
+            <p className="text-sm text-muted-foreground">
+              All inventory levels healthy
+            </p>
           </div>
         ) : (
           <Table>

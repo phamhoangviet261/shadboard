@@ -2,8 +2,8 @@ import { NextResponse } from "next/server"
 
 import { ProductBulkActionSchema } from "@/schemas/product-schema"
 
-import { db } from "@/lib/prisma"
 import { logBulkProductActivity } from "@/lib/activity-log"
+import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 

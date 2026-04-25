@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+
 import {
   Card,
   CardContent,
@@ -74,7 +75,9 @@ export function CollectionInsights() {
       <CardContent>
         {collections.length === 0 ? (
           <div className="flex xl:h-[350px] h-32 items-center justify-center rounded-md border border-dashed">
-            <p className="text-sm text-muted-foreground">No collection data available</p>
+            <p className="text-sm text-muted-foreground">
+              No collection data available
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">

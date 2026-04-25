@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 
 import { AnalyticsSummaryCards } from "./_components/analytics-summary-cards"
-import { TopStockProducts } from "./_components/top-stock-products"
-import { LowStockAlerts } from "./_components/low-stock-alerts"
 import { CollectionInsights } from "./_components/collection-insights"
+import { LowStockAlerts } from "./_components/low-stock-alerts"
+import { TopStockProducts } from "./_components/top-stock-products"
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | Lensora",
@@ -15,7 +15,7 @@ export default function AdminDashboardPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
         <p className="text-muted-foreground mt-2">
-          Monitor your store's performance, inventory, and health.
+          Monitor your store&apos;s performance, inventory, and health.
         </p>
       </div>
 

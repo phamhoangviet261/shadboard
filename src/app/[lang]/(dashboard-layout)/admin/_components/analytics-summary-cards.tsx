@@ -1,15 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Activity, AlertTriangle, Box, DollarSign, Package } from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
-import { Package, AlertTriangle, Box, DollarSign, Activity, Archive } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function AnalyticsSummaryCards() {
   const [data, setData] = useState<{
@@ -87,7 +82,9 @@ export function AnalyticsSummaryCards() {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Stock Units</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Total Stock Units
+          </CardTitle>
           <Box className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>

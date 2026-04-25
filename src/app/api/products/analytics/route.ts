@@ -1,8 +1,17 @@
 import { NextResponse } from "next/server"
+
 import { db } from "@/lib/prisma"
-import { Prisma } from "@/generated/client"
 
 export const runtime = "nodejs"
+
+interface CollectionSummary {
+  id: string
+  name: string
+  productCount: number
+  activeProductCount: number
+  stockUnits: number
+  inventoryValue: number
+}
 
 export async function GET() {
   try {
@@ -39,7 +48,7 @@ export async function GET() {
     let lowStockCount = 0
 
     const lowStockProductsList = []
-    const collectionSummaryMap: Record<string, any> = {}
+    const collectionSummaryMap: Record<string, CollectionSummary> = {}
 
     for (const collection of collections) {
       collectionSummaryMap[collection.id] = {

@@ -3,8 +3,8 @@ import { Prisma } from "@/generated/client"
 
 import { CollectionUpdateSchema } from "@/schemas/collection-schema"
 
-import { db } from "@/lib/prisma"
 import { logCollectionActivity } from "@/lib/activity-log"
+import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 

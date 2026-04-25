@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
+
+import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -16,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 
 export function TopStockProducts() {
   const [products, setProducts] = useState<
@@ -79,7 +80,9 @@ export function TopStockProducts() {
       <CardContent>
         {products.length === 0 ? (
           <div className="flex h-32 items-center justify-center rounded-md border border-dashed">
-            <p className="text-sm text-muted-foreground">No stock data available</p>
+            <p className="text-sm text-muted-foreground">
+              No stock data available
+            </p>
           </div>
         ) : (
           <Table>

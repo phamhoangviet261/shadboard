@@ -1,11 +1,13 @@
 import { headers } from "next/headers"
-import { db } from "@/lib/prisma"
+
 import type { Prisma } from "@/generated/client"
 
-export type ActivityEntityType = 
-  | "product" 
-  | "collection" 
-  | "inventory" 
+import { db } from "@/lib/prisma"
+
+export type ActivityEntityType =
+  | "product"
+  | "collection"
+  | "inventory"
   | "bulk_action"
 
 export interface ActivityLogInput {
@@ -26,7 +28,8 @@ export interface ActivityLogInput {
 export async function createActivityLog(input: ActivityLogInput) {
   try {
     const headersList = await headers()
-    const ipAddress = headersList.get("x-forwarded-for") || headersList.get("x-real-ip")
+    const ipAddress =
+      headersList.get("x-forwarded-for") || headersList.get("x-real-ip")
     const userAgent = headersList.get("user-agent")
 
     return await db.activityLog.create({

@@ -6,8 +6,8 @@ import {
   ProductQuerySchema,
 } from "@/schemas/product-schema"
 
-import { db } from "@/lib/prisma"
 import { logProductActivity } from "@/lib/activity-log"
+import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 

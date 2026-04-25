@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
+
 import type { Prisma } from "@/generated/client"
+
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -24,7 +26,9 @@ export async function GET(req: Request) {
     const q = searchParams.get("q")
     const from = searchParams.get("from")
     const to = searchParams.get("to")
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as "asc" | "desc"
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as
+      | "asc"
+      | "desc"
 
     const where: Prisma.ActivityLogWhereInput = {}
 
