@@ -3,12 +3,13 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Edit, Trash2 } from "lucide-react"
+import { Copy, Edit, Trash2 } from "lucide-react"
 
 import type { LocaleType } from "@/types"
 
 import { Button } from "@/components/ui/button"
 import { ProductDeleteDialog } from "./product-delete-dialog"
+import { ProductDuplicateDialog } from "./product-duplicate-dialog"
 
 interface ProductDetailsActionsProps {
   productId: string
@@ -23,6 +24,7 @@ export function ProductDetailsActions({
 }: ProductDetailsActionsProps) {
   const router = useRouter()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = useState(false)
 
   return (
     <>
@@ -32,6 +34,13 @@ export function ProductDetailsActions({
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Link>
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => setIsDuplicateDialogOpen(true)}
+        >
+          <Copy className="mr-2 h-4 w-4" />
+          Duplicate
         </Button>
         <Button
           variant="destructive"
@@ -48,6 +57,14 @@ export function ProductDetailsActions({
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onSuccess={() => router.push(`/${lang}/admin/products`)}
+      />
+
+      <ProductDuplicateDialog
+        productId={productId}
+        productName={productName}
+        lang={lang}
+        open={isDuplicateDialogOpen}
+        onOpenChange={setIsDuplicateDialogOpen}
       />
     </>
   )

@@ -81,6 +81,26 @@ Cập nhật một hoặc nhiều trường của sản phẩm.
 
 ---
 
+### Nhân bản Sản phẩm
+`POST /api/products/[id]/duplicate`
+
+Tạo một sản phẩm nháp mới dựa trên một sản phẩm hiện có.
+
+**Hành vi:**
+- Sao chép tất cả các trường có thể chỉnh sửa (tên, mô tả, giá, thông số kỹ thuật, màu sắc, v.v.).
+- Thêm hậu tố " Copy" vào tên sản phẩm.
+- Tự động tạo slug và SKU duy nhất.
+- Đặt trạng thái thành `draft` (nháp).
+- Các trường được bảo vệ như `id`, `createdAt`, và `updatedAt` sẽ không được sao chép.
+
+**Ví dụ Request:**
+`POST /api/products/[uuid]/duplicate`
+
+**Ví dụ Response:**
+Trả về đối tượng sản phẩm mới được tạo với trạng thái `201 Created`.
+
+---
+
 ### Xóa Sản phẩm (Xóa mềm)
 `DELETE /api/products/[id]`
 

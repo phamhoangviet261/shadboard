@@ -49,6 +49,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ProductDeleteDialog } from "./product-delete-dialog"
+import { ProductDuplicateDialog } from "./product-duplicate-dialog"
 
 interface ProductManagementTableProps {
   products: ProductType[]
@@ -79,6 +80,10 @@ export function ProductManagementTable({
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "")
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm)
   const [productToDelete, setProductToDelete] = useState<{
+    id: string
+    name: string
+  } | null>(null)
+  const [productToDuplicate, setProductToDuplicate] = useState<{
     id: string
     name: string
   } | null>(null)
@@ -266,6 +271,16 @@ export function ProductManagementTable({
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
+                            onClick={() =>
+                              setProductToDuplicate({
+                                id: product.id,
+                                name: product.name,
+                              })
+                            }
+                          >
+                            Duplicate product
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
                             onClick={() =>
                               setProductToDelete({
@@ -351,6 +366,16 @@ export function ProductManagementTable({
           productName={productToDelete.name}
           open={!!productToDelete}
           onOpenChange={(open) => !open && setProductToDelete(null)}
+        />
+      )}
+
+      {productToDuplicate && (
+        <ProductDuplicateDialog
+          productId={productToDuplicate.id}
+          productName={productToDuplicate.name}
+          lang={lang}
+          open={!!productToDuplicate}
+          onOpenChange={(open) => !open && setProductToDuplicate(null)}
         />
       )}
     </div>

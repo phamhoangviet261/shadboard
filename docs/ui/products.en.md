@@ -9,7 +9,8 @@ The Product Management module provides a comprehensive interface for managing th
 - **Search**: Debounced search by Name, Slug, or SKU.
 - **Filters**: Filter products by Status (Draft, Published, Archived) and Collection.
 - **Pagination**: Navigate through large catalogs with ease.
-- **Actions**: Quick access to view details, edit, or delete products.
+- **Actions**: Quick access to view details, edit, duplicate, or delete products.
+- **Duplicate Product**: Create a new draft product from an existing one with a single click. Slugs and SKUs are automatically regenerated to ensure uniqueness.
 
 ### Product Details
 - **Comprehensive View**: Shows all product information including eyewear-specific specifications.
@@ -30,11 +31,13 @@ The Product Management module provides a comprehensive interface for managing th
 - `ProductForm`: The centralized form for both creation and editing.
 - `ProductDetailsActions`: Client-side handlers for detail page interactions.
 - `ProductDeleteDialog`: Confirmation dialog for safe product archival.
+- `ProductDuplicateDialog`: Confirmation dialog for duplicating products.
 
 ## API Integration
 
 - `GET /api/products`: Listing with query parameters.
 - `GET /api/products/[id]`: Single product retrieval.
 - `POST /api/products`: Product creation.
+- `POST /api/products/[id]/duplicate`: Duplicate an existing product.
 - `PATCH /api/products/[id]`: Product updates.
 - `DELETE /api/products/[id]`: Soft deletion (archiving).

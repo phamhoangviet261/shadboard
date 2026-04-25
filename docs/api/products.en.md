@@ -81,6 +81,26 @@ Partial product object.
 
 ---
 
+### Duplicate Product
+`POST /api/products/[id]/duplicate`
+
+Create a new draft product based on an existing product. 
+
+**Behavior:**
+- Copies all editable fields (name, description, price, specs, colors, etc.).
+- Appends " Copy" to the product name.
+- Automatically generates a unique slug and SKU.
+- Sets status to `draft`.
+- Protected fields like `id`, `createdAt`, and `updatedAt` are not copied.
+
+**Example Request:**
+`POST /api/products/[uuid]/duplicate`
+
+**Example Response:**
+Returns the newly created product object with a `201 Created` status.
+
+---
+
 ### Delete Product (Soft Delete)
 `DELETE /api/products/[id]`
 
