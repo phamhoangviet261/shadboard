@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Edit, Trash2 } from "lucide-react"
 
 import type { LocaleType } from "@/types"
+
 import { Button } from "@/components/ui/button"
 import { ProductDeleteDialog } from "./product-delete-dialog"
 
@@ -32,7 +33,7 @@ export function ProductDetailsActions({
             Edit
           </Link>
         </Button>
-        <Button 
+        <Button
           variant="destructive"
           onClick={() => setIsDeleteDialogOpen(true)}
         >

@@ -33,7 +33,9 @@ export function ProductQuickView({
   onOpenChange,
 }: ProductQuickViewProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || { name: "", hex: "" })
+  const [selectedColor, setSelectedColor] = useState(
+    product.colors?.[0] || { name: "", hex: "" }
+  )
 
   const images = product.images || []
   const colors = product.colors || []
@@ -47,12 +49,9 @@ export function ProductQuickView({
       )
     : 0
 
-  const goNext = () =>
-    setCurrentImageIndex((i) => (i + 1) % images.length)
+  const goNext = () => setCurrentImageIndex((i) => (i + 1) % images.length)
   const goPrev = () =>
-    setCurrentImageIndex(
-      (i) => (i - 1 + images.length) % images.length
-    )
+    setCurrentImageIndex((i) => (i - 1 + images.length) % images.length)
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

@@ -1,11 +1,13 @@
 import Link from "next/link"
 import { Plus } from "lucide-react"
 
-import type { LocaleType } from "@/types"
+import type { Prisma } from "@/generated/client"
+import type { CollectionType, LocaleType, ProductType } from "@/types"
 import type { Metadata } from "next"
 
-import { db } from "@/lib/prisma"
 import { ProductQuerySchema } from "@/schemas/product-schema"
+
+import { db } from "@/lib/prisma"
 
 import { Button } from "@/components/ui/button"
 import { ProductManagementTable } from "./_components/product-management-table"
@@ -35,7 +37,7 @@ export default async function AdminProductsPage(props: {
   const skip = (query.page - 1) * query.limit
 
   // Build where clause (matches API logic)
-  const where: any = {
+  const where: Prisma.ProductWhereInput = {
     deletedAt: null,
   }
 
@@ -81,11 +83,13 @@ export default async function AdminProductsPage(props: {
     }),
   ])
 
-  const serializedProducts = JSON.parse(JSON.stringify(products, (key, value) => 
-    typeof value === 'object' && value?.constructor?.name === 'Decimal' 
-      ? Number(value) 
-      : value
-  ))
+  const serializedProducts = JSON.parse(
+    JSON.stringify(products, (key, value) =>
+      typeof value === "object" && value?.constructor?.name === "Decimal"
+        ? Number(value)
+        : value
+    )
+  ) as ProductType[]
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -103,7 +107,7 @@ export default async function AdminProductsPage(props: {
 
       <ProductManagementTable
         products={serializedProducts}
-        collections={collections as any}
+        collections={collections as Pick<CollectionType, "id" | "name">[]}
         lang={lang}
         pagination={{
           total,

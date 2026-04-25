@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/prisma"
-import { ProductUpdateSchema } from "@/schemas/product-schema"
 import { Prisma } from "@/generated/client"
+
+import { ProductUpdateSchema } from "@/schemas/product-schema"
+
+import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 
@@ -30,7 +32,10 @@ export async function GET(
     })
 
     if (!product) {
-      return NextResponse.json({ message: "Product not found." }, { status: 404 })
+      return NextResponse.json(
+        { message: "Product not found." },
+        { status: 404 }
+      )
     }
 
     return NextResponse.json(product)
@@ -50,7 +55,7 @@ export async function PATCH(
   try {
     const { id } = await params
     let body: unknown
-    
+
     try {
       body = await req.json()
     } catch {
@@ -59,7 +64,7 @@ export async function PATCH(
         { status: 400 }
       )
     }
-    
+
     const parsed = ProductUpdateSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(parsed.error, { status: 400 })
@@ -74,12 +79,15 @@ export async function PATCH(
     })
 
     if (!product) {
-      return NextResponse.json({ message: "Product not found." }, { status: 404 })
+      return NextResponse.json(
+        { message: "Product not found." },
+        { status: 404 }
+      )
     }
 
     const updatedProduct = await db.product.update({
       where: { id },
-      data: parsed.data as any,
+      data: parsed.data as Prisma.ProductUncheckedUpdateInput,
     })
 
     return NextResponse.json(updatedProduct)
@@ -116,7 +124,10 @@ export async function DELETE(
     })
 
     if (!product) {
-      return NextResponse.json({ message: "Product not found." }, { status: 404 })
+      return NextResponse.json(
+        { message: "Product not found." },
+        { status: 404 }
+      )
     }
 
     await db.product.update({

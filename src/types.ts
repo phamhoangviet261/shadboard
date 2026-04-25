@@ -171,9 +171,26 @@ export type ComingSoonFormType = z.infer<typeof ComingSoonSchema>
 // ─── Lensora Eyewear Types ───────────────────────────────────────────────────
 
 export type ProductStatus = "draft" | "published" | "archived"
-export type FrameShape = "round" | "square" | "rectangle" | "cat-eye" | "aviator" | "oval" | "geometric"
-export type FrameMaterial = "acetate" | "titanium" | "stainless-steel" | "tr90" | "wood"
-export type LensType = "single-vision" | "progressive" | "bifocal" | "blue-light" | "sunglasses"
+export type FrameShape =
+  | "round"
+  | "square"
+  | "rectangle"
+  | "cat-eye"
+  | "aviator"
+  | "oval"
+  | "geometric"
+export type FrameMaterial =
+  | "acetate"
+  | "titanium"
+  | "stainless-steel"
+  | "tr90"
+  | "wood"
+export type LensType =
+  | "single-vision"
+  | "progressive"
+  | "bifocal"
+  | "blue-light"
+  | "sunglasses"
 export type FaceFit = "narrow" | "medium" | "wide"
 export type Gender = "men" | "women" | "unisex"
 export type ProductSize = "XS" | "S" | "M" | "L" | "XL"
@@ -214,8 +231,8 @@ export interface ProductType {
   thumbnailUrl: string | null
   brand: string | null
   tags: string[]
-  metadata: Record<string, any> | null
-  
+  metadata: Record<string, unknown> | null
+
   // Eyewear specific
   colors: ColorVariant[] | null
   frameShape: FrameShape | null
@@ -228,10 +245,10 @@ export interface ProductType {
   specs: ProductSpecs | null
   seoTitle: string | null
   seoDescription: string | null
-  
+
   collectionId: string | null
   collection?: Partial<CollectionType>
-  
+
   createdAt: string
   updatedAt: string
   deletedAt: string | null
@@ -246,13 +263,13 @@ export interface CollectionType {
   status: ProductStatus
   sortOrder: number
   isFeatured: boolean
-  metadata: Record<string, any> | null
-  
+  metadata: Record<string, unknown> | null
+
   products?: ProductType[]
   _count?: {
     products: number
   }
-  
+
   createdAt: string
   updatedAt: string
   deletedAt: string | null

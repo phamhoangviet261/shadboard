@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { MoreHorizontal, Search } from "lucide-react"
 import { useDebounce } from "react-use"
+import { MoreHorizontal, Search } from "lucide-react"
 
 import type {
   CollectionType,
@@ -26,6 +26,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -40,14 +48,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
 import { ProductDeleteDialog } from "./product-delete-dialog"
 
 interface ProductManagementTableProps {
@@ -78,7 +78,10 @@ export function ProductManagementTable({
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "")
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm)
-  const [productToDelete, setProductToDelete] = useState<{ id: string, name: string } | null>(null)
+  const [productToDelete, setProductToDelete] = useState<{
+    id: string
+    name: string
+  } | null>(null)
 
   useDebounce(
     () => {
@@ -131,7 +134,9 @@ export function ProductManagementTable({
         </div>
         <Select
           value={searchParams.get("status") || "all"}
-          onValueChange={(value) => onFilterChange("status", value === "all" ? null : value)}
+          onValueChange={(value) =>
+            onFilterChange("status", value === "all" ? null : value)
+          }
         >
           <SelectTrigger className="w-full sm:w-44">
             <SelectValue placeholder="Status" />
@@ -145,7 +150,9 @@ export function ProductManagementTable({
         </Select>
         <Select
           value={searchParams.get("collectionId") || "all"}
-          onValueChange={(value) => onFilterChange("collectionId", value === "all" ? null : value)}
+          onValueChange={(value) =>
+            onFilterChange("collectionId", value === "all" ? null : value)
+          }
         >
           <SelectTrigger className="w-full sm:w-44">
             <SelectValue placeholder="Collection" />
@@ -182,7 +189,11 @@ export function ProductManagementTable({
                     <TableCell>
                       <div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted">
                         <Image
-                          src={product.thumbnailUrl || (product.images?.[0]?.url) || ""}
+                          src={
+                            product.thumbnailUrl ||
+                            product.images?.[0]?.url ||
+                            ""
+                          }
                           alt={product.images?.[0]?.alt || product.name}
                           fill
                           className="object-cover"
@@ -200,7 +211,9 @@ export function ProductManagementTable({
                         {product.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{product.collection?.name || "Unassigned"}</TableCell>
+                    <TableCell>
+                      {product.collection?.name || "Unassigned"}
+                    </TableCell>
                     <TableCell>
                       <div className="font-medium">${product.price}</div>
                       {product.compareAtPrice && (
@@ -211,7 +224,11 @@ export function ProductManagementTable({
                     </TableCell>
                     <TableCell>
                       <span
-                        className={product.stockQuantity < product.lowStockThreshold ? "text-destructive" : ""}
+                        className={
+                          product.stockQuantity < product.lowStockThreshold
+                            ? "text-destructive"
+                            : ""
+                        }
                       >
                         {product.stockQuantity} in stock
                       </span>
@@ -248,9 +265,14 @@ export function ProductManagementTable({
                               View on storefront
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
-                            onClick={() => setProductToDelete({ id: product.id, name: product.name })}
+                            onClick={() =>
+                              setProductToDelete({
+                                id: product.id,
+                                name: product.name,
+                              })
+                            }
                           >
                             Delete product
                           </DropdownMenuItem>
@@ -278,29 +300,45 @@ export function ProductManagementTable({
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious 
-                href={pagination.page > 1 ? `?${createQueryString({ page: pagination.page - 1 })}` : "#"}
+              <PaginationPrevious
+                href={
+                  pagination.page > 1
+                    ? `?${createQueryString({ page: pagination.page - 1 })}`
+                    : "#"
+                }
                 aria-disabled={pagination.page <= 1}
-                className={pagination.page <= 1 ? "pointer-events-none opacity-50" : ""}
+                className={
+                  pagination.page <= 1 ? "pointer-events-none opacity-50" : ""
+                }
               />
             </PaginationItem>
-            
-            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
-              <PaginationItem key={p}>
-                <PaginationLink 
-                  href={`?${createQueryString({ page: p })}`}
-                  isActive={p === pagination.page}
-                >
-                  {p}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
+
+            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(
+              (p) => (
+                <PaginationItem key={p}>
+                  <PaginationLink
+                    href={`?${createQueryString({ page: p })}`}
+                    isActive={p === pagination.page}
+                  >
+                    {p}
+                  </PaginationLink>
+                </PaginationItem>
+              )
+            )}
 
             <PaginationItem>
-              <PaginationNext 
-                href={pagination.page < pagination.totalPages ? `?${createQueryString({ page: pagination.page + 1 })}` : "#"}
+              <PaginationNext
+                href={
+                  pagination.page < pagination.totalPages
+                    ? `?${createQueryString({ page: pagination.page + 1 })}`
+                    : "#"
+                }
                 aria-disabled={pagination.page >= pagination.totalPages}
-                className={pagination.page >= pagination.totalPages ? "pointer-events-none opacity-50" : ""}
+                className={
+                  pagination.page >= pagination.totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
               />
             </PaginationItem>
           </PaginationContent>

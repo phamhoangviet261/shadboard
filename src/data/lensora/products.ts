@@ -16,7 +16,8 @@ export const productsData: ProductType[] = [
     status: "published",
     stockQuantity: 34,
     lowStockThreshold: 10,
-    thumbnailUrl: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&q=80",
+    thumbnailUrl:
+      "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&q=80",
     images: [
       {
         url: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&q=80",
@@ -76,7 +77,8 @@ export const productsData: ProductType[] = [
     status: "published",
     stockQuantity: 18,
     lowStockThreshold: 5,
-    thumbnailUrl: "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=800&q=80",
+    thumbnailUrl:
+      "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=800&q=80",
     images: [
       {
         url: "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=800&q=80",

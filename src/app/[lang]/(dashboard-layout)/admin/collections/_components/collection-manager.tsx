@@ -5,12 +5,15 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { MoreHorizontal, Plus, Search } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { MoreHorizontal, Plus, Search } from "lucide-react"
 
-import { CollectionCreateSchema, type CollectionCreateInput } from "@/schemas/collection-schema"
-import type { CollectionType, LocaleType, ProductType } from "@/types"
+import type { CollectionCreateInput } from "@/schemas/collection-schema"
+import type { CollectionType, LocaleType } from "@/types"
+
+import { CollectionCreateSchema } from "@/schemas/collection-schema"
+
 import { api } from "@/lib/api-client"
 
 import { Badge } from "@/components/ui/badge"
@@ -32,6 +35,13 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -39,13 +49,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -58,13 +61,11 @@ import { Textarea } from "@/components/ui/textarea"
 
 interface CollectionManagerProps {
   collections: CollectionType[]
-  products: Pick<ProductType, "id" | "name" | "price" | "thumbnailUrl">[]
   lang: LocaleType
 }
 
 export function CollectionManager({
   collections,
-  products,
   lang,
 }: CollectionManagerProps) {
   const router = useRouter()
@@ -94,7 +95,8 @@ export function CollectionManager({
         !normalizedQuery ||
         collection.name.toLowerCase().includes(normalizedQuery) ||
         collection.slug.toLowerCase().includes(normalizedQuery) ||
-        (collection.description?.toLowerCase().includes(normalizedQuery) ?? false)
+        (collection.description?.toLowerCase().includes(normalizedQuery) ??
+          false)
     )
   }, [collections, query])
 
@@ -138,8 +140,10 @@ export function CollectionManager({
       }
       setIsSheetOpen(false)
       router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || "Something went wrong")
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      )
     } finally {
       setLoading(false)
     }
@@ -208,7 +212,9 @@ export function CollectionManager({
                         {collection.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{collection._count?.products || 0} items</TableCell>
+                    <TableCell>
+                      {collection._count?.products || 0} items
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -255,14 +261,19 @@ export function CollectionManager({
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
           <SheetHeader>
-            <SheetTitle>{editingId ? "Edit Collection" : "Create Collection"}</SheetTitle>
+            <SheetTitle>
+              {editingId ? "Edit Collection" : "Create Collection"}
+            </SheetTitle>
             <SheetDescription>
               Manage storefront collection copy, cover imagery, and publishing
               state.
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="mt-6 space-y-4"
+            >
               <FormField
                 control={form.control}
                 name="name"
@@ -296,10 +307,10 @@ export function CollectionManager({
                   <FormItem>
                     <FormLabel>Cover image URL</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="https://images.unsplash.com/..." 
-                        {...field} 
-                        value={field.value || ""} 
+                      <Input
+                        placeholder="https://images.unsplash.com/..."
+                        {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -330,7 +341,10 @@ export function CollectionManager({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select status" />

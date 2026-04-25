@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import { api } from "@/lib/api-client"
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,8 +46,10 @@ export function ProductDeleteDialog({
       } else {
         router.refresh()
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete product")
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete product"
+      )
     } finally {
       setLoading(false)
     }
@@ -58,7 +61,9 @@ export function ProductDeleteDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This will archive <strong>{productName}</strong>. You can still restore it later from the database if needed, but it will be hidden from the admin and storefront.
+            This will archive <strong>{productName}</strong>. You can still
+            restore it later from the database if needed, but it will be hidden
+            from the admin and storefront.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/prisma"
-import { ProductCreateSchema, ProductQuerySchema } from "@/schemas/product-schema"
 import { Prisma } from "@/generated/client"
+
+import {
+  ProductCreateSchema,
+  ProductQuerySchema,
+} from "@/schemas/product-schema"
+
+import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 
@@ -9,23 +14,23 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const params = Object.fromEntries(searchParams.entries())
-    
+
     const parsed = ProductQuerySchema.safeParse(params)
     if (!parsed.success) {
       return NextResponse.json(parsed.error, { status: 400 })
     }
 
-    const { 
-      page, 
-      limit, 
-      q, 
-      status, 
-      collectionId, 
-      minPrice, 
-      maxPrice, 
-      tags, 
-      sortBy, 
-      sortOrder 
+    const {
+      page,
+      limit,
+      q,
+      status,
+      collectionId,
+      minPrice,
+      maxPrice,
+      tags,
+      sortBy,
+      sortOrder,
     } = parsed.data
 
     const skip = (page - 1) * limit
@@ -59,7 +64,7 @@ export async function GET(req: Request) {
     }
 
     if (tags) {
-      const tagList = tags.split(",").map(t => t.trim())
+      const tagList = tags.split(",").map((t) => t.trim())
       where.tags = {
         hasSome: tagList,
       }
@@ -88,11 +93,13 @@ export async function GET(req: Request) {
     ])
 
     return NextResponse.json({
-      data: JSON.parse(JSON.stringify(products, (key, value) => 
-        typeof value === 'object' && value?.constructor?.name === 'Decimal' 
-          ? Number(value) 
-          : value
-      )),
+      data: JSON.parse(
+        JSON.stringify(products, (key, value) =>
+          typeof value === "object" && value?.constructor?.name === "Decimal"
+            ? Number(value)
+            : value
+        )
+      ),
       pagination: {
         total,
         page,
@@ -112,7 +119,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     let body: unknown
-    
+
     try {
       body = await req.json()
     } catch {
@@ -121,14 +128,14 @@ export async function POST(req: Request) {
         { status: 400 }
       )
     }
-    
+
     const parsed = ProductCreateSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(parsed.error, { status: 400 })
     }
 
     const product = await db.product.create({
-      data: parsed.data as any,
+      data: parsed.data as Prisma.ProductUncheckedCreateInput,
     })
 
     return NextResponse.json(product, { status: 201 })

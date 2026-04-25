@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/prisma"
-import { CollectionCreateSchema, CollectionQuerySchema } from "@/schemas/collection-schema"
 import { Prisma } from "@/generated/client"
+
+import {
+  CollectionCreateSchema,
+  CollectionQuerySchema,
+} from "@/schemas/collection-schema"
+
+import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 
@@ -9,7 +14,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const params = Object.fromEntries(searchParams.entries())
-    
+
     const parsed = CollectionQuerySchema.safeParse(params)
     if (!parsed.success) {
       return NextResponse.json(parsed.error, { status: 400 })
@@ -38,15 +43,17 @@ export async function GET(req: Request) {
       orderBy: {
         [sortBy]: sortOrder,
       },
-      include: includeProductCount ? {
-        _count: {
-          select: { 
-            products: { 
-              where: { deletedAt: null } 
-            } 
+      include: includeProductCount
+        ? {
+            _count: {
+              select: {
+                products: {
+                  where: { deletedAt: null },
+                },
+              },
+            },
           }
-        }
-      } : undefined
+        : undefined,
     })
 
     return NextResponse.json(collections)
@@ -62,7 +69,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     let body: unknown
-    
+
     try {
       body = await req.json()
     } catch {
@@ -71,14 +78,14 @@ export async function POST(req: Request) {
         { status: 400 }
       )
     }
-    
+
     const parsed = CollectionCreateSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(parsed.error, { status: 400 })
     }
 
     const collection = await db.collection.create({
-      data: parsed.data as any,
+      data: parsed.data as Prisma.CollectionUncheckedCreateInput,
     })
 
     return NextResponse.json(collection, { status: 201 })

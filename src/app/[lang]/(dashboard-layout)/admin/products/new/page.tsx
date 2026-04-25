@@ -1,7 +1,8 @@
-import type { LocaleType } from "@/types"
+import type { CollectionType, LocaleType } from "@/types"
 import type { Metadata } from "next"
 
 import { db } from "@/lib/prisma"
+
 import { ProductForm } from "../_components/product-form"
 
 export const metadata: Metadata = {
@@ -24,7 +25,10 @@ export default async function AdminNewProductPage(props: {
         <h2 className="text-3xl font-bold tracking-tight">Add Product</h2>
       </div>
 
-      <ProductForm lang={lang} collections={collections as any} />
+      <ProductForm
+        lang={lang}
+        collections={collections as Pick<CollectionType, "id" | "name">[]}
+      />
     </div>
   )
 }

@@ -3,28 +3,43 @@
  */
 
 export type ApiRequestOptions = RequestInit & {
-  params?: Record<string, any>
+  params?: Record<string, unknown>
 }
 
 export class ApiError extends Error {
   constructor(
     public status: number,
     public message: string,
-    public data?: any
+    public data?: unknown
   ) {
     super(message)
     this.name = "ApiError"
   }
 }
 
+function getApiErrorMessage(data: unknown, fallback: string) {
+  if (
+    data &&
+    typeof data === "object" &&
+    "message" in data &&
+    typeof data.message === "string"
+  ) {
+    return data.message
+  }
+
+  return fallback
+}
+
 async function handleResponse<T>(response: Response): Promise<T> {
-  const isJson = response.headers.get("content-type")?.includes("application/json")
+  const isJson = response.headers
+    .get("content-type")
+    ?.includes("application/json")
   const data = isJson ? await response.json() : null
 
   if (!response.ok) {
     throw new ApiError(
       response.status,
-      data?.message || response.statusText || "An error occurred",
+      getApiErrorMessage(data, response.statusText || "An error occurred"),
       data
     )
   }
@@ -58,7 +73,11 @@ export const api = {
     return handleResponse<T>(response)
   },
 
-  async post<T>(url: string, body?: any, options: RequestInit = {}): Promise<T> {
+  async post<T>(
+    url: string,
+    body?: unknown,
+    options: RequestInit = {}
+  ): Promise<T> {
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -72,7 +91,11 @@ export const api = {
     return handleResponse<T>(response)
   },
 
-  async patch<T>(url: string, body?: any, options: RequestInit = {}): Promise<T> {
+  async patch<T>(
+    url: string,
+    body?: unknown,
+    options: RequestInit = {}
+  ): Promise<T> {
     const response = await fetch(url, {
       method: "PATCH",
       headers: {

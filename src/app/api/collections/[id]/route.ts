@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/prisma"
-import { CollectionUpdateSchema } from "@/schemas/collection-schema"
 import { Prisma } from "@/generated/client"
+
+import { CollectionUpdateSchema } from "@/schemas/collection-schema"
+
+import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 
@@ -19,17 +21,20 @@ export async function GET(
       },
       include: {
         _count: {
-          select: { 
-            products: { 
-              where: { deletedAt: null } 
-            } 
-          }
-        }
-      }
+          select: {
+            products: {
+              where: { deletedAt: null },
+            },
+          },
+        },
+      },
     })
 
     if (!collection) {
-      return NextResponse.json({ message: "Collection not found." }, { status: 404 })
+      return NextResponse.json(
+        { message: "Collection not found." },
+        { status: 404 }
+      )
     }
 
     return NextResponse.json(collection)
@@ -49,7 +54,7 @@ export async function PATCH(
   try {
     const { id } = await params
     let body: unknown
-    
+
     try {
       body = await req.json()
     } catch {
@@ -58,7 +63,7 @@ export async function PATCH(
         { status: 400 }
       )
     }
-    
+
     const parsed = CollectionUpdateSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(parsed.error, { status: 400 })
@@ -72,12 +77,15 @@ export async function PATCH(
     })
 
     if (!collection) {
-      return NextResponse.json({ message: "Collection not found." }, { status: 404 })
+      return NextResponse.json(
+        { message: "Collection not found." },
+        { status: 404 }
+      )
     }
 
     const updatedCollection = await db.collection.update({
       where: { id },
-      data: parsed.data as any,
+      data: parsed.data as Prisma.CollectionUncheckedUpdateInput,
     })
 
     return NextResponse.json(updatedCollection)
@@ -114,7 +122,10 @@ export async function DELETE(
     })
 
     if (!collection) {
-      return NextResponse.json({ message: "Collection not found." }, { status: 404 })
+      return NextResponse.json(
+        { message: "Collection not found." },
+        { status: 404 }
+      )
     }
 
     await db.collection.update({

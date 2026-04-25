@@ -1,16 +1,18 @@
+import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, Edit, Trash2 } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
-import type { LocaleType } from "@/types"
+import type { LocaleType, ProductImage, ProductType } from "@/types"
 import type { Metadata } from "next"
+import type { ComponentProps } from "react"
 
 import { db } from "@/lib/prisma"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import Image from "next/image"
 import { ProductDetailsActions } from "../_components/product-details-actions"
 
 export const metadata: Metadata = {
@@ -36,13 +38,18 @@ export default async function AdminProductDetailPage(props: {
     notFound()
   }
 
-  const serializedProduct = JSON.parse(JSON.stringify(product, (key, value) => 
-    typeof value === 'object' && value?.constructor?.name === 'Decimal' 
-      ? Number(value) 
-      : value
-  ))
+  const serializedProduct = JSON.parse(
+    JSON.stringify(product, (key, value) =>
+      typeof value === "object" && value?.constructor?.name === "Decimal"
+        ? Number(value)
+        : value
+    )
+  ) as ProductType
 
-  const statusVariant: any = {
+  const statusVariant: Record<
+    ProductType["status"],
+    ComponentProps<typeof Badge>["variant"]
+  > = {
     published: "default",
     draft: "secondary",
     archived: "outline",
@@ -58,19 +65,23 @@ export default async function AdminProductDetailPage(props: {
             </Link>
           </Button>
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">{serializedProduct.name}</h2>
+            <h2 className="text-3xl font-bold tracking-tight">
+              {serializedProduct.name}
+            </h2>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant={statusVariant[serializedProduct.status]}>
                 {serializedProduct.status}
               </Badge>
-              <span className="text-sm text-muted-foreground">SKU: {serializedProduct.sku || "N/A"}</span>
+              <span className="text-sm text-muted-foreground">
+                SKU: {serializedProduct.sku || "N/A"}
+              </span>
             </div>
           </div>
         </div>
-        <ProductDetailsActions 
-          productId={id} 
-          productName={serializedProduct.name} 
-          lang={lang} 
+        <ProductDetailsActions
+          productId={id}
+          productName={serializedProduct.name}
+          lang={lang}
         />
       </div>
 
@@ -82,17 +93,23 @@ export default async function AdminProductDetailPage(props: {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
-                {serializedProduct.images && serializedProduct.images.length > 0 ? (
-                  serializedProduct.images.map((image: any, index: number) => (
-                    <div key={index} className="relative aspect-square overflow-hidden rounded-lg border bg-muted">
-                      <Image
-                        src={image.url}
-                        alt={image.alt || serializedProduct.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ))
+                {serializedProduct.images &&
+                serializedProduct.images.length > 0 ? (
+                  serializedProduct.images.map(
+                    (image: ProductImage, index: number) => (
+                      <div
+                        key={index}
+                        className="relative aspect-square overflow-hidden rounded-lg border bg-muted"
+                      >
+                        <Image
+                          src={image.url}
+                          alt={image.alt || serializedProduct.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )
+                  )
                 ) : (
                   <div className="col-span-2 flex h-40 items-center justify-center rounded-lg border border-dashed text-muted-foreground">
                     No images uploaded
@@ -120,50 +137,72 @@ export default async function AdminProductDetailPage(props: {
             <CardContent className="grid grid-cols-2 gap-y-4 text-sm sm:grid-cols-3">
               <div>
                 <p className="font-medium">Frame Shape</p>
-                <p className="text-muted-foreground capitalize">{serializedProduct.frameShape || "N/A"}</p>
+                <p className="text-muted-foreground capitalize">
+                  {serializedProduct.frameShape || "N/A"}
+                </p>
               </div>
               <div>
                 <p className="font-medium">Material</p>
-                <p className="text-muted-foreground capitalize">{serializedProduct.frameMaterial || "N/A"}</p>
+                <p className="text-muted-foreground capitalize">
+                  {serializedProduct.frameMaterial || "N/A"}
+                </p>
               </div>
               <div>
                 <p className="font-medium">Lens Type</p>
-                <p className="text-muted-foreground capitalize">{serializedProduct.lensType || "N/A"}</p>
+                <p className="text-muted-foreground capitalize">
+                  {serializedProduct.lensType || "N/A"}
+                </p>
               </div>
               <div>
                 <p className="font-medium">Face Fit</p>
-                <p className="text-muted-foreground capitalize">{serializedProduct.faceFit || "N/A"}</p>
+                <p className="text-muted-foreground capitalize">
+                  {serializedProduct.faceFit || "N/A"}
+                </p>
               </div>
               <div>
                 <p className="font-medium">Gender</p>
-                <p className="text-muted-foreground capitalize">{serializedProduct.gender || "N/A"}</p>
+                <p className="text-muted-foreground capitalize">
+                  {serializedProduct.gender || "N/A"}
+                </p>
               </div>
               <div>
                 <p className="font-medium">Sizes</p>
-                <p className="text-muted-foreground">{serializedProduct.size?.join(", ") || "N/A"}</p>
+                <p className="text-muted-foreground">
+                  {serializedProduct.size?.join(", ") || "N/A"}
+                </p>
               </div>
             </CardContent>
             <Separator />
             <CardContent className="grid grid-cols-2 gap-y-4 pt-6 text-sm sm:grid-cols-5">
               <div>
                 <p className="font-medium">Lens</p>
-                <p className="text-muted-foreground">{serializedProduct.specs?.lensWidth}mm</p>
+                <p className="text-muted-foreground">
+                  {serializedProduct.specs?.lensWidth}mm
+                </p>
               </div>
               <div>
                 <p className="font-medium">Bridge</p>
-                <p className="text-muted-foreground">{serializedProduct.specs?.bridgeWidth}mm</p>
+                <p className="text-muted-foreground">
+                  {serializedProduct.specs?.bridgeWidth}mm
+                </p>
               </div>
               <div>
                 <p className="font-medium">Temple</p>
-                <p className="text-muted-foreground">{serializedProduct.specs?.templeLength}mm</p>
+                <p className="text-muted-foreground">
+                  {serializedProduct.specs?.templeLength}mm
+                </p>
               </div>
               <div>
                 <p className="font-medium">Total</p>
-                <p className="text-muted-foreground">{serializedProduct.specs?.totalWidth}mm</p>
+                <p className="text-muted-foreground">
+                  {serializedProduct.specs?.totalWidth}mm
+                </p>
               </div>
               <div>
                 <p className="font-medium">Weight</p>
-                <p className="text-muted-foreground">{serializedProduct.specs?.weight}g</p>
+                <p className="text-muted-foreground">
+                  {serializedProduct.specs?.weight}g
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -177,12 +216,16 @@ export default async function AdminProductDetailPage(props: {
             <CardContent className="space-y-4 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Price</span>
-                <span className="font-bold text-lg">${serializedProduct.price}</span>
+                <span className="font-bold text-lg">
+                  ${serializedProduct.price}
+                </span>
               </div>
               {serializedProduct.compareAtPrice && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Compare at</span>
-                  <span className="line-through">${serializedProduct.compareAtPrice}</span>
+                  <span className="line-through">
+                    ${serializedProduct.compareAtPrice}
+                  </span>
                 </div>
               )}
               {serializedProduct.costPrice && (
@@ -194,7 +237,14 @@ export default async function AdminProductDetailPage(props: {
               <Separator />
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Stock</span>
-                <span className={serializedProduct.stockQuantity < serializedProduct.lowStockThreshold ? "text-destructive font-bold" : ""}>
+                <span
+                  className={
+                    serializedProduct.stockQuantity <
+                    serializedProduct.lowStockThreshold
+                      ? "text-destructive font-bold"
+                      : ""
+                  }
+                >
                   {serializedProduct.stockQuantity} units
                 </span>
               </div>
@@ -212,17 +262,23 @@ export default async function AdminProductDetailPage(props: {
             <CardContent className="space-y-4 text-sm">
               <div>
                 <p className="font-medium">Collection</p>
-                <p className="text-muted-foreground">{serializedProduct.collection?.name || "Unassigned"}</p>
+                <p className="text-muted-foreground">
+                  {serializedProduct.collection?.name || "Unassigned"}
+                </p>
               </div>
               <div>
                 <p className="font-medium">Brand</p>
-                <p className="text-muted-foreground">{serializedProduct.brand || "Lensora"}</p>
+                <p className="text-muted-foreground">
+                  {serializedProduct.brand || "Lensora"}
+                </p>
               </div>
               <div>
                 <p className="font-medium">Tags</p>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {serializedProduct.tags.map((tag: string) => (
-                    <Badge key={tag} variant="secondary">{tag}</Badge>
+                    <Badge key={tag} variant="secondary">
+                      {tag}
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -236,11 +292,15 @@ export default async function AdminProductDetailPage(props: {
             <CardContent className="space-y-2 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>Created</span>
-                <span>{new Date(serializedProduct.createdAt).toLocaleDateString()}</span>
+                <span>
+                  {new Date(serializedProduct.createdAt).toLocaleDateString()}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Last updated</span>
-                <span>{new Date(serializedProduct.updatedAt).toLocaleDateString()}</span>
+                <span>
+                  {new Date(serializedProduct.updatedAt).toLocaleDateString()}
+                </span>
               </div>
             </CardContent>
           </Card>

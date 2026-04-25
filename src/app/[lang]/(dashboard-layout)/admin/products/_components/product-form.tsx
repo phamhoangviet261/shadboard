@@ -3,17 +3,15 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { GripVertical, Plus, Sparkles, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { GripVertical, Plus, Sparkles, Trash2 } from "lucide-react"
 
-import { ProductCreateSchema, type ProductCreateInput } from "@/schemas/product-schema"
-import type {
-  CollectionType,
-  FileType,
-  LocaleType,
-  ProductType,
-} from "@/types"
+import type { ProductCreateInput } from "@/schemas/product-schema"
+import type { CollectionType, FileType, LocaleType, ProductType } from "@/types"
+
+import { ProductCreateSchema } from "@/schemas/product-schema"
+
 import { api } from "@/lib/api-client"
 
 import { Button } from "@/components/ui/button"
@@ -50,7 +48,11 @@ interface ProductFormProps {
   collections: Pick<CollectionType, "id" | "name">[]
 }
 
-export function ProductForm({ lang, initialData, collections }: ProductFormProps) {
+export function ProductForm({
+  lang,
+  initialData,
+  collections,
+}: ProductFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [files, setFiles] = useState<FileType[]>(
@@ -65,72 +67,74 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
 
   const form = useForm<ProductCreateInput>({
     resolver: zodResolver(ProductCreateSchema),
-    defaultValues: initialData ? {
-      name: initialData.name,
-      slug: initialData.slug,
-      description: initialData.description || "",
-      shortDescription: initialData.shortDescription || "",
-      sku: initialData.sku || "",
-      price: initialData.price,
-      compareAtPrice: initialData.compareAtPrice || undefined,
-      costPrice: initialData.costPrice || undefined,
-      currency: initialData.currency,
-      status: initialData.status,
-      stockQuantity: initialData.stockQuantity,
-      lowStockThreshold: initialData.lowStockThreshold,
-      thumbnailUrl: initialData.thumbnailUrl || undefined,
-      brand: initialData.brand || "Lensora",
-      tags: initialData.tags || [],
-      collectionId: initialData.collectionId || null,
-      isFeatured: initialData.isFeatured,
-      colors: initialData.colors || [],
-      frameShape: initialData.frameShape || "",
-      frameMaterial: initialData.frameMaterial || "",
-      lensType: initialData.lensType || "",
-      faceFit: initialData.faceFit || "",
-      gender: initialData.gender || "",
-      size: initialData.size || ["M"],
-      specs: initialData.specs || {
-        lensWidth: 50,
-        bridgeWidth: 20,
-        templeLength: 145,
-        totalWidth: 140,
-        weight: 22,
-      },
-      seoTitle: initialData.seoTitle || "",
-      seoDescription: initialData.seoDescription || "",
-    } : {
-      name: "",
-      slug: "",
-      description: "",
-      price: 0,
-      currency: "USD",
-      status: "draft",
-      stockQuantity: 0,
-      lowStockThreshold: 10,
-      brand: "Lensora",
-      tags: [],
-      isFeatured: false,
-      colors: [
-        { name: "Midnight Black", hex: "#111111" },
-        { name: "Honey Tortoise", hex: "#8B5E3C" },
-      ],
-      size: ["M"],
-      specs: {
-        lensWidth: 50,
-        bridgeWidth: 20,
-        templeLength: 145,
-        totalWidth: 140,
-        weight: 22,
-      }
-    },
+    defaultValues: initialData
+      ? {
+          name: initialData.name,
+          slug: initialData.slug,
+          description: initialData.description || "",
+          shortDescription: initialData.shortDescription || "",
+          sku: initialData.sku || "",
+          price: initialData.price,
+          compareAtPrice: initialData.compareAtPrice || undefined,
+          costPrice: initialData.costPrice || undefined,
+          currency: initialData.currency,
+          status: initialData.status,
+          stockQuantity: initialData.stockQuantity,
+          lowStockThreshold: initialData.lowStockThreshold,
+          thumbnailUrl: initialData.thumbnailUrl || undefined,
+          brand: initialData.brand || "Lensora",
+          tags: initialData.tags || [],
+          collectionId: initialData.collectionId || null,
+          isFeatured: initialData.isFeatured,
+          colors: initialData.colors || [],
+          frameShape: initialData.frameShape || "",
+          frameMaterial: initialData.frameMaterial || "",
+          lensType: initialData.lensType || "",
+          faceFit: initialData.faceFit || "",
+          gender: initialData.gender || "",
+          size: initialData.size || ["M"],
+          specs: initialData.specs || {
+            lensWidth: 50,
+            bridgeWidth: 20,
+            templeLength: 145,
+            totalWidth: 140,
+            weight: 22,
+          },
+          seoTitle: initialData.seoTitle || "",
+          seoDescription: initialData.seoDescription || "",
+        }
+      : {
+          name: "",
+          slug: "",
+          description: "",
+          price: 0,
+          currency: "USD",
+          status: "draft",
+          stockQuantity: 0,
+          lowStockThreshold: 10,
+          brand: "Lensora",
+          tags: [],
+          isFeatured: false,
+          colors: [
+            { name: "Midnight Black", hex: "#111111" },
+            { name: "Honey Tortoise", hex: "#8B5E3C" },
+          ],
+          size: ["M"],
+          specs: {
+            lensWidth: 50,
+            bridgeWidth: 20,
+            templeLength: 145,
+            totalWidth: 140,
+            weight: 22,
+          },
+        },
   })
 
   const onSubmit = async (values: ProductCreateInput) => {
     setLoading(true)
     try {
       // Sync files to images array
-      const images = files.map(f => ({ url: f.url, alt: f.name }))
+      const images = files.map((f) => ({ url: f.url, alt: f.name }))
       const payload = { ...values, images }
 
       if (initialData) {
@@ -140,11 +144,13 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
         await api.post("/api/products", payload)
         toast.success("Product created successfully")
       }
-      
+
       router.push(`/${lang}/admin/products`)
       router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save product")
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save product"
+      )
     } finally {
       setLoading(false)
     }
@@ -193,11 +199,11 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder="Detailed product description..." 
-                          rows={5} 
-                          {...field} 
-                          value={field.value || ""} 
+                        <Textarea
+                          placeholder="Detailed product description..."
+                          rows={5}
+                          {...field}
+                          value={field.value || ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -256,7 +262,14 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>Price ($)</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -269,7 +282,19 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>Compare at Price ($)</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" {...field} value={field.value || ""} onChange={e => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)} />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          value={field.value || ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? parseFloat(e.target.value)
+                                : undefined
+                            )
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -282,7 +307,11 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>SKU</FormLabel>
                       <FormControl>
-                        <Input placeholder="LNS-001" {...field} value={field.value || ""} />
+                        <Input
+                          placeholder="LNS-001"
+                          {...field}
+                          value={field.value || ""}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -295,7 +324,13 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>Inventory Stock</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -319,7 +354,9 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                         value={color.name}
                         aria-label="Color name"
                         onChange={(event) => {
-                          const newColors = [...(form.getValues("colors") || [])]
+                          const newColors = [
+                            ...(form.getValues("colors") || []),
+                          ]
                           newColors[index].name = event.target.value
                           form.setValue("colors", newColors)
                         }}
@@ -329,7 +366,9 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                         value={color.hex}
                         aria-label="Color value"
                         onChange={(event) => {
-                          const newColors = [...(form.getValues("colors") || [])]
+                          const newColors = [
+                            ...(form.getValues("colors") || []),
+                          ]
                           newColors[index].hex = event.target.value
                           form.setValue("colors", newColors)
                         }}
@@ -339,7 +378,9 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                         variant="outline"
                         size="icon"
                         onClick={() => {
-                          const newColors = form.getValues("colors")?.filter((_, i) => i !== index)
+                          const newColors = form
+                            .getValues("colors")
+                            ?.filter((_, i) => i !== index)
                           form.setValue("colors", newColors)
                         }}
                       >
@@ -354,7 +395,10 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                   size="sm"
                   onClick={() => {
                     const currentColors = form.getValues("colors") || []
-                    form.setValue("colors", [...currentColors, { name: "New color", hex: "#d6d3d1" }])
+                    form.setValue("colors", [
+                      ...currentColors,
+                      { name: "New color", hex: "#d6d3d1" },
+                    ])
                   }}
                 >
                   <Plus className="mr-2 size-4" />
@@ -375,7 +419,11 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>SEO Title</FormLabel>
                       <FormControl>
-                        <Input placeholder="Solaris Round Sunglasses - Lensora" {...field} value={field.value || ""} />
+                        <Input
+                          placeholder="Solaris Round Sunglasses - Lensora"
+                          {...field}
+                          value={field.value || ""}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -388,11 +436,11 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>SEO Description</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder="Premium handcrafted eyewear..." 
-                          rows={3} 
-                          {...field} 
-                          value={field.value || ""} 
+                        <Textarea
+                          placeholder="Premium handcrafted eyewear..."
+                          rows={3}
+                          {...field}
+                          value={field.value || ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -419,7 +467,10 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Status</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select status" />
@@ -442,8 +493,8 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Collection</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
+                      <Select
+                        onValueChange={field.onChange}
                         defaultValue={field.value || undefined}
                       >
                         <FormControl>
@@ -453,7 +504,10 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                         </FormControl>
                         <SelectContent>
                           {collections.map((collection) => (
-                            <SelectItem key={collection.id} value={collection.id}>
+                            <SelectItem
+                              key={collection.id}
+                              value={collection.id}
+                            >
                               {collection.name}
                             </SelectItem>
                           ))}
@@ -498,7 +552,10 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Frame Shape</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value || ""}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select shape" />
@@ -524,7 +581,10 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Material</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value || ""}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select material" />
@@ -533,7 +593,9 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                         <SelectContent>
                           <SelectItem value="acetate">Acetate</SelectItem>
                           <SelectItem value="titanium">Titanium</SelectItem>
-                          <SelectItem value="stainless-steel">Stainless Steel</SelectItem>
+                          <SelectItem value="stainless-steel">
+                            Stainless Steel
+                          </SelectItem>
                           <SelectItem value="tr90">TR90</SelectItem>
                           <SelectItem value="wood">Wood</SelectItem>
                         </SelectContent>
@@ -548,15 +610,22 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Lens Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value || ""}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select lens type" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="single-vision">Single Vision</SelectItem>
-                          <SelectItem value="progressive">Progressive</SelectItem>
+                          <SelectItem value="single-vision">
+                            Single Vision
+                          </SelectItem>
+                          <SelectItem value="progressive">
+                            Progressive
+                          </SelectItem>
                           <SelectItem value="bifocal">Bifocal</SelectItem>
                           <SelectItem value="blue-light">Blue Light</SelectItem>
                           <SelectItem value="sunglasses">Sunglasses</SelectItem>
@@ -573,7 +642,10 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Face Fit</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value || ""}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Fit" />
@@ -595,7 +667,10 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Gender</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value || ""}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Gender" />
@@ -629,8 +704,8 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                               onCheckedChange={() => {
                                 const currentValues = field.value || []
                                 const newValue = currentValues.includes(size)
-                                  ? currentValues.filter(s => s !== size)
-                                  : [...currentValues, size as any]
+                                  ? currentValues.filter((s) => s !== size)
+                                  : [...currentValues, size]
                                 field.onChange(newValue)
                               }}
                               className="sr-only"
@@ -658,7 +733,13 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>Lens (mm)</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -671,7 +752,13 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>Bridge (mm)</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -684,7 +771,13 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>Temple (mm)</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -697,7 +790,13 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem>
                       <FormLabel>Total (mm)</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -710,7 +809,18 @@ export function ProductForm({ lang, initialData, collections }: ProductFormProps
                     <FormItem className="col-span-2">
                       <FormLabel>Weight (g)</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} value={field.value || ""} onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} />
+                        <Input
+                          type="number"
+                          {...field}
+                          value={field.value || ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? parseInt(e.target.value)
+                                : undefined
+                            )
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
