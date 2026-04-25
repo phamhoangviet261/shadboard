@@ -10,6 +10,8 @@ import { db } from "@/lib/prisma"
 
 import CredentialsProvider from "next-auth/providers/credentials"
 
+type PrismaAdapterClient = Parameters<typeof PrismaAdapter>[0]
+
 // Extend NextAuth's Session and User interfaces to include custom properties
 declare module "next-auth" {
   interface Session {
@@ -45,7 +47,7 @@ declare module "next-auth/jwt" {
 export const authOptions: NextAuthOptions = {
   // Use Prisma adapter for database interaction
   // More info: https://next-auth.js.org/getting-started/adapter
-  adapter: PrismaAdapter(db) as Adapter,
+  adapter: PrismaAdapter(db as unknown as PrismaAdapterClient) as Adapter,
   providers: [
     CredentialsProvider({
       name: "Credentials",
