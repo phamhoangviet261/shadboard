@@ -36,22 +36,22 @@ export function CollectionProductGrid({
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
+          (p.description?.toLowerCase().includes(q) ?? false)
       )
     }
 
     if (filters.frameShapes.length)
-      result = result.filter((p) => filters.frameShapes.includes(p.frameShape))
+      result = result.filter((p) => p.frameShape && filters.frameShapes.includes(p.frameShape))
     if (filters.frameMaterials.length)
       result = result.filter((p) =>
-        filters.frameMaterials.includes(p.frameMaterial)
+        p.frameMaterial && filters.frameMaterials.includes(p.frameMaterial)
       )
     if (filters.lensTypes.length)
-      result = result.filter((p) => filters.lensTypes.includes(p.lensType))
+      result = result.filter((p) => p.lensType && filters.lensTypes.includes(p.lensType))
     if (filters.genders.length)
-      result = result.filter((p) => filters.genders.includes(p.gender))
+      result = result.filter((p) => p.gender && filters.genders.includes(p.gender))
     if (filters.faceFits.length)
-      result = result.filter((p) => filters.faceFits.includes(p.faceFit))
+      result = result.filter((p) => p.faceFit && filters.faceFits.includes(p.faceFit))
 
     result = result.filter(
       (p) =>

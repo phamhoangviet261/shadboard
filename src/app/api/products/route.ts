@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/prisma"
-import { ProductQuerySchema } from "@/schemas/product-schema"
+import { ProductCreateSchema, ProductQuerySchema } from "@/schemas/product-schema"
 import { Prisma } from "@/generated/client"
 
 export const runtime = "nodejs"
@@ -104,6 +104,47 @@ export async function GET(req: Request) {
     console.error("Error fetching products:", error)
     return NextResponse.json(
       { message: "Unable to fetch products." },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    let body: unknown
+    
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json(
+        { message: "Invalid JSON request body." },
+        { status: 400 }
+      )
+    }
+    
+    const parsed = ProductCreateSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(parsed.error, { status: 400 })
+    }
+
+    const product = await db.product.create({
+      data: parsed.data as any,
+    })
+
+    return NextResponse.json(product, { status: 201 })
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        { message: "Slug or SKU already in use." },
+        { status: 409 }
+      )
+    }
+    console.error("Error creating product:", error)
+    return NextResponse.json(
+      { message: "Unable to create product." },
       { status: 500 }
     )
   }

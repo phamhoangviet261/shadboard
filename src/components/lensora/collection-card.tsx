@@ -35,7 +35,7 @@ export function CollectionCard({
       {/* Background Image */}
       <div className="aspect-[3/4] relative">
         <Image
-          src={collection.coverImage}
+          src={collection.thumbnailUrl || ""}
           alt={collection.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

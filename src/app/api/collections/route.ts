@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/prisma"
-import { CollectionQuerySchema } from "@/schemas/collection-schema"
+import { CollectionCreateSchema, CollectionQuerySchema } from "@/schemas/collection-schema"
 import { Prisma } from "@/generated/client"
 
 export const runtime = "nodejs"
@@ -54,6 +54,47 @@ export async function GET(req: Request) {
     console.error("Error fetching collections:", error)
     return NextResponse.json(
       { message: "Unable to fetch collections." },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    let body: unknown
+    
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json(
+        { message: "Invalid JSON request body." },
+        { status: 400 }
+      )
+    }
+    
+    const parsed = CollectionCreateSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(parsed.error, { status: 400 })
+    }
+
+    const collection = await db.collection.create({
+      data: parsed.data as any,
+    })
+
+    return NextResponse.json(collection, { status: 201 })
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        { message: "Slug already in use." },
+        { status: 409 }
+      )
+    }
+    console.error("Error creating collection:", error)
+    return NextResponse.json(
+      { message: "Unable to create collection." },
       { status: 500 }
     )
   }

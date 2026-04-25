@@ -31,8 +31,8 @@ export function ProductCard({ product, lang }: ProductCardProps) {
       )
     : 0
 
-  const mainImage = product.images[0]
-  const hoverImage = product.images[1] ?? product.images[0]
+  const mainImage = product.images?.[0] || { url: "", alt: product.name }
+  const hoverImage = product.images?.[1] ?? mainImage
 
   return (
     <>
@@ -122,21 +122,23 @@ export function ProductCard({ product, lang }: ProductCardProps) {
           </div>
 
           {/* Color swatches */}
-          <div className="flex items-center gap-1">
-            {product.colors.slice(0, 4).map((color) => (
-              <span
-                key={color.name}
-                title={color.name}
-                className="size-3 rounded-full border border-border/60 shadow-sm"
-                style={{ backgroundColor: color.hex }}
-              />
-            ))}
-            {product.colors.length > 4 && (
-              <span className="text-xs text-muted-foreground ml-0.5">
-                +{product.colors.length - 4}
-              </span>
-            )}
-          </div>
+          {product.colors && product.colors.length > 0 && (
+            <div className="flex items-center gap-1">
+              {product.colors.slice(0, 4).map((color) => (
+                <span
+                  key={color.name}
+                  title={color.name}
+                  className="size-3 rounded-full border border-border/60 shadow-sm"
+                  style={{ backgroundColor: color.hex }}
+                />
+              ))}
+              {product.colors.length > 4 && (
+                <span className="text-xs text-muted-foreground ml-0.5">
+                  +{product.colors.length - 4}
+                </span>
+              )}
+            </div>
+          )}
 
           <p className="text-xs text-muted-foreground capitalize">
             {product.frameShape} · {product.frameMaterial}

@@ -172,35 +172,6 @@ export type ComingSoonFormType = z.infer<typeof ComingSoonSchema>
 
 export type ProductStatus = "draft" | "published" | "archived"
 
-export type FrameShape =
-  | "round"
-  | "square"
-  | "rectangle"
-  | "cat-eye"
-  | "aviator"
-  | "oval"
-  | "geometric"
-
-export type FrameMaterial =
-  | "acetate"
-  | "titanium"
-  | "stainless-steel"
-  | "tr90"
-  | "wood"
-
-export type LensType =
-  | "single-vision"
-  | "progressive"
-  | "bifocal"
-  | "blue-light"
-  | "sunglasses"
-
-export type FaceFit = "narrow" | "medium" | "wide"
-
-export type Gender = "men" | "women" | "unisex"
-
-export type ProductSize = "XS" | "S" | "M" | "L" | "XL"
-
 export interface ColorVariant {
   name: string
   hex: string
@@ -223,37 +194,72 @@ export interface ProductType {
   id: string
   name: string
   slug: string
-  description: string
+  description: string | null
+  shortDescription: string | null
+  sku: string | null
   price: number
-  compareAtPrice?: number
+  compareAtPrice: number | null
+  costPrice: number | null
+  currency: string
   status: ProductStatus
-  collectionId: string
-  images: ProductImage[]
-  colors: ColorVariant[]
-  frameShape: FrameShape
-  frameMaterial: FrameMaterial
-  lensType: LensType
-  faceFit: FaceFit
-  gender: Gender
-  size: ProductSize[]
-  stock: number
-  sku: string
+  stockQuantity: number
+  lowStockThreshold: number
+  images: ProductImage[] | null
+  thumbnailUrl: string | null
+  brand: string | null
+  tags: string[]
+  metadata: Record<string, any> | null
+  
+  // Eyewear specific
+  colors: ColorVariant[] | null
+  frameShape: string | null
+  frameMaterial: string | null
+  lensType: string | null
+  faceFit: string | null
+  gender: string | null
+  size: string[]
   isFeatured: boolean
-  specs: ProductSpecs
-  seoTitle?: string
-  seoDescription?: string
+  specs: ProductSpecs | null
+  seoTitle: string | null
+  seoDescription: string | null
+  
+  collectionId: string | null
+  collection?: Partial<CollectionType>
+  
   createdAt: string
   updatedAt: string
+  deletedAt: string | null
 }
 
 export interface CollectionType {
   id: string
   name: string
   slug: string
-  description: string
-  coverImage: string
+  description: string | null
+  thumbnailUrl: string | null
   status: ProductStatus
+  sortOrder: number
   isFeatured: boolean
+  metadata: Record<string, any> | null
+  
+  products?: ProductType[]
+  _count?: {
+    products: number
+  }
+  
   createdAt: string
   updatedAt: string
+  deletedAt: string | null
+}
+
+export interface PaginationInfo {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  pagination: PaginationInfo
 }

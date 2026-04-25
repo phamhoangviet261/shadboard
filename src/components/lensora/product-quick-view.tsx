@@ -33,7 +33,10 @@ export function ProductQuickView({
   onOpenChange,
 }: ProductQuickViewProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [selectedColor, setSelectedColor] = useState(product.colors[0])
+  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || { name: "", hex: "" })
+
+  const images = product.images || []
+  const colors = product.colors || []
 
   const hasDiscount =
     product.compareAtPrice && product.compareAtPrice > product.price
@@ -45,10 +48,10 @@ export function ProductQuickView({
     : 0
 
   const goNext = () =>
-    setCurrentImageIndex((i) => (i + 1) % product.images.length)
+    setCurrentImageIndex((i) => (i + 1) % images.length)
   const goPrev = () =>
     setCurrentImageIndex(
-      (i) => (i - 1 + product.images.length) % product.images.length
+      (i) => (i - 1 + images.length) % images.length
     )
 
   return (
@@ -63,13 +66,19 @@ export function ProductQuickView({
 
         {/* Image gallery */}
         <div className="relative aspect-square bg-muted">
-          <Image
-            src={product.images[currentImageIndex].url}
-            alt={product.images[currentImageIndex].alt}
-            fill
-            className="object-cover"
-          />
-          {product.images.length > 1 && (
+          {images.length > 0 ? (
+            <Image
+              src={images[currentImageIndex].url}
+              alt={images[currentImageIndex].alt}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-muted-foreground">
+              No images
+            </div>
+          )}
+          {images.length > 1 && (
             <>
               <button
                 onClick={goPrev}
@@ -88,9 +97,9 @@ export function ProductQuickView({
             </>
           )}
           {/* Dot indicators */}
-          {product.images.length > 1 && (
+          {images.length > 1 && (
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-              {product.images.map((_, i) => (
+              {images.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrentImageIndex(i)}
@@ -140,17 +149,19 @@ export function ProductQuickView({
           </p>
 
           {/* Color */}
-          <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-2">
-              Color —{" "}
-              <span className="text-foreground">{selectedColor.name}</span>
-            </p>
-            <ColorSwatch
-              colors={product.colors}
-              selected={selectedColor}
-              onSelect={setSelectedColor}
-            />
-          </div>
+          {colors.length > 0 && (
+            <div>
+              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-2">
+                Color —{" "}
+                <span className="text-foreground">{selectedColor.name}</span>
+              </p>
+              <ColorSwatch
+                colors={colors}
+                selected={selectedColor}
+                onSelect={setSelectedColor}
+              />
+            </div>
+          )}
 
           {/* Specs summary */}
           <div className="grid grid-cols-3 gap-3">

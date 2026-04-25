@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) return {}
   return {
     title: product.seoTitle || `${product.name} — Lensora`,
-    description: product.seoDescription || product.description,
+    description: product.seoDescription || product.description || "",
   }
 }
 
@@ -64,7 +64,7 @@ export default async function ProductDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16 items-start">
         {/* Gallery */}
         <div className="lg:sticky lg:top-24">
-          <ProductGallery images={product.images} />
+          <ProductGallery images={product.images || []} />
         </div>
 
         {/* Info */}
@@ -96,21 +96,23 @@ export default async function ProductDetailPage({ params }: Props) {
           </div>
 
           <p className="text-base text-muted-foreground leading-relaxed">
-            {product.description}
+            {product.description || ""}
           </p>
 
           <ProductDetailsForm product={product} />
 
           {/* Accordions */}
           <div className="pt-4 border-t border-border">
-            <FrameSpecs
-              specs={product.specs}
-              frameMaterial={product.frameMaterial}
-              frameShape={product.frameShape}
-              lensType={product.lensType}
-              faceFit={product.faceFit}
-              gender={product.gender}
-            />
+            {product.specs && (
+              <FrameSpecs
+                specs={product.specs}
+                frameMaterial={product.frameMaterial || ""}
+                frameShape={product.frameShape || ""}
+                lensType={product.lensType || ""}
+                faceFit={product.faceFit || ""}
+                gender={product.gender || ""}
+              />
+            )}
           </div>
         </div>
       </div>

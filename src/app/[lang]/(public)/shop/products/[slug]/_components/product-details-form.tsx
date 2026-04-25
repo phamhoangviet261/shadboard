@@ -14,8 +14,8 @@ interface ProductDetailsFormProps {
 }
 
 export function ProductDetailsForm({ product }: ProductDetailsFormProps) {
-  const [selectedColor, setSelectedColor] = useState(product.colors[0])
-  const [selectedSize, setSelectedSize] = useState(product.size[0])
+  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || { name: "", hex: "" })
+  const [selectedSize, setSelectedSize] = useState(product.size?.[0] || "")
 
   return (
     <div className="space-y-6">

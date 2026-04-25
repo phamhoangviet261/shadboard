@@ -3,9 +3,15 @@
 import { useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { MoreHorizontal, Plus, Search } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 
+import { CollectionCreateSchema, type CollectionCreateInput } from "@/schemas/collection-schema"
 import type { CollectionType, LocaleType, ProductType } from "@/types"
+import { api } from "@/lib/api-client"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,8 +22,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Sheet,
   SheetContent,
@@ -38,7 +51,7 @@ import { Textarea } from "@/components/ui/textarea"
 
 interface CollectionManagerProps {
   collections: CollectionType[]
-  products: ProductType[]
+  products: Pick<ProductType, "id" | "name" | "price" | "thumbnailUrl">[]
   lang: LocaleType
 }
 
@@ -47,10 +60,24 @@ export function CollectionManager({
   products,
   lang,
 }: CollectionManagerProps) {
+  const router = useRouter()
   const [query, setQuery] = useState("")
-  const [activeCollection, setActiveCollection] =
-    useState<CollectionType | null>(null)
-  const [isCreating, setIsCreating] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
+
+  const form = useForm<CollectionCreateInput>({
+    resolver: zodResolver(CollectionCreateSchema),
+    defaultValues: {
+      name: "",
+      slug: "",
+      description: "",
+      thumbnailUrl: "",
+      status: "draft",
+      sortOrder: 0,
+      isFeatured: false,
+    },
+  })
 
   const filteredCollections = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -60,22 +87,56 @@ export function CollectionManager({
         !normalizedQuery ||
         collection.name.toLowerCase().includes(normalizedQuery) ||
         collection.slug.toLowerCase().includes(normalizedQuery) ||
-        collection.description.toLowerCase().includes(normalizedQuery)
+        (collection.description?.toLowerCase().includes(normalizedQuery) ?? false)
     )
   }, [collections, query])
 
   const openCreate = () => {
-    setActiveCollection(null)
-    setIsCreating(true)
+    setEditingId(null)
+    form.reset({
+      name: "",
+      slug: "",
+      description: "",
+      thumbnailUrl: "",
+      status: "draft",
+      sortOrder: collections.length,
+      isFeatured: false,
+    })
+    setIsSheetOpen(true)
   }
 
   const openEdit = (collection: CollectionType) => {
-    setActiveCollection(collection)
-    setIsCreating(false)
+    setEditingId(collection.id)
+    form.reset({
+      name: collection.name,
+      slug: collection.slug,
+      description: collection.description || "",
+      thumbnailUrl: collection.thumbnailUrl || "",
+      status: collection.status,
+      sortOrder: collection.sortOrder,
+      isFeatured: collection.isFeatured,
+    })
+    setIsSheetOpen(true)
   }
 
-  const isSheetOpen = isCreating || Boolean(activeCollection)
-  const sheetTitle = isCreating ? "Create collection" : "Edit collection"
+  const onSubmit = async (values: CollectionCreateInput) => {
+    setLoading(true)
+    try {
+      if (editingId) {
+        await api.patch(`/api/collections/${editingId}`, values)
+        toast.success("Collection updated")
+      } else {
+        await api.post("/api/collections", values)
+        toast.success("Collection created")
+      }
+      setIsSheetOpen(false)
+      router.refresh()
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -95,7 +156,7 @@ export function CollectionManager({
         </Button>
       </div>
 
-      <div className="rounded-xl border bg-card shadow-sm">
+      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -109,16 +170,12 @@ export function CollectionManager({
           <TableBody>
             {filteredCollections.length > 0 ? (
               filteredCollections.map((collection) => {
-                const productCount = products.filter(
-                  (product) => product.collectionId === collection.id
-                ).length
-
                 return (
                   <TableRow key={collection.id}>
                     <TableCell>
                       <div className="relative h-16 w-24 overflow-hidden rounded-md bg-muted">
                         <Image
-                          src={collection.coverImage}
+                          src={collection.thumbnailUrl || ""}
                           alt={collection.name}
                           fill
                           className="object-cover"
@@ -127,7 +184,7 @@ export function CollectionManager({
                     </TableCell>
                     <TableCell>
                       <div className="font-medium">{collection.name}</div>
-                      <div className="mt-1 text-sm text-muted-foreground">
+                      <div className="mt-1 text-xs text-muted-foreground">
                         /{collection.slug}
                       </div>
                     </TableCell>
@@ -144,7 +201,7 @@ export function CollectionManager({
                         {collection.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{productCount} items</TableCell>
+                    <TableCell>{collection._count?.products || 0} items</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -163,6 +220,7 @@ export function CollectionManager({
                           <DropdownMenuItem asChild>
                             <Link
                               href={`/${lang}/shop/collections/${collection.slug}`}
+                              target="_blank"
                             >
                               View on storefront
                             </Link>
@@ -187,71 +245,114 @@ export function CollectionManager({
         </Table>
       </div>
 
-      <Sheet
-        open={isSheetOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            setActiveCollection(null)
-            setIsCreating(false)
-          }
-        }}
-      >
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
           <SheetHeader>
-            <SheetTitle>{sheetTitle}</SheetTitle>
+            <SheetTitle>{editingId ? "Edit Collection" : "Create Collection"}</SheetTitle>
             <SheetDescription>
               Manage storefront collection copy, cover imagery, and publishing
               state.
             </SheetDescription>
           </SheetHeader>
-          <div className="mt-6 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="collection-name">Name</Label>
-              <Input
-                id="collection-name"
-                defaultValue={activeCollection?.name}
-                placeholder="Nocturne"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nocturne" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="collection-slug">Slug</Label>
-              <Input
-                id="collection-slug"
-                defaultValue={activeCollection?.slug}
-                placeholder="nocturne"
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Slug</FormLabel>
+                    <FormControl>
+                      <Input placeholder="nocturne" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="collection-cover">Cover image URL</Label>
-              <Input
-                id="collection-cover"
-                defaultValue={activeCollection?.coverImage}
-                placeholder="https://images.unsplash.com/..."
+              <FormField
+                control={form.control}
+                name="thumbnailUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cover image URL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="https://images.unsplash.com/..." 
+                        {...field} 
+                        value={field.value || ""} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="collection-description">Description</Label>
-              <Textarea
-                id="collection-description"
-                defaultValue={activeCollection?.description}
-                rows={5}
-                placeholder="Describe the collection point of view."
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        rows={5}
+                        placeholder="Describe the collection point of view."
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-          </div>
-          <SheetFooter className="mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setActiveCollection(null)
-                setIsCreating(false)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="button">Save collection</Button>
-          </SheetFooter>
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="published">Published</SelectItem>
+                        <SelectItem value="archived">Archived</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <SheetFooter className="mt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsSheetOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Saving..." : "Save collection"}
+                </Button>
+              </SheetFooter>
+            </form>
+          </Form>
         </SheetContent>
       </Sheet>
     </div>

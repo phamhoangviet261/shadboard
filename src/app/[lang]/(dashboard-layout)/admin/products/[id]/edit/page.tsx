@@ -3,8 +3,7 @@ import { notFound } from "next/navigation"
 import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 
-import { productsData } from "@/data/lensora/products"
-
+import { db } from "@/lib/prisma"
 import { ProductForm } from "../../_components/product-form"
 
 export const metadata: Metadata = {
@@ -15,11 +14,29 @@ export default async function AdminEditProductPage(props: {
   params: Promise<{ lang: LocaleType; id: string }>
 }) {
   const { lang, id } = await props.params
-  const product = productsData.find((p) => p.id === id)
+  
+  const [product, collections] = await Promise.all([
+    db.product.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    }),
+    db.collection.findMany({
+      where: { deletedAt: null },
+      select: { id: true, name: true },
+    }),
+  ])
 
   if (!product) {
     notFound()
   }
+
+  const serializedProduct = JSON.parse(JSON.stringify(product, (key, value) => 
+    typeof value === 'object' && value?.constructor?.name === 'Decimal' 
+      ? Number(value) 
+      : value
+  ))
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 max-w-5xl mx-auto">
@@ -27,7 +44,11 @@ export default async function AdminEditProductPage(props: {
         <h2 className="text-3xl font-bold tracking-tight">Edit Product</h2>
       </div>
 
-      <ProductForm initialData={product} lang={lang} />
+      <ProductForm 
+        initialData={serializedProduct} 
+        lang={lang} 
+        collections={collections as any} 
+      />
     </div>
   )
 }

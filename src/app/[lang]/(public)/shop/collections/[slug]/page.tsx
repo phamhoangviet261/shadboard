@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!collection) return {}
   return {
     title: `${collection.name} — Lensora`,
-    description: collection.description,
+    description: collection.description || "",
   }
 }
 
@@ -46,7 +46,7 @@ export default async function CollectionDetailPage({ params }: Props) {
       {/* Collection hero */}
       <section className="relative h-64 md:h-96 overflow-hidden">
         <Image
-          src={collection.coverImage}
+          src={collection.thumbnailUrl || ""}
           alt={collection.name}
           fill
           priority
@@ -61,7 +61,7 @@ export default async function CollectionDetailPage({ params }: Props) {
             {collection.name}
           </h1>
           <p className="text-white/70 text-base max-w-lg leading-relaxed">
-            {collection.description}
+            {collection.description || ""}
           </p>
         </div>
       </section>
