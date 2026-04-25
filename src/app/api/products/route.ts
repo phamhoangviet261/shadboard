@@ -7,6 +7,7 @@ import {
 } from "@/schemas/product-schema"
 
 import { db } from "@/lib/prisma"
+import { logProductActivity } from "@/lib/activity-log"
 
 export const runtime = "nodejs"
 
@@ -152,6 +153,12 @@ export async function POST(req: Request) {
 
     const product = await db.product.create({
       data: parsed.data as Prisma.ProductUncheckedCreateInput,
+    })
+
+    await logProductActivity({
+      action: "product_created",
+      product: { id: product.id, name: product.name },
+      after: product,
     })
 
     return NextResponse.json(product, { status: 201 })

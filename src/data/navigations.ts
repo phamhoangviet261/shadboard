@@ -39,6 +39,11 @@ export const navigationsData: NavigationType[] = [
         href: "/admin/ai-writer",
         iconName: "Sparkles",
       },
+      {
+        title: "Activity Logs",
+        href: "/admin/activity-logs",
+        iconName: "History",
+      },
     ],
   },
   {

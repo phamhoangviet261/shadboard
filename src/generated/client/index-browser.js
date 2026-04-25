@@ -232,6 +232,22 @@ exports.Prisma.CollectionScalarFieldEnum = {
   deletedAt: 'deletedAt'
 };
 
+exports.Prisma.ActivityLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  entityName: 'entityName',
+  actorId: 'actorId',
+  actorEmail: 'actorEmail',
+  metadata: 'metadata',
+  before: 'before',
+  after: 'after',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -266,7 +282,8 @@ exports.Prisma.ModelName = {
   Session: 'Session',
   VerificationToken: 'VerificationToken',
   Product: 'Product',
-  Collection: 'Collection'
+  Collection: 'Collection',
+  ActivityLog: 'ActivityLog'
 };
 
 /**

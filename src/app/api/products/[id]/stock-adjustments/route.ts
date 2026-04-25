@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import { ProductStockAdjustmentSchema } from "@/schemas/product-schema"
 
 import { db } from "@/lib/prisma"
+import { logInventoryActivity } from "@/lib/activity-log"
 
 export const runtime = "nodejs"
 
@@ -61,6 +62,14 @@ export async function POST(
       data: {
         stockQuantity: newStock,
       },
+    })
+
+    await logInventoryActivity({
+      action: `stock_${type === "set" ? "set" : type === "increase" ? "increased" : "decreased"}`,
+      product: { id: updatedProduct.id, name: updatedProduct.name },
+      before: { stockQuantity: product.stockQuantity },
+      after: { stockQuantity: updatedProduct.stockQuantity },
+      metadata: { adjustment: quantity, type },
     })
 
     // If there was an InventoryAdjustment table, we would also create a record here using db.$transaction.

@@ -7,6 +7,7 @@ import {
 } from "@/schemas/collection-schema"
 
 import { db } from "@/lib/prisma"
+import { logCollectionActivity } from "@/lib/activity-log"
 
 export const runtime = "nodejs"
 
@@ -86,6 +87,12 @@ export async function POST(req: Request) {
 
     const collection = await db.collection.create({
       data: parsed.data as Prisma.CollectionUncheckedCreateInput,
+    })
+
+    await logCollectionActivity({
+      action: "collection_created",
+      collection: { id: collection.id, name: collection.name },
+      after: collection,
     })
 
     return NextResponse.json(collection, { status: 201 })

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import { ProductBulkActionSchema } from "@/schemas/product-schema"
 
 import { db } from "@/lib/prisma"
+import { logBulkProductActivity } from "@/lib/activity-log"
 
 export const runtime = "nodejs"
 
@@ -31,17 +32,34 @@ export async function POST(req: Request) {
           where: { id: { in: data.ids } },
           data: { status: data.status },
         })
+        await logBulkProductActivity({
+          action: "product_bulk_status_updated",
+          ids: data.ids,
+          count: data.ids.length,
+          metadata: { status: data.status },
+        })
         break
       case "delete":
         await db.product.updateMany({
           where: { id: { in: data.ids } },
           data: { deletedAt: new Date() },
         })
+        await logBulkProductActivity({
+          action: "product_bulk_deleted",
+          ids: data.ids,
+          count: data.ids.length,
+        })
         break
       case "assignCollection":
         await db.product.updateMany({
           where: { id: { in: data.ids } },
           data: { collectionId: data.collectionId },
+        })
+        await logBulkProductActivity({
+          action: "product_bulk_collection_assigned",
+          ids: data.ids,
+          count: data.ids.length,
+          metadata: { collectionId: data.collectionId },
         })
         break
       case "addTags":
@@ -71,6 +89,15 @@ export async function POST(req: Request) {
               data: { tags: currentTags },
             })
           }
+        })
+        await logBulkProductActivity({
+          action:
+            data.action === "addTags"
+              ? "product_bulk_tags_added"
+              : "product_bulk_tags_removed",
+          ids: data.ids,
+          count: data.ids.length,
+          metadata: { tags: data.tags },
         })
         break
       default:

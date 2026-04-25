@@ -4,6 +4,7 @@ import { Prisma } from "@/generated/client"
 import { CollectionUpdateSchema } from "@/schemas/collection-schema"
 
 import { db } from "@/lib/prisma"
+import { logCollectionActivity } from "@/lib/activity-log"
 
 export const runtime = "nodejs"
 
@@ -88,6 +89,13 @@ export async function PATCH(
       data: parsed.data as Prisma.CollectionUncheckedUpdateInput,
     })
 
+    await logCollectionActivity({
+      action: "collection_updated",
+      collection: { id: updatedCollection.id, name: updatedCollection.name },
+      before: collection,
+      after: updatedCollection,
+    })
+
     return NextResponse.json(updatedCollection)
   } catch (error) {
     if (
@@ -131,6 +139,11 @@ export async function DELETE(
     await db.collection.update({
       where: { id },
       data: { deletedAt: new Date() },
+    })
+
+    await logCollectionActivity({
+      action: "collection_deleted",
+      collection: { id: collection.id, name: collection.name },
     })
 
     return NextResponse.json({ message: "Collection deleted successfully." })

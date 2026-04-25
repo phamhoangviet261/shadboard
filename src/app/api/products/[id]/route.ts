@@ -3,6 +3,7 @@ import { Prisma } from "@/generated/client"
 
 import { ProductUpdateSchema } from "@/schemas/product-schema"
 
+import { logProductActivity } from "@/lib/activity-log"
 import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
@@ -90,6 +91,13 @@ export async function PATCH(
       data: parsed.data as Prisma.ProductUncheckedUpdateInput,
     })
 
+    await logProductActivity({
+      action: "product_updated",
+      product: { id: updatedProduct.id, name: updatedProduct.name },
+      before: product,
+      after: updatedProduct,
+    })
+
     return NextResponse.json(updatedProduct)
   } catch (error) {
     if (
@@ -133,6 +141,11 @@ export async function DELETE(
     await db.product.update({
       where: { id },
       data: { deletedAt: new Date() },
+    })
+
+    await logProductActivity({
+      action: "product_deleted",
+      product: { id: product.id, name: product.name },
     })
 
     return NextResponse.json({ message: "Product deleted successfully." })

@@ -154,3 +154,25 @@ model Collection {
   @@index([isFeatured])
   @@index([sortOrder])
 }
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  action     String
+  entityType String // product | collection | inventory | bulk_action
+  entityId   String?
+  entityName String?
+  actorId    String?
+  actorEmail String?
+  metadata   Json?
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([actorId])
+  @@index([createdAt])
+}

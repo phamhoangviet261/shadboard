@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import type { Prisma } from "@/generated/client"
 
 import { db } from "@/lib/prisma"
+import { logProductActivity } from "@/lib/activity-log"
 import { generateUniqueSku, generateUniqueSlug } from "@/lib/product-utils"
 
 export const runtime = "nodejs"
@@ -62,6 +63,13 @@ export async function POST(
         sku: uniqueSku,
         status: "draft",
       } as Prisma.ProductUncheckedCreateInput,
+    })
+
+    await logProductActivity({
+      action: "product_duplicated",
+      product: { id: duplicatedProduct.id, name: duplicatedProduct.name },
+      metadata: { originalId: id },
+      after: duplicatedProduct,
     })
 
     return NextResponse.json(duplicatedProduct, { status: 201 })
