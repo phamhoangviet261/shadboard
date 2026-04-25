@@ -300,10 +300,14 @@ export function ProductManagementTable({
                           {product.stockQuantity} in stock
                         </span>
                         {product.stockQuantity <= 0 ? (
-                          <Badge variant="destructive" className="h-5 px-1 text-[10px]">
+                          <Badge
+                            variant="destructive"
+                            className="h-5 px-1 text-[10px]"
+                          >
                             Out of stock
                           </Badge>
-                        ) : product.stockQuantity <= product.lowStockThreshold ? (
+                        ) : product.stockQuantity <=
+                          product.lowStockThreshold ? (
                           <Badge
                             variant="secondary"
                             className="h-5 px-1 text-[10px] bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-200"

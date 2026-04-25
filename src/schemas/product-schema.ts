@@ -112,4 +112,6 @@ export type ProductCreateInput = z.infer<typeof ProductCreateSchema>
 export type ProductUpdateInput = z.infer<typeof ProductUpdateSchema>
 export type ProductQueryInput = z.infer<typeof ProductQuerySchema>
 export type ProductBulkActionInput = z.infer<typeof ProductBulkActionSchema>
-export type ProductStockAdjustmentInput = z.infer<typeof ProductStockAdjustmentSchema>
+export type ProductStockAdjustmentInput = z.infer<
+  typeof ProductStockAdjustmentSchema
+>

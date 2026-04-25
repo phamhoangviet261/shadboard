@@ -3,14 +3,13 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
-import {
-  ProductStockAdjustmentSchema,
-  type ProductStockAdjustmentInput,
-} from "@/schemas/product-schema"
+import type { ProductStockAdjustmentInput } from "@/schemas/product-schema"
+
+import { ProductStockAdjustmentSchema } from "@/schemas/product-schema"
 
 import { api } from "@/lib/api-client"
 
@@ -232,7 +231,10 @@ export function ProductStockAdjustmentDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting || projectedStock < 0}>
+              <Button
+                type="submit"
+                disabled={isSubmitting || projectedStock < 0}
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 
-import { db } from "@/lib/prisma"
 import { ProductStockAdjustmentSchema } from "@/schemas/product-schema"
+
+import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 
