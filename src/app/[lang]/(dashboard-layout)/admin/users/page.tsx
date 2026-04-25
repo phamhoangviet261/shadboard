@@ -2,6 +2,7 @@ import type { Prisma } from "@/generated/client"
 import type { Metadata } from "next"
 
 import { UserQuerySchema } from "@/schemas/user-schema"
+
 import { authenticateUser } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 

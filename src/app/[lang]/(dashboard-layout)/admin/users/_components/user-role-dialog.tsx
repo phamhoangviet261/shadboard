@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { toast } from "sonner"
 import { UserRole } from "@/generated/client"
+import { toast } from "sonner"
 
 import {
   AlertDialog,
@@ -14,6 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -21,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
 
 interface UserRoleDialogProps {
   user: {
@@ -67,7 +67,9 @@ export function UserRoleDialog({
       onSuccess()
       onOpenChange(false)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update role")
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update role"
+      )
     } finally {
       setIsLoading(false)
     }
@@ -79,13 +81,17 @@ export function UserRoleDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Change User Role</AlertDialogTitle>
           <AlertDialogDescription>
-            Select a new role for <strong>{user.name}</strong>. This will change their permissions immediately.
+            Select a new role for <strong>{user.name}</strong>. This will change
+            their permissions immediately.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="py-4">
           <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
-            <Select value={role} onValueChange={(val) => setRole(val as UserRole)}>
+            <Select
+              value={role}
+              onValueChange={(val) => setRole(val as UserRole)}
+            >
               <SelectTrigger id="role">
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
@@ -100,10 +106,13 @@ export function UserRoleDialog({
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={(e) => {
-            e.preventDefault()
-            handleUpdate()
-          }} disabled={isLoading}>
+          <AlertDialogAction
+            onClick={(e) => {
+              e.preventDefault()
+              handleUpdate()
+            }}
+            disabled={isLoading}
+          >
             {isLoading ? "Updating..." : "Update Role"}
           </AlertDialogAction>
         </AlertDialogFooter>

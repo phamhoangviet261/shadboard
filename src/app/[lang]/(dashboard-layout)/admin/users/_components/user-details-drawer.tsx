@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react"
 import { format } from "date-fns"
-import { User, Shield, Mail, Calendar, Clock, Activity } from "lucide-react"
+import { Activity, Calendar, Clock, Mail, Shield, User } from "lucide-react"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
   SheetContent,
@@ -11,15 +15,31 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 
 interface UserDetailsDrawerProps {
-  user: any | null
+  user: UserDetails | null
   open: boolean
   onOpenChange: (open: boolean) => void
+}
+
+interface UserDetails {
+  id: string
+  name: string
+  email: string
+  role: string
+  status: string
+  avatar: string | null
+  createdAt: string
+  updatedAt: string
+  lastLoginAt: string | null
+}
+
+interface ActivityLogPreview {
+  id: string
+  action: string
+  entityName: string | null
+  entityType: string
+  createdAt: string
 }
 
 export function UserDetailsDrawer({
@@ -27,7 +47,7 @@ export function UserDetailsDrawer({
   open,
   onOpenChange,
 }: UserDetailsDrawerProps) {
-  const [logs, setLogs] = useState<any[]>([])
+  const [logs, setLogs] = useState<ActivityLogPreview[]>([])
   const [isLoadingLogs, setIsLoadingLogs] = useState(false)
 
   useEffect(() => {
@@ -35,10 +55,14 @@ export function UserDetailsDrawer({
       const fetchLogs = async () => {
         try {
           setIsLoadingLogs(true)
-          const response = await fetch(`/api/activity-logs?actorId=${user.id}&limit=10`)
-          const data = await response.json()
+          const response = await fetch(
+            `/api/activity-logs?actorId=${user.id}&limit=10`
+          )
+          const data = (await response.json()) as {
+            data?: ActivityLogPreview[]
+          }
           if (response.ok) {
-            setLogs(data.data || [])
+            setLogs(data.data ?? [])
           }
         } catch (error) {
           console.error("Failed to fetch logs:", error)
@@ -66,8 +90,10 @@ export function UserDetailsDrawer({
           <div className="flex flex-col gap-6 py-6">
             <div className="flex flex-col items-center gap-4 text-center">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user.avatar} />
-                <AvatarFallback className="text-2xl">{user.name?.[0]}</AvatarFallback>
+                <AvatarImage src={user.avatar ?? undefined} />
+                <AvatarFallback className="text-2xl">
+                  {user.name?.[0]}
+                </AvatarFallback>
               </Avatar>
               <div className="space-y-1">
                 <h3 className="text-xl font-semibold">{user.name}</h3>
@@ -75,7 +101,9 @@ export function UserDetailsDrawer({
               </div>
               <div className="flex gap-2">
                 <Badge variant="outline">{user.role}</Badge>
-                <Badge variant={user.status === "ACTIVE" ? "default" : "destructive"}>
+                <Badge
+                  variant={user.status === "ACTIVE" ? "default" : "destructive"}
+                >
                   {user.status}
                 </Badge>
               </div>
@@ -109,7 +137,11 @@ export function UserDetailsDrawer({
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Last Login:</span>
-                  <span>{user.lastLoginAt ? format(new Date(user.lastLoginAt), "PPP HH:mm") : "Never"}</span>
+                  <span>
+                    {user.lastLoginAt
+                      ? format(new Date(user.lastLoginAt), "PPP HH:mm")
+                      : "Never"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -121,9 +153,11 @@ export function UserDetailsDrawer({
                 <h4 className="text-sm font-medium">Recent Activity</h4>
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </div>
-              
+
               {isLoadingLogs ? (
-                <div className="py-4 text-center text-sm text-muted-foreground">Loading activity...</div>
+                <div className="py-4 text-center text-sm text-muted-foreground">
+                  Loading activity...
+                </div>
               ) : logs.length > 0 ? (
                 <div className="relative space-y-4 before:absolute before:left-2 before:top-2 before:h-[calc(100%-16px)] before:w-[2px] before:bg-muted">
                   {logs.map((log) => (
@@ -131,7 +165,9 @@ export function UserDetailsDrawer({
                       <div className="absolute left-0 top-1.5 h-4 w-4 rounded-full border-2 border-background bg-primary shadow-sm" />
                       <div className="grid gap-1">
                         <div className="text-sm font-medium leading-none">
-                          {log.action.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}
+                          {log.action
+                            .replace(/_/g, " ")
+                            .replace(/\b\w/g, (c: string) => c.toUpperCase())}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {log.entityName || log.entityType}

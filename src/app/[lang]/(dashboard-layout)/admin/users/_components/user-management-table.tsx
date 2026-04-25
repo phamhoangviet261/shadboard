@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { format } from "date-fns"
-import { Search } from "lucide-react"
-import { useDebounce } from "react-use"
-
 import { UserRole } from "@/generated/client"
+import { format } from "date-fns"
+import { useDebounce } from "react-use"
+import { Search } from "lucide-react"
+
 import type { PaginationInfo } from "@/types"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -35,7 +35,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
 import { UserDetailsDrawer } from "./user-details-drawer"
 import { UserRoleDialog } from "./user-role-dialog"
 import { UserStatusDialog } from "./user-status-dialog"

@@ -51,11 +51,15 @@ export function UserStatusDialog({
         throw new Error(data.message || "Failed to update status")
       }
 
-      toast.success(`${isEnabling ? "Enabled" : "Disabled"} ${user.name}'s account`)
+      toast.success(
+        `${isEnabling ? "Enabled" : "Disabled"} ${user.name}'s account`
+      )
       onSuccess()
       onOpenChange(false)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update status")
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update status"
+      )
     } finally {
       setIsLoading(false)
     }
@@ -69,8 +73,10 @@ export function UserStatusDialog({
             {isEnabling ? "Enable Account" : "Disable Account"}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to {isEnabling ? "enable" : "disable"} <strong>{user.name}</strong>'s account?
-            {!isEnabling && " When disabled, they will no longer be able to access protected admin features."}
+            Are you sure you want to {isEnabling ? "enable" : "disable"}{" "}
+            <strong>{user.name}</strong>&apos;s account?
+            {!isEnabling &&
+              " When disabled, they will no longer be able to access protected admin features."}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -81,9 +87,17 @@ export function UserStatusDialog({
               handleUpdate()
             }}
             disabled={isLoading}
-            className={!isEnabling ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+            className={
+              !isEnabling
+                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                : ""
+            }
           >
-            {isLoading ? "Processing..." : isEnabling ? "Enable Account" : "Disable Account"}
+            {isLoading
+              ? "Processing..."
+              : isEnabling
+                ? "Enable Account"
+                : "Disable Account"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

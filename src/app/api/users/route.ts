@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+
 import type { Prisma } from "@/generated/client"
 
 import { UserQuerySchema } from "@/schemas/user-schema"
