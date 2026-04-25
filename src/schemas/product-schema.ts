@@ -38,7 +38,7 @@ export const ProductCreateSchema = z.object({
   brand: z.string().optional(),
   tags: z.array(z.string()).optional(),
   metadata: z.record(z.any()).optional(),
-  collectionId: z.string().uuid().optional().nullable(),
+  collectionId: z.string().min(1).optional().nullable(),
 
   // Eyewear specific
   colors: z.array(ColorVariantSchema).optional(),
