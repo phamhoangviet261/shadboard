@@ -6,16 +6,74 @@ import { db } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url)
+function getPaginationResponse({
+  data = [],
+  page,
+  limit,
+  total = 0,
+}: {
+  data?: unknown[]
+  page: number
+  limit: number
+  total?: number
+}) {
+  const totalPages = Math.max(1, Math.ceil(total / limit))
 
-    // Pagination
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1"))
-    const limit = Math.min(
-      100,
-      Math.max(1, parseInt(searchParams.get("limit") || "20"))
-    )
+  return {
+    data,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  }
+}
+
+function getPrismaErrorCode(error: unknown) {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    typeof error.code === "string"
+  ) {
+    return error.code
+  }
+
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "errorCode" in error &&
+    typeof error.errorCode === "string"
+  ) {
+    return error.errorCode
+  }
+
+  if (error instanceof Error) {
+    const match = error.message.match(/\bP\d{4}\b/u)
+
+    return match?.[0] ?? null
+  }
+
+  return null
+}
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const pageParam = Number.parseInt(searchParams.get("page") || "1", 10)
+  const limitParam = Number.parseInt(searchParams.get("limit") || "20", 10)
+  const page = Number.isFinite(pageParam) ? Math.max(1, pageParam) : 1
+  const limit = Number.isFinite(limitParam)
+    ? Math.min(100, Math.max(1, limitParam))
+    : 20
+
+  try {
+    if (!db.activityLog) {
+      return NextResponse.json(getPaginationResponse({ page, limit }))
+    }
+
     const skip = (page - 1) * limit
 
     // Filters
@@ -26,9 +84,8 @@ export async function GET(req: Request) {
     const q = searchParams.get("q")
     const from = searchParams.get("from")
     const to = searchParams.get("to")
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as
-      | "asc"
-      | "desc"
+    const sortOrderParam = searchParams.get("sortOrder")
+    const sortOrder = sortOrderParam === "asc" ? "asc" : "desc"
 
     const where: Prisma.ActivityLogWhereInput = {}
 
@@ -63,19 +120,22 @@ export async function GET(req: Request) {
       }),
     ])
 
-    return NextResponse.json({
-      data: logs,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-        hasNextPage: page < Math.ceil(total / limit),
-        hasPreviousPage: page > 1,
-      },
-    })
+    return NextResponse.json(
+      getPaginationResponse({ data: logs, page, limit, total })
+    )
   } catch (error) {
     console.error("Error fetching activity logs:", error)
+
+    const errorCode = getPrismaErrorCode(error)
+
+    if (
+      errorCode === "P1001" ||
+      errorCode === "P2021" ||
+      errorCode === "P2022"
+    ) {
+      return NextResponse.json(getPaginationResponse({ page, limit }))
+    }
+
     return NextResponse.json(
       { message: "Unable to fetch activity logs." },
       { status: 500 }
