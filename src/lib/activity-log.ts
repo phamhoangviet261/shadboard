@@ -1,7 +1,5 @@
 import { headers } from "next/headers"
 
-import type { Prisma } from "@/generated/client"
-
 import { db } from "@/lib/prisma"
 
 export type ActivityEntityType =
@@ -26,25 +24,41 @@ export interface ActivityLogInput {
  * Core helper to create an activity log entry
  */
 export async function createActivityLog(input: ActivityLogInput) {
+  console.log("[ActivityLog] Creating log for action:", input.action)
   try {
-    const headersList = await headers()
-    const ipAddress =
-      headersList.get("x-forwarded-for") || headersList.get("x-real-ip")
-    const userAgent = headersList.get("user-agent")
+    let ipAddress: string | null = null
+    let userAgent: string | null = null
 
-    return await db.activityLog.create({
+    try {
+      const headersList = await headers()
+      ipAddress =
+        headersList.get("x-forwarded-for") || headersList.get("x-real-ip")
+      userAgent = headersList.get("user-agent")
+    } catch (headerError) {
+      console.warn("[ActivityLog] Failed to get headers:", headerError)
+    }
+
+    const log = await db.activityLog.create({
       data: {
         ...input,
-        metadata: (input.metadata as Prisma.InputJsonValue) || undefined,
-        before: (input.before as Prisma.InputJsonValue) || undefined,
-        after: (input.after as Prisma.InputJsonValue) || undefined,
+        metadata: input.metadata
+          ? JSON.parse(JSON.stringify(input.metadata))
+          : undefined,
+        before: input.before
+          ? JSON.parse(JSON.stringify(input.before))
+          : undefined,
+        after: input.after
+          ? JSON.parse(JSON.stringify(input.after))
+          : undefined,
         ipAddress,
         userAgent,
       },
     })
+    console.log("[ActivityLog] Log created successfully:", log.id)
+    return log
   } catch (error) {
     // We don't want activity logging to crash the main process
-    console.error("Failed to create activity log:", error)
+    console.error("[ActivityLog] Failed to create activity log:", error)
     return null
   }
 }
