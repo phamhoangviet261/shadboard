@@ -15,6 +15,7 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --ignore-path .gitignore --write .",
     "migrate": "pnpm exec prisma migrate dev",
+    "db:seed": "prisma db seed",
     "postinstall": "prisma generate"
   },
   "engines": {

@@ -42,3 +42,37 @@ Giao diện người dùng được bảo vệ bằng hook `usePermission`. Các
 
 ## Nhật ký Hoạt động (Audit Logs)
 Mọi hành động quản trị đều được ghi lại với trường `actorRole`, đảm bảo khả năng kiểm tra đầy đủ về người đã thực hiện hành động nào và dưới vai trò nào.
+
+## Tài khoản Kiểm thử (Phát triển)
+
+> [!WARNING]
+> Những tài khoản này chỉ dành cho mục đích **kiểm thử cục bộ/phát triển**. Tuyệt đối không sử dụng trong môi trường sản xuất (production).
+
+### Thông tin Đăng nhập
+
+| Vai trò | Email | Mật khẩu |
+| :--- | :--- | :--- |
+| **Admin** | `admin@vietpham.com` | `Admin@123456` |
+| **Manager** | `manager@vietpham.com` | `Manager@123456` |
+| **Editor** | `editor@vietpham.com` | `Editor@123456` |
+| **Viewer** | `viewer@vietpham.com` | `Viewer@123456` |
+
+### Khởi tạo Dữ liệu (Seeding)
+
+Để thêm hoặc cập nhật các tài khoản kiểm thử này vào cơ sở dữ liệu cục bộ của bạn, hãy chạy lệnh:
+
+```bash
+pnpm db:seed
+```
+
+Lệnh này sử dụng `prisma/seed.ts` để băm mật khẩu bảo mật và cập nhật (upsert) hồ sơ người dùng.
+
+## Hướng dẫn Kiểm tra Thủ công
+
+1.  **Chạy lệnh seed**: `pnpm db:seed`
+2.  **Đăng nhập**: Sử dụng thông tin đăng nhập ở trên tại màn hình đăng nhập.
+3.  **Kiểm tra Quyền hạn**:
+    - Với vai trò **Viewer**, thử truy cập trang "Phân tích" (Analytics) (sẽ bị chặn).
+    - Với vai trò **Editor**, thử xóa một sản phẩm (nút xóa sẽ bị ẩn hoặc vô hiệu hóa).
+    - Với vai trò **Manager**, thử điều chỉnh kho hàng trong tab Inventory.
+    - Với vai trò **Admin**, xác nhận toàn quyền truy cập nhật ký và cài đặt.

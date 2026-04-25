@@ -42,3 +42,37 @@ The UI is protected using the `usePermission` hook. Restricted buttons are hidde
 
 ## Audit Logs
 Every administrative action is logged with the `actorRole` field, ensuring a complete audit trail of who did what and under which role.
+
+## Development Test Accounts
+
+> [!WARNING]
+> These accounts are for **local/development testing only**. Do not use these in a production environment.
+
+### Test Credentials
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Admin** | `admin@vietpham.com` | `Admin@123456` |
+| **Manager** | `manager@vietpham.com` | `Manager@123456` |
+| **Editor** | `editor@vietpham.com` | `Editor@123456` |
+| **Viewer** | `viewer@vietpham.com` | `Viewer@123456` |
+
+### Database Seeding
+
+To insert or update these test accounts in your local database, run:
+
+```bash
+pnpm db:seed
+```
+
+This command uses `prisma/seed.ts` to securely hash passwords and upsert user records.
+
+## Manual Testing Guide
+
+1.  **Run the seed command**: `pnpm db:seed`
+2.  **Login**: Use the credentials above at the login screen.
+3.  **Verify Permissions**: 
+    - As **Viewer**, try to access the "Analytics" page (should be blocked).
+    - As **Editor**, try to delete a product (the delete button should be hidden or disabled).
+    - As **Manager**, try to adjust stock in the Inventory tab.
+    - As **Admin**, verify full access to all logs and settings.
