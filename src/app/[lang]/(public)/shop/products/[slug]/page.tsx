@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 
-import { productsData } from "@/data/lensora/products"
+import { db } from "@/lib/prisma"
 
 import { Badge } from "@/components/ui/badge"
 import { ProductDetailsForm } from "./_components/product-details-form"
@@ -18,8 +19,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const product = productsData.find((p) => p.slug === slug)
-  if (!product) return {}
+  const product = await db.product.findUnique({ where: { slug } })
+  if (!product || product.deletedAt) return {}
   return {
     title: product.seoTitle || `${product.name} — Lensora`,
     description: product.seoDescription || product.description || "",
@@ -27,33 +28,59 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  return productsData
-    .filter((p) => p.status === "published")
-    .map((p) => ({ slug: p.slug }))
+  const products = await db.product.findMany({
+    where: { status: "published", deletedAt: null },
+    select: { slug: true },
+  })
+  return products.map((p) => ({ slug: p.slug }))
 }
 
 export default async function ProductDetailPage({ params }: Props) {
   const { lang, slug } = await params
-  const product = productsData.find((p) => p.slug === slug)
+  const product = await db.product.findUnique({
+    where: { slug },
+  })
 
-  if (!product || product.status !== "published") {
+  if (!product || product.status !== "published" || product.deletedAt) {
     notFound()
   }
 
-  const relatedProducts = productsData
-    .filter(
-      (p) =>
-        p.collectionId === product.collectionId &&
-        p.id !== product.id &&
-        p.status === "published"
+  let relatedProducts: any[] = []
+  if (product.collectionId) {
+    relatedProducts = await db.product.findMany({
+      where: {
+        collectionId: product.collectionId,
+        id: { not: product.id },
+        status: "published",
+        deletedAt: null,
+      },
+      take: 4,
+    })
+  }
+
+  const serializedProduct = JSON.parse(
+    JSON.stringify(product, (key, value) =>
+      typeof value === "object" && value?.constructor?.name === "Decimal"
+        ? Number(value)
+        : value
     )
-    .slice(0, 4)
+  )
+
+  const serializedRelatedProducts = JSON.parse(
+    JSON.stringify(relatedProducts, (key, value) =>
+      typeof value === "object" && value?.constructor?.name === "Decimal"
+        ? Number(value)
+        : value
+    )
+  )
 
   const hasDiscount =
-    product.compareAtPrice && product.compareAtPrice > product.price
+    serializedProduct.compareAtPrice &&
+    serializedProduct.compareAtPrice > serializedProduct.price
   const discountPercent = hasDiscount
     ? Math.round(
-        ((product.compareAtPrice! - product.price) / product.compareAtPrice!) *
+        ((serializedProduct.compareAtPrice! - serializedProduct.price) /
+          serializedProduct.compareAtPrice!) *
           100
       )
     : 0
@@ -64,14 +91,14 @@ export default async function ProductDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16 items-start">
         {/* Gallery */}
         <div className="lg:sticky lg:top-24">
-          <ProductGallery images={product.images || []} />
+          <ProductGallery images={serializedProduct.images || []} />
         </div>
 
         {/* Info */}
         <div className="space-y-8 max-w-lg">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              {product.isFeatured && (
+              {serializedProduct.isFeatured && (
                 <Badge variant="secondary" className="text-xs">
                   Featured
                 </Badge>
@@ -83,34 +110,36 @@ export default async function ProductDetailPage({ params }: Props) {
               )}
             </div>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
-              {product.name}
+              {serializedProduct.name}
             </h1>
             <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold">${product.price}</span>
+              <span className="text-2xl font-bold">
+                ${serializedProduct.price}
+              </span>
               {hasDiscount && (
                 <span className="text-lg text-muted-foreground line-through">
-                  ${product.compareAtPrice}
+                  ${serializedProduct.compareAtPrice}
                 </span>
               )}
             </div>
           </div>
 
           <p className="text-base text-muted-foreground leading-relaxed">
-            {product.description || ""}
+            {serializedProduct.description || ""}
           </p>
 
-          <ProductDetailsForm product={product} />
+          <ProductDetailsForm product={serializedProduct as any} />
 
           {/* Accordions */}
           <div className="pt-4 border-t border-border">
-            {product.specs && (
+            {serializedProduct.specs && (
               <FrameSpecs
-                specs={product.specs}
-                frameMaterial={product.frameMaterial || ""}
-                frameShape={product.frameShape || ""}
-                lensType={product.lensType || ""}
-                faceFit={product.faceFit || ""}
-                gender={product.gender || ""}
+                specs={serializedProduct.specs}
+                frameMaterial={serializedProduct.frameMaterial || ""}
+                frameShape={serializedProduct.frameShape || ""}
+                lensType={serializedProduct.lensType || ""}
+                faceFit={serializedProduct.faceFit || ""}
+                gender={serializedProduct.gender || ""}
               />
             )}
           </div>
@@ -118,7 +147,7 @@ export default async function ProductDetailPage({ params }: Props) {
       </div>
 
       {/* Related Products */}
-      {relatedProducts.length > 0 && (
+      {serializedRelatedProducts.length > 0 && (
         <section>
           <div className="flex items-end justify-between mb-8">
             <h2 className="text-2xl font-bold tracking-tight">
@@ -132,7 +161,7 @@ export default async function ProductDetailPage({ params }: Props) {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((p) => (
+            {serializedRelatedProducts.map((p: any) => (
               <ProductCard key={p.id} product={p} lang={lang} />
             ))}
           </div>
