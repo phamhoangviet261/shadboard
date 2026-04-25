@@ -4,6 +4,7 @@ import React from "react"
 
 import type { Permission } from "@/lib/permissions"
 
+import { useMe } from "@/hooks/use-me"
 import { usePermission } from "@/hooks/use-permission"
 
 interface PermissionGateProps {
@@ -23,7 +24,8 @@ export function PermissionGate({
   children,
 }: PermissionGateProps) {
   const { canAny, isLoading } = usePermission()
-
+  const me = useMe()
+  console.log("Current user:", me)
   if (isLoading) return null
 
   if (permission) {
