@@ -43,9 +43,18 @@ interface LogEntry {
   metadata: Record<string, unknown> | null
 }
 
+interface ActivityLogsResponse {
+  data?: LogEntry[]
+  pagination?: {
+    totalPages?: number
+  }
+  message?: string
+}
+
 export default function ActivityLogPage() {
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [search, setSearch] = useState("")
@@ -53,17 +62,31 @@ export default function ActivityLogPage() {
 
   const fetchLogs = useCallback(async () => {
     setLoading(true)
+    setError(null)
+
     try {
       let url = `/api/activity-logs?page=${page}&limit=15`
       if (search) url += `&q=${encodeURIComponent(search)}`
       if (entityType !== "all") url += `&entityType=${entityType}`
 
       const res = await fetch(url)
-      const data = await res.json()
-      setLogs(data.data)
-      setTotalPages(data.pagination.totalPages)
+      const data = (await res.json()) as ActivityLogsResponse
+
+      if (!res.ok) {
+        throw new Error(data.message || "Unable to fetch activity logs.")
+      }
+
+      setLogs(Array.isArray(data.data) ? data.data : [])
+      setTotalPages(Math.max(1, data.pagination?.totalPages ?? 1))
     } catch (error) {
       console.error("Failed to fetch logs:", error)
+      setLogs([])
+      setTotalPages(1)
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch activity logs."
+      )
     } finally {
       setLoading(false)
     }
@@ -201,6 +224,15 @@ export default function ActivityLogPage() {
                     ))}
                   </TableRow>
                 ))
+              ) : error ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="h-32 text-center text-destructive"
+                  >
+                    {error}
+                  </TableCell>
+                </TableRow>
               ) : logs.length === 0 ? (
                 <TableRow>
                   <TableCell
