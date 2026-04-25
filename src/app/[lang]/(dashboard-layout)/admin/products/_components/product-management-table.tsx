@@ -17,6 +17,7 @@ import type {
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +49,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { ProductBulkActionsToolbar } from "./product-bulk-actions-toolbar"
 import { ProductDeleteDialog } from "./product-delete-dialog"
 import { ProductDuplicateDialog } from "./product-duplicate-dialog"
 
@@ -87,6 +89,7 @@ export function ProductManagementTable({
     id: string
     name: string
   } | null>(null)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   useDebounce(
     () => {
@@ -125,8 +128,19 @@ export function ProductManagementTable({
     }
   }, [debouncedSearch, pathname, router, createQueryString, searchParams])
 
+  // Clear selection when filters or pagination change
+  useEffect(() => {
+    setSelectedIds([])
+  }, [searchParams, pathname])
+
   return (
     <div className="space-y-4">
+      <ProductBulkActionsToolbar
+        selectedIds={selectedIds}
+        collections={collections}
+        onClearSelection={() => setSelectedIds([])}
+        onSuccess={() => router.refresh()}
+      />
       <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-sm sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -177,6 +191,22 @@ export function ProductManagementTable({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[50px]">
+                <Checkbox
+                  checked={
+                    products.length > 0 &&
+                    selectedIds.length === products.length
+                  }
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedIds(products.map((p) => p.id))
+                    } else {
+                      setSelectedIds([])
+                    }
+                  }}
+                  aria-label="Select all"
+                />
+              </TableHead>
               <TableHead className="w-[80px]">Image</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Status</TableHead>
@@ -191,6 +221,21 @@ export function ProductManagementTable({
               products.map((product) => {
                 return (
                   <TableRow key={product.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.includes(product.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedIds((prev) => [...prev, product.id])
+                          } else {
+                            setSelectedIds((prev) =>
+                              prev.filter((id) => id !== product.id)
+                            )
+                          }
+                        }}
+                        aria-label={`Select ${product.name}`}
+                      />
+                    </TableCell>
                     <TableCell>
                       <div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted">
                         <Image
@@ -299,7 +344,7 @@ export function ProductManagementTable({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="h-32 text-center">
+                <TableCell colSpan={8} className="h-32 text-center">
                   <p className="font-medium">No products found</p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     Adjust the search term or status filter.

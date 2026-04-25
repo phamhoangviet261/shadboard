@@ -3,14 +3,13 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Copy } from "lucide-react"
+
+import type { LocaleType, ProductType } from "@/types"
 
 import { api } from "@/lib/api-client"
-import { LocaleType, ProductType } from "@/types"
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -46,7 +45,7 @@ export function ProductDuplicateDialog({
       )
       toast.success("Product duplicated successfully")
       onOpenChange(false)
-      
+
       // Redirect to edit page of the new product
       router.push(`/${lang}/admin/products/${newProduct.id}/edit`)
       router.refresh()
@@ -66,10 +65,9 @@ export function ProductDuplicateDialog({
           <AlertDialogTitle>Duplicate product?</AlertDialogTitle>
           <AlertDialogDescription>
             This will create a new draft product with copied data from{" "}
-            <span className="font-semibold text-foreground">
-              {productName}
-            </span>
-            . The slug and SKU will be automatically regenerated to ensure uniqueness.
+            <span className="font-semibold text-foreground">{productName}</span>
+            . The slug and SKU will be automatically regenerated to ensure
+            uniqueness.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

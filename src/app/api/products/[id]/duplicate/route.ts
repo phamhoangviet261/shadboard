@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
-import { Prisma } from "@/generated/client"
+
+import type { Prisma } from "@/generated/client"
+
 import { db } from "@/lib/prisma"
-import { generateUniqueSlug, generateUniqueSku } from "@/lib/product-utils"
+import { generateUniqueSku, generateUniqueSlug } from "@/lib/product-utils"
 
 export const runtime = "nodejs"
 
@@ -29,7 +31,7 @@ export async function POST(
 
     // 2. Prepare duplicated data
     const newName = `${originalProduct.name} Copy`
-    
+
     // Generate unique slug based on new name
     const baseSlug = newName
       .toLowerCase()
@@ -38,7 +40,9 @@ export async function POST(
     const uniqueSlug = await generateUniqueSlug(baseSlug)
 
     // Generate unique SKU
-    const baseSku = originalProduct.sku ? `${originalProduct.sku}-COPY` : `SKU-${Date.now()}-COPY`
+    const baseSku = originalProduct.sku
+      ? `${originalProduct.sku}-COPY`
+      : `SKU-${Date.now()}-COPY`
     const uniqueSku = await generateUniqueSku(baseSku)
 
     // 3. Create new product (excluding protected fields)

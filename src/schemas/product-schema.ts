@@ -73,6 +73,34 @@ export const ProductQuerySchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 })
 
+export const ProductBulkActionSchema = z.discriminatedUnion("action", [
+  z.object({
+    action: z.literal("updateStatus"),
+    ids: z.array(z.string().min(1)).min(1),
+    status: ProductStatusSchema,
+  }),
+  z.object({
+    action: z.literal("delete"),
+    ids: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    action: z.literal("assignCollection"),
+    ids: z.array(z.string().min(1)).min(1),
+    collectionId: z.string().min(1).nullable(),
+  }),
+  z.object({
+    action: z.literal("addTags"),
+    ids: z.array(z.string().min(1)).min(1),
+    tags: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    action: z.literal("removeTags"),
+    ids: z.array(z.string().min(1)).min(1),
+    tags: z.array(z.string().min(1)).min(1),
+  }),
+])
+
 export type ProductCreateInput = z.infer<typeof ProductCreateSchema>
 export type ProductUpdateInput = z.infer<typeof ProductUpdateSchema>
 export type ProductQueryInput = z.infer<typeof ProductQuerySchema>
+export type ProductBulkActionInput = z.infer<typeof ProductBulkActionSchema>
