@@ -63,6 +63,7 @@ export const ProductQuerySchema = z.object({
   limit: z.coerce.number().int().positive().default(10),
   q: z.string().optional(),
   status: ProductStatusSchema.optional(),
+  stockStatus: z.enum(["in_stock", "low_stock", "out_of_stock"]).optional(),
   collectionId: z.string().optional(),
   minPrice: z.coerce.number().nonnegative().optional(),
   maxPrice: z.coerce.number().nonnegative().optional(),
@@ -100,7 +101,15 @@ export const ProductBulkActionSchema = z.discriminatedUnion("action", [
   }),
 ])
 
+export const ProductStockAdjustmentSchema = z.object({
+  type: z.enum(["increase", "decrease", "set"]),
+  quantity: z.number().int().nonnegative(),
+  reason: z.string().min(1, "Reason is required"),
+  note: z.string().optional(),
+})
+
 export type ProductCreateInput = z.infer<typeof ProductCreateSchema>
 export type ProductUpdateInput = z.infer<typeof ProductUpdateSchema>
 export type ProductQueryInput = z.infer<typeof ProductQuerySchema>
 export type ProductBulkActionInput = z.infer<typeof ProductBulkActionSchema>
+export type ProductStockAdjustmentInput = z.infer<typeof ProductStockAdjustmentSchema>

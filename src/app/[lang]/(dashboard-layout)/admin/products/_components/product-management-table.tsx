@@ -52,6 +52,7 @@ import {
 import { ProductBulkActionsToolbar } from "./product-bulk-actions-toolbar"
 import { ProductDeleteDialog } from "./product-delete-dialog"
 import { ProductDuplicateDialog } from "./product-duplicate-dialog"
+import { ProductStockAdjustmentDialog } from "./product-stock-adjustment-dialog"
 
 interface ProductManagementTableProps {
   products: ProductType[]
@@ -88,6 +89,11 @@ export function ProductManagementTable({
   const [productToDuplicate, setProductToDuplicate] = useState<{
     id: string
     name: string
+  } | null>(null)
+  const [productToAdjustStock, setProductToAdjustStock] = useState<{
+    id: string
+    name: string
+    currentStock: number
   } | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
 
@@ -185,6 +191,22 @@ export function ProductManagementTable({
             ))}
           </SelectContent>
         </Select>
+        <Select
+          value={searchParams.get("stockStatus") || "all"}
+          onValueChange={(value) =>
+            onFilterChange("stockStatus", value === "all" ? null : value)
+          }
+        >
+          <SelectTrigger className="w-full sm:w-44">
+            <SelectValue placeholder="Stock Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All stock</SelectItem>
+            <SelectItem value="in_stock">In stock</SelectItem>
+            <SelectItem value="low_stock">Low stock</SelectItem>
+            <SelectItem value="out_of_stock">Out of stock</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
@@ -273,15 +295,23 @@ export function ProductManagementTable({
                       )}
                     </TableCell>
                     <TableCell>
-                      <span
-                        className={
-                          product.stockQuantity < product.lowStockThreshold
-                            ? "text-destructive"
-                            : ""
-                        }
-                      >
-                        {product.stockQuantity} in stock
-                      </span>
+                      <div className="flex flex-col items-start gap-1">
+                        <span className="font-medium">
+                          {product.stockQuantity} in stock
+                        </span>
+                        {product.stockQuantity <= 0 ? (
+                          <Badge variant="destructive" className="h-5 px-1 text-[10px]">
+                            Out of stock
+                          </Badge>
+                        ) : product.stockQuantity <= product.lowStockThreshold ? (
+                          <Badge
+                            variant="secondary"
+                            className="h-5 px-1 text-[10px] bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-200"
+                          >
+                            Low stock
+                          </Badge>
+                        ) : null}
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -324,6 +354,17 @@ export function ProductManagementTable({
                             }
                           >
                             Duplicate product
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setProductToAdjustStock({
+                                id: product.id,
+                                name: product.name,
+                                currentStock: product.stockQuantity,
+                              })
+                            }
+                          >
+                            Adjust stock
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
@@ -421,6 +462,16 @@ export function ProductManagementTable({
           lang={lang}
           open={!!productToDuplicate}
           onOpenChange={(open) => !open && setProductToDuplicate(null)}
+        />
+      )}
+
+      {productToAdjustStock && (
+        <ProductStockAdjustmentDialog
+          productId={productToAdjustStock.id}
+          productName={productToAdjustStock.name}
+          currentStock={productToAdjustStock.currentStock}
+          open={!!productToAdjustStock}
+          onOpenChange={(open) => !open && setProductToAdjustStock(null)}
         />
       )}
     </div>

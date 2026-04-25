@@ -31,6 +31,7 @@ export async function GET(req: Request) {
       tags,
       sortBy,
       sortOrder,
+      stockStatus,
     } = parsed.data
 
     const skip = (page - 1) * limit
@@ -67,6 +68,21 @@ export async function GET(req: Request) {
       const tagList = tags.split(",").map((t) => t.trim())
       where.tags = {
         hasSome: tagList,
+      }
+    }
+
+    if (stockStatus) {
+      if (stockStatus === "out_of_stock") {
+        where.stockQuantity = { lte: 0 }
+      } else if (stockStatus === "low_stock") {
+        where.stockQuantity = {
+          gt: 0,
+          lte: db.product.fields.lowStockThreshold,
+        }
+      } else if (stockStatus === "in_stock") {
+        where.stockQuantity = {
+          gt: db.product.fields.lowStockThreshold,
+        }
       }
     }
 
