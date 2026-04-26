@@ -196,14 +196,25 @@ export function ProductForm({
         }
       }
 
-      // Update form values
       Object.entries(sample).forEach(([key, value]) => {
-        if (value !== undefined) {
+        if (key !== "images" && value !== undefined) {
           form.setValue(key as any, value)
         }
       })
 
       form.setValue("slug", uniqueSlug)
+
+      if (sample.images?.length) {
+        setFiles(
+          sample.images.map((image, index) => ({
+            id: `sample-product-image-${index}`,
+            name: image.alt || `Sample product image ${index + 1}`,
+            size: 0,
+            type: "image/webp",
+            url: image.url,
+          }))
+        )
+      }
 
       // Randomly pick a collection if available
       if (collections.length > 0 && !form.getValues("collectionId")) {

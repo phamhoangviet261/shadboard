@@ -2,8 +2,24 @@ import { z } from "zod"
 
 export const ProductStatusSchema = z.enum(["draft", "published", "archived"])
 
+const ProductAssetUrlSchema = z.string().refine(
+  (value) => {
+    if (value.startsWith("/")) {
+      return true
+    }
+
+    try {
+      new URL(value)
+      return true
+    } catch {
+      return false
+    }
+  },
+  { message: "Enter a valid URL or app image path" }
+)
+
 export const ProductImageSchema = z.object({
-  url: z.string().url(),
+  url: ProductAssetUrlSchema,
   alt: z.string().optional(),
 })
 
@@ -34,7 +50,7 @@ export const ProductCreateSchema = z.object({
   stockQuantity: z.number().int().nonnegative().default(0),
   lowStockThreshold: z.number().int().nonnegative().default(0),
   images: z.array(ProductImageSchema).optional(),
-  thumbnailUrl: z.string().url().optional(),
+  thumbnailUrl: ProductAssetUrlSchema.optional(),
   brand: z.string().optional(),
   tags: z.array(z.string()).optional(),
   metadata: z.record(z.any()).optional(),
