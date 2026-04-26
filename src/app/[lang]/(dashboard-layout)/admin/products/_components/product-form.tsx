@@ -326,8 +326,11 @@ export function ProductForm({
                           thumbnailUrl={form.watch("thumbnailUrl")}
                           onChange={(newImages, newThumbnail) => {
                             field.onChange(newImages)
-                            if (newThumbnail) {
-                              form.setValue("thumbnailUrl", newThumbnail)
+                            if (newThumbnail !== undefined) {
+                              form.setValue(
+                                "thumbnailUrl",
+                                newThumbnail || undefined
+                              )
                             }
                           }}
                         />

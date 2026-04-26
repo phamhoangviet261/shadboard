@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
 import { useDropzone } from "react-dropzone"
@@ -50,14 +50,27 @@ export interface ProductMediaItem {
   error?: string
 }
 
+interface ProductImageValue {
+  url: string
+  alt?: string
+  publicId?: string
+}
+
 interface ProductImageManagerProps {
-  images?: { url: string; alt?: string; publicId?: string }[]
+  images?: ProductImageValue[]
   thumbnailUrl?: string
-  onChange: (
-    images: { url: string; alt: string; publicId?: string }[],
-    thumbnailUrl?: string
-  ) => void
+  onChange: (images: ProductImageValue[], thumbnailUrl?: string) => void
   maxImages?: number
+}
+
+function getImagesSignature(images: ProductImageValue[]) {
+  return JSON.stringify(
+    images.map((image) => ({
+      url: image.url,
+      alt: image.alt || "",
+      publicId: image.publicId || "",
+    }))
+  )
 }
 
 export function ProductImageManager({
@@ -67,11 +80,40 @@ export function ProductImageManager({
   maxImages = 8,
 }: ProductImageManagerProps) {
   const [items, setItems] = useState<ProductMediaItem[]>([])
+  const itemsRef = useRef<ProductMediaItem[]>([])
+  const lastEmittedImagesSignatureRef = useRef<string | null>(null)
+  const lastSyncedImagesSignatureRef = useRef<string | null>(null)
   const [urlInput, setUrlInput] = useState("")
   const [isAddingUrl, setIsAddingUrl] = useState(false)
 
+  const updateItems = useCallback(
+    (
+      next:
+        | ProductMediaItem[]
+        | ((current: ProductMediaItem[]) => ProductMediaItem[])
+    ) => {
+      const nextItems =
+        typeof next === "function" ? next(itemsRef.current) : next
+      itemsRef.current = nextItems
+      setItems(nextItems)
+      return nextItems
+    },
+    []
+  )
+
   // Initialize items from props
   useEffect(() => {
+    const incomingSignature = getImagesSignature(images)
+
+    if (lastEmittedImagesSignatureRef.current === incomingSignature) {
+      lastSyncedImagesSignatureRef.current = incomingSignature
+      return
+    }
+
+    if (lastSyncedImagesSignatureRef.current === incomingSignature) {
+      return
+    }
+
     const initialItems: ProductMediaItem[] = images.map((img, index) => ({
       id: img.publicId || `existing-${index}-${img.url}`,
       url: img.url,
@@ -80,8 +122,9 @@ export function ProductImageManager({
       isLocal: isLocalPreview(img.url),
       status: "success",
     }))
-    setItems(initialItems)
-  }, [images])
+    lastSyncedImagesSignatureRef.current = incomingSignature
+    updateItems(initialItems)
+  }, [images, updateItems])
 
   const notifyChange = useCallback(
     (newItems: ProductMediaItem[], newThumbnail?: string) => {
@@ -92,13 +135,15 @@ export function ProductImageManager({
           alt: item.alt,
           publicId: item.publicId,
         }))
-      onChange(imagesToEmit, newThumbnail || thumbnailUrl)
+      lastEmittedImagesSignatureRef.current = getImagesSignature(imagesToEmit)
+      onChange(imagesToEmit, newThumbnail ?? thumbnailUrl)
     },
     [onChange, thumbnailUrl]
   )
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
+      const currentItems = itemsRef.current
       const newItems: ProductMediaItem[] = []
 
       // 1. Initial validation and local preview setup
@@ -109,7 +154,7 @@ export function ProductImageManager({
           return
         }
 
-        if (items.length + newItems.length >= maxImages) return
+        if (currentItems.length + newItems.length >= maxImages) return
 
         newItems.push({
           id: crypto.randomUUID(),
@@ -124,14 +169,13 @@ export function ProductImageManager({
 
       if (newItems.length === 0) return
 
-      const updatedItems = [...items, ...newItems]
-      setItems(updatedItems)
+      updateItems([...currentItems, ...newItems])
 
       // 2. Trigger uploads for each new item
       newItems.forEach(async (item) => {
         if (!item.file) return
 
-        setItems((current) =>
+        updateItems((current) =>
           current.map((i) =>
             i.id === item.id ? { ...i, status: "uploading" as const } : i
           )
@@ -139,13 +183,13 @@ export function ProductImageManager({
 
         try {
           const result = await uploadToCloudinary(item.file, (progress) => {
-            setItems((current) =>
+            updateItems((current) =>
               current.map((i) => (i.id === item.id ? { ...i, progress } : i))
             )
           })
 
-          setItems((current) => {
-            const final = current.map((i) =>
+          const finalItems = updateItems((current) =>
+            current.map((i) =>
               i.id === item.id
                 ? {
                     ...i,
@@ -157,13 +201,11 @@ export function ProductImageManager({
                   }
                 : i
             )
-            // Notify change after EACH successful upload to keep form in sync
-            notifyChange(final)
-            return final
-          })
+          )
+          notifyChange(finalItems)
         } catch (error) {
           console.error("Upload failed:", error)
-          setItems((current) =>
+          updateItems((current) =>
             current.map((i) =>
               i.id === item.id
                 ? {
@@ -178,7 +220,7 @@ export function ProductImageManager({
         }
       })
     },
-    [items, maxImages, notifyChange]
+    [maxImages, notifyChange, updateItems]
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -211,21 +253,22 @@ export function ProductImageManager({
       status: "success",
     }
 
-    const updatedItems = [...items, newItem]
-    setItems(updatedItems)
+    const updatedItems = updateItems([...itemsRef.current, newItem])
     setUrlInput("")
     setIsAddingUrl(false)
     notifyChange(updatedItems)
   }
 
   const handleRemove = (id: string) => {
-    const itemToRemove = items.find((item) => item.id === id)
+    const currentItems = itemsRef.current
+    const itemToRemove = currentItems.find((item) => item.id === id)
     if (itemToRemove?.isLocal) {
       revokeImagePreviewUrl(itemToRemove.url)
     }
 
-    const updatedItems = items.filter((item) => item.id !== id)
-    setItems(updatedItems)
+    const updatedItems = updateItems(
+      currentItems.filter((item) => item.id !== id)
+    )
 
     let newThumbnail = thumbnailUrl
     if (itemToRemove?.url === thumbnailUrl) {
@@ -239,11 +282,12 @@ export function ProductImageManager({
   }
 
   const handleSetThumbnail = (url: string) => {
-    const targetItem = items.find((item) => item.url === url)
+    const currentItems = itemsRef.current
+    const targetItem = currentItems.find((item) => item.url === url)
     if (!targetItem || targetItem.status !== "success") return
 
     onChange(
-      items
+      currentItems
         .filter((item) => item.status === "success")
         .map((item) => ({
           url: item.url,
@@ -257,11 +301,11 @@ export function ProductImageManager({
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return
 
-    const reorderedItems = Array.from(items)
+    const reorderedItems = Array.from(itemsRef.current)
     const [removed] = reorderedItems.splice(result.source.index, 1)
     reorderedItems.splice(result.destination.index, 0, removed)
 
-    setItems(reorderedItems)
+    updateItems(reorderedItems)
     notifyChange(reorderedItems)
   }
 
