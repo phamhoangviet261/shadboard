@@ -38,6 +38,7 @@
     "@hookform/resolvers": "3.9.0",
     "@mdx-js/loader": "3.1.0",
     "@mdx-js/react": "3.1.0",
+    "@mediapipe/tasks-vision": "^0.10.34",
     "@next/mdx": "15.2.4",
     "@prisma/client": "5.20.0",
     "@radix-ui/react-accessible-icon": "1.1.0",
