@@ -39,7 +39,7 @@ export const defaultFilters: FilterState = {
   lensTypes: [],
   genders: [],
   faceFits: [],
-  priceRange: [0, 500],
+  priceRange: [0, 50000],
 }
 
 interface ProductFiltersProps {

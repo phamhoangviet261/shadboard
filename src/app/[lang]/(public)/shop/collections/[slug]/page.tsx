@@ -44,7 +44,6 @@ export async function generateStaticParams() {
 
 export default async function CollectionDetailPage({ params }: Props) {
   const { lang, slug } = await params
-
   let collection
   let collectionProducts
 
@@ -59,9 +58,7 @@ export default async function CollectionDetailPage({ params }: Props) {
         createdAt: "desc",
       },
     })
-
     collectionProducts = serializeProducts<ProductType>(products)
-
     collection = {
       id: "all",
       name: "All Products",
@@ -82,6 +79,8 @@ export default async function CollectionDetailPage({ params }: Props) {
       (p) => p.collectionId === collection!.id
     )
   }
+
+  console.log({ collectionProducts })
 
   return (
     <div>
