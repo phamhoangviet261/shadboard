@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Camera, ChevronLeft, Info, Loader2 } from "lucide-react"
 
@@ -8,11 +8,11 @@ import type { TryOnAdjustments } from "@/components/try-on/TryOnControls"
 import type { TryOnProduct } from "@/components/try-on/TryOnProductPicker"
 import type { PaginatedResponse, ProductType } from "@/types"
 
+import { Button } from "@/components/ui/button"
 import { TryOnControls } from "@/components/try-on/TryOnControls"
 import { TryOnProductPicker } from "@/components/try-on/TryOnProductPicker"
 import { TryOnSnapshotPreview } from "@/components/try-on/TryOnSnapshotPreview"
 import { VirtualTryOnCamera } from "@/components/try-on/VirtualTryOnCamera"
-import { Button } from "@/components/ui/button"
 
 export default function VirtualTryOnPage() {
   const [products, setProducts] = useState<TryOnProduct[]>([])
@@ -39,7 +39,7 @@ export default function VirtualTryOnPage() {
           throw new Error("Failed to fetch products")
         }
         const result: PaginatedResponse<ProductType> = await response.json()
-        
+
         const mappedProducts: TryOnProduct[] = result.data.map((p) => ({
           id: p.id,
           name: p.name,
@@ -144,23 +144,25 @@ export default function VirtualTryOnPage() {
           {/* Controls and Picker */}
           <div className="lg:col-span-4 flex flex-col gap-8">
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4">
-               {isLoading ? (
-                  <div className="flex flex-col items-center justify-center p-12 gap-3">
-                     <Loader2 className="w-6 h-6 text-neutral-700 animate-spin" />
-                     <p className="text-[11px] text-neutral-500 uppercase tracking-widest">Loading studio...</p>
-                  </div>
-               ) : error ? (
-                  <div className="p-4 text-center">
-                    <p className="text-xs text-red-500">{error}</p>
-                    <Button 
-                      variant="link" 
-                      onClick={() => window.location.reload()}
-                      className="text-white text-xs mt-2"
-                    >
-                      Try Again
-                    </Button>
-                  </div>
-               ) : (
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center p-12 gap-3">
+                  <Loader2 className="w-6 h-6 text-neutral-700 animate-spin" />
+                  <p className="text-[11px] text-neutral-500 uppercase tracking-widest">
+                    Loading studio...
+                  </p>
+                </div>
+              ) : error ? (
+                <div className="p-4 text-center">
+                  <p className="text-xs text-red-500">{error}</p>
+                  <Button
+                    variant="link"
+                    onClick={() => window.location.reload()}
+                    className="text-white text-xs mt-2"
+                  >
+                    Try Again
+                  </Button>
+                </div>
+              ) : (
                 <>
                   <TryOnProductPicker
                     products={products}
@@ -176,7 +178,7 @@ export default function VirtualTryOnPage() {
                     />
                   </div>
                 </>
-               )}
+              )}
             </div>
           </div>
         </div>

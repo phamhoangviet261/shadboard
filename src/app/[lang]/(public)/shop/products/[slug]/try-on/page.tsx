@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
@@ -10,11 +10,11 @@ import type { TryOnAdjustments } from "@/components/try-on/TryOnControls"
 import type { TryOnProduct } from "@/components/try-on/TryOnProductPicker"
 import type { PaginatedResponse, ProductType } from "@/types"
 
+import { Button } from "@/components/ui/button"
 import { TryOnControls } from "@/components/try-on/TryOnControls"
 import { TryOnProductPicker } from "@/components/try-on/TryOnProductPicker"
 import { TryOnSnapshotPreview } from "@/components/try-on/TryOnSnapshotPreview"
 import { VirtualTryOnCamera } from "@/components/try-on/VirtualTryOnCamera"
-import { Button } from "@/components/ui/button"
 
 export default function ProductVirtualTryOnPage() {
   const params = useParams()
@@ -44,7 +44,7 @@ export default function ProductVirtualTryOnPage() {
           throw new Error("Failed to fetch products")
         }
         const result: PaginatedResponse<ProductType> = await response.json()
-        
+
         const mappedProducts: TryOnProduct[] = result.data.map((p) => ({
           id: p.id,
           name: p.name,
@@ -54,9 +54,9 @@ export default function ProductVirtualTryOnPage() {
         }))
 
         setProducts(mappedProducts)
-        
+
         // Find current product from slug
-        const currentProduct = mappedProducts.find(p => p.slug === slug)
+        const currentProduct = mappedProducts.find((p) => p.slug === slug)
         if (currentProduct) {
           setSelectedProduct(currentProduct)
         } else if (mappedProducts.length > 0) {
@@ -159,10 +159,10 @@ export default function ProductVirtualTryOnPage() {
               <h3 className="text-sm font-medium uppercase tracking-wider text-neutral-400 mb-4 px-1">
                 Currently Trying
               </h3>
-              
+
               {isLoading ? (
                 <div className="flex items-center gap-4 p-3 bg-neutral-800/50 rounded-xl border border-neutral-700">
-                   <Loader2 className="w-5 h-5 text-neutral-600 animate-spin mx-auto" />
+                  <Loader2 className="w-5 h-5 text-neutral-600 animate-spin mx-auto" />
                 </div>
               ) : selectedProduct ? (
                 <div className="flex items-center gap-4 p-3 bg-neutral-800/50 rounded-xl border border-neutral-700">
@@ -188,21 +188,21 @@ export default function ProductVirtualTryOnPage() {
             </div>
 
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 h-[400px]">
-               {isLoading ? (
-                  <div className="flex flex-col items-center justify-center h-full gap-3">
-                     <Loader2 className="w-6 h-6 text-neutral-700 animate-spin" />
-                  </div>
-               ) : error ? (
-                  <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-                    <p className="text-xs text-red-500">{error}</p>
-                  </div>
-               ) : (
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center h-full gap-3">
+                  <Loader2 className="w-6 h-6 text-neutral-700 animate-spin" />
+                </div>
+              ) : error ? (
+                <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+                  <p className="text-xs text-red-500">{error}</p>
+                </div>
+              ) : (
                 <TryOnProductPicker
                   products={products.filter((p) => p.slug !== slug)}
                   selectedId={selectedProduct?.id || null}
                   onSelect={(p) => setSelectedProduct(p)}
                 />
-               )}
+              )}
             </div>
 
             <TryOnControls
