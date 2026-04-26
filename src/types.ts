@@ -211,6 +211,7 @@ export interface ProductSpecs {
 export interface ProductImage {
   url: string
   alt: string
+  publicId?: string
 }
 
 export interface ProductType {

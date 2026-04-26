@@ -8,6 +8,7 @@ import type { Metadata } from "next"
 import type { ComponentProps } from "react"
 
 import { db } from "@/lib/prisma"
+import { serializeProduct } from "@/lib/product-serialization"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -38,13 +39,7 @@ export default async function AdminProductDetailPage(props: {
     notFound()
   }
 
-  const serializedProduct = JSON.parse(
-    JSON.stringify(product, (key, value) =>
-      typeof value === "object" && value?.constructor?.name === "Decimal"
-        ? Number(value)
-        : value
-    )
-  ) as ProductType
+  const serializedProduct = serializeProduct<ProductType>(product)
 
   const statusVariant: Record<
     ProductType["status"],

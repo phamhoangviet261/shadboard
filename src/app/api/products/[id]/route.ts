@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server"
 import { Prisma } from "@/generated/client"
 
+import type { ProductType } from "@/types"
+
 import { ProductUpdateSchema } from "@/schemas/product-schema"
 
 import { logProductActivity } from "@/lib/activity-log"
 import { authenticateUser, getAuthErrorResponse } from "@/lib/auth"
 import { db } from "@/lib/prisma"
+import { serializeProduct } from "@/lib/product-serialization"
 
 export const runtime = "nodejs"
 
@@ -40,7 +43,7 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(product)
+    return NextResponse.json(serializeProduct<ProductType>(product))
   } catch (error) {
     console.error("Error fetching product:", error)
     return NextResponse.json(
@@ -100,7 +103,7 @@ export async function PATCH(
       after: updatedProduct,
     })
 
-    return NextResponse.json(updatedProduct)
+    return NextResponse.json(serializeProduct<ProductType>(updatedProduct))
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&

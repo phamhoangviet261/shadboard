@@ -8,6 +8,7 @@ import type { Metadata } from "next"
 import { ProductQuerySchema } from "@/schemas/product-schema"
 
 import { db } from "@/lib/prisma"
+import { serializeProducts } from "@/lib/product-serialization"
 
 import { Button } from "@/components/ui/button"
 import { ProductManagementTable } from "./_components/product-management-table"
@@ -84,13 +85,7 @@ export default async function AdminProductsPage(props: {
     }),
   ])
 
-  const serializedProducts = JSON.parse(
-    JSON.stringify(products, (key, value) =>
-      typeof value === "object" && value?.constructor?.name === "Decimal"
-        ? Number(value)
-        : value
-    )
-  ) as ProductType[]
+  const serializedProducts = serializeProducts<ProductType>(products)
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">

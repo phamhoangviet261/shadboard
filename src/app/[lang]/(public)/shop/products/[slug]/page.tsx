@@ -1,11 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import type { LocaleType } from "@/types"
+import type { LocaleType, ProductType } from "@/types"
 import type { Metadata } from "next"
 
 import { db } from "@/lib/prisma"
+import {
+  serializeProduct,
+  serializeProducts,
+} from "@/lib/product-serialization"
 
 import { Badge } from "@/components/ui/badge"
 import { ProductDetailsForm } from "./_components/product-details-form"
@@ -45,7 +48,7 @@ export default async function ProductDetailPage({ params }: Props) {
     notFound()
   }
 
-  let relatedProducts: any[] = []
+  let relatedProducts: unknown[] = []
   if (product.collectionId) {
     relatedProducts = await db.product.findMany({
       where: {
@@ -58,21 +61,9 @@ export default async function ProductDetailPage({ params }: Props) {
     })
   }
 
-  const serializedProduct = JSON.parse(
-    JSON.stringify(product, (key, value) =>
-      typeof value === "object" && value?.constructor?.name === "Decimal"
-        ? Number(value)
-        : value
-    )
-  )
-
-  const serializedRelatedProducts = JSON.parse(
-    JSON.stringify(relatedProducts, (key, value) =>
-      typeof value === "object" && value?.constructor?.name === "Decimal"
-        ? Number(value)
-        : value
-    )
-  )
+  const serializedProduct = serializeProduct<ProductType>(product)
+  const serializedRelatedProducts =
+    serializeProducts<ProductType>(relatedProducts)
 
   const hasDiscount =
     serializedProduct.compareAtPrice &&
@@ -128,7 +119,7 @@ export default async function ProductDetailPage({ params }: Props) {
             {serializedProduct.description || ""}
           </p>
 
-          <ProductDetailsForm product={serializedProduct as any} />
+          <ProductDetailsForm product={serializedProduct} />
 
           {/* Accordions */}
           <div className="pt-4 border-t border-border">
@@ -161,7 +152,7 @@ export default async function ProductDetailPage({ params }: Props) {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {serializedRelatedProducts.map((p: any) => (
+            {serializedRelatedProducts.map((p) => (
               <ProductCard key={p.id} product={p} lang={lang} />
             ))}
           </div>

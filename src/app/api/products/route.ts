@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { Prisma } from "@/generated/client"
 
+import type { ProductType } from "@/types"
+
 import {
   ProductCreateSchema,
   ProductQuerySchema,
@@ -9,6 +11,10 @@ import {
 import { logProductActivity } from "@/lib/activity-log"
 import { authenticateUser, getAuthErrorResponse } from "@/lib/auth"
 import { db } from "@/lib/prisma"
+import {
+  serializeProduct,
+  serializeProducts,
+} from "@/lib/product-serialization"
 
 export const runtime = "nodejs"
 
@@ -111,13 +117,7 @@ export async function GET(req: Request) {
     ])
 
     return NextResponse.json({
-      data: JSON.parse(
-        JSON.stringify(products, (key, value) =>
-          typeof value === "object" && value?.constructor?.name === "Decimal"
-            ? Number(value)
-            : value
-        )
-      ),
+      data: serializeProducts<ProductType>(products),
       pagination: {
         total,
         page,
@@ -179,7 +179,9 @@ export async function POST(req: Request) {
       after: product,
     })
 
-    return NextResponse.json(product, { status: 201 })
+    return NextResponse.json(serializeProduct<ProductType>(product), {
+      status: 201,
+    })
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&

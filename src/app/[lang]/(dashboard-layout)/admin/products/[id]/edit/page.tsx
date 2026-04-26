@@ -5,6 +5,7 @@ import type { Metadata } from "next"
 
 import { authenticateUser } from "@/lib/auth"
 import { db } from "@/lib/prisma"
+import { serializeProduct } from "@/lib/product-serialization"
 
 import { ProductForm } from "../../_components/product-form"
 import { UnauthorizedState } from "@/components/auth/unauthorized-state"
@@ -41,13 +42,7 @@ export default async function AdminEditProductPage(props: {
     notFound()
   }
 
-  const serializedProduct = JSON.parse(
-    JSON.stringify(product, (key, value) =>
-      typeof value === "object" && value?.constructor?.name === "Decimal"
-        ? Number(value)
-        : value
-    )
-  ) as ProductType
+  const serializedProduct = serializeProduct<ProductType>(product)
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 max-w-5xl mx-auto">

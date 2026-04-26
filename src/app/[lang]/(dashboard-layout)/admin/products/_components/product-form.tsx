@@ -45,6 +45,14 @@ import { ProductImageManager } from "@/components/admin/products/product-image-m
 
 const PRODUCT_SIZES = ["XS", "S", "M", "L", "XL"] as const
 
+function toOptionalNumber(value: number | string | null | undefined) {
+  if (value === null || value === undefined || value === "") {
+    return undefined
+  }
+
+  return Number(value)
+}
+
 interface ProductFormProps {
   lang: LocaleType
   initialData?: ProductType
@@ -69,9 +77,9 @@ export function ProductForm({
           description: initialData.description || "",
           shortDescription: initialData.shortDescription || "",
           sku: initialData.sku || "",
-          price: initialData.price,
-          compareAtPrice: initialData.compareAtPrice || undefined,
-          costPrice: initialData.costPrice || undefined,
+          price: Number(initialData.price),
+          compareAtPrice: toOptionalNumber(initialData.compareAtPrice),
+          costPrice: toOptionalNumber(initialData.costPrice),
           currency: initialData.currency,
           status: initialData.status,
           stockQuantity: initialData.stockQuantity,
