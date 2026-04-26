@@ -2,20 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { Camera, ChevronLeft, Info } from "lucide-react"
+import { Camera, ChevronLeft, Info, Loader2 } from "lucide-react"
 
 import type { TryOnAdjustments } from "@/components/try-on/TryOnControls"
 import type { TryOnProduct } from "@/components/try-on/TryOnProductPicker"
+import type { PaginatedResponse, ProductType } from "@/types"
 
-import { productsData } from "@/data/lensora/products"
-
-import { Button } from "@/components/ui/button"
 import { TryOnControls } from "@/components/try-on/TryOnControls"
 import { TryOnProductPicker } from "@/components/try-on/TryOnProductPicker"
 import { TryOnSnapshotPreview } from "@/components/try-on/TryOnSnapshotPreview"
 import { VirtualTryOnCamera } from "@/components/try-on/VirtualTryOnCamera"
+import { Button } from "@/components/ui/button"
 
 export default function VirtualTryOnPage() {
+  const [products, setProducts] = useState<TryOnProduct[]>([])
   const [selectedProduct, setSelectedProduct] = useState<TryOnProduct | null>(
     null
   )
@@ -27,25 +27,41 @@ export default function VirtualTryOnPage() {
   })
   const [snapshotUrl, setSnapshotUrl] = useState<string | null>(null)
   const [isSnapshotOpen, setIsSnapshotOpen] = useState(false)
-
-  const products = useMemo<TryOnProduct[]>(
-    () =>
-      productsData.map((p) => ({
-        id: p.id,
-        name: p.name,
-        price: p.price,
-        // Transparent PNGs align better, but product thumbnails keep the MVP data-driven.
-        imageUrl: p.thumbnailUrl,
-        slug: p.slug,
-      })),
-    []
-  )
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (products.length > 0 && !selectedProduct) {
-      setSelectedProduct(products[0])
+    async function fetchProducts() {
+      try {
+        setIsLoading(true)
+        const response = await fetch("/api/products?status=published&limit=50")
+        if (!response.ok) {
+          throw new Error("Failed to fetch products")
+        }
+        const result: PaginatedResponse<ProductType> = await response.json()
+        
+        const mappedProducts: TryOnProduct[] = result.data.map((p) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          imageUrl: p.thumbnailUrl || "/images/products/no-image.webp",
+          slug: p.slug,
+        }))
+
+        setProducts(mappedProducts)
+        if (mappedProducts.length > 0) {
+          setSelectedProduct(mappedProducts[0])
+        }
+      } catch (err) {
+        console.error("Error fetching VTO products:", err)
+        setError("Unable to load products. Please try again later.")
+      } finally {
+        setIsLoading(false)
+      }
     }
-  }, [products, selectedProduct])
+
+    fetchProducts()
+  }, [])
 
   const handleCapture = (dataUrl: string) => {
     setSnapshotUrl(dataUrl)
@@ -127,17 +143,41 @@ export default function VirtualTryOnPage() {
 
           {/* Controls and Picker */}
           <div className="lg:col-span-4 flex flex-col gap-8">
-            <TryOnProductPicker
-              products={products}
-              selectedId={selectedProduct?.id || null}
-              onSelect={(p) => setSelectedProduct(p)}
-            />
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4">
+               {isLoading ? (
+                  <div className="flex flex-col items-center justify-center p-12 gap-3">
+                     <Loader2 className="w-6 h-6 text-neutral-700 animate-spin" />
+                     <p className="text-[11px] text-neutral-500 uppercase tracking-widest">Loading studio...</p>
+                  </div>
+               ) : error ? (
+                  <div className="p-4 text-center">
+                    <p className="text-xs text-red-500">{error}</p>
+                    <Button 
+                      variant="link" 
+                      onClick={() => window.location.reload()}
+                      className="text-white text-xs mt-2"
+                    >
+                      Try Again
+                    </Button>
+                  </div>
+               ) : (
+                <>
+                  <TryOnProductPicker
+                    products={products}
+                    selectedId={selectedProduct?.id || null}
+                    onSelect={(p) => setSelectedProduct(p)}
+                  />
 
-            <TryOnControls
-              adjustments={adjustments}
-              setAdjustments={setAdjustments}
-              onReset={resetAdjustments}
-            />
+                  <div className="mt-8">
+                    <TryOnControls
+                      adjustments={adjustments}
+                      setAdjustments={setAdjustments}
+                      onReset={resetAdjustments}
+                    />
+                  </div>
+                </>
+               )}
+            </div>
           </div>
         </div>
       </main>
