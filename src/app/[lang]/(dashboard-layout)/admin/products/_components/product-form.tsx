@@ -6,20 +6,20 @@ import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { GripVertical, Loader2, Plus, Sparkles, Trash2 } from "lucide-react"
+import { Loader2, Plus, Sparkles, Trash2 } from "lucide-react"
 
 import type { ProductCreateInput } from "@/schemas/product-schema"
-import type { CollectionType, FileType, LocaleType, ProductType } from "@/types"
+import type { CollectionType, LocaleType, ProductType } from "@/types"
 
 import { ProductCreateSchema } from "@/schemas/product-schema"
 
 import { api } from "@/lib/api-client"
+import { isLocalPreview } from "@/lib/image-utils"
 import { generateSampleProductData } from "@/lib/sample-data"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { FileDropzone } from "@/components/ui/file-dropzone"
 import {
   Form,
   FormControl,
@@ -41,6 +41,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { ProductImageManager } from "@/components/admin/products/product-image-manager"
 
 const PRODUCT_SIZES = ["XS", "S", "M", "L", "XL"] as const
 
@@ -58,15 +59,6 @@ export function ProductForm({
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
-  const [files, setFiles] = useState<FileType[]>(
-    initialData?.images?.map((image, index) => ({
-      id: `${initialData.id}-image-${index}`,
-      name: image.alt,
-      size: 0,
-      type: "image/jpeg",
-      url: image.url,
-    })) ?? []
-  )
 
   const form = useForm<ProductCreateInput>({
     resolver: zodResolver(ProductCreateSchema),
@@ -90,6 +82,7 @@ export function ProductForm({
           collectionId: initialData.collectionId || null,
           isFeatured: initialData.isFeatured,
           colors: initialData.colors || [],
+          images: initialData.images || [],
           frameShape: initialData.frameShape || "",
           frameMaterial: initialData.frameMaterial || "",
           lensType: initialData.lensType || "",
@@ -130,21 +123,29 @@ export function ProductForm({
             totalWidth: 140,
             weight: 22,
           },
+          images: [],
         },
   })
 
   const onSubmit = async (values: ProductCreateInput) => {
+    // Check for local previews
+    const hasLocalPreviews = values.images?.some((img: { url: string }) =>
+      isLocalPreview(img.url)
+    )
+    if (hasLocalPreviews) {
+      toast.error(
+        "Please provide remote URLs for all images before saving. Local previews cannot be persisted yet."
+      )
+      return
+    }
+
     setLoading(true)
     try {
-      // Sync files to images array
-      const images = files.map((f) => ({ url: f.url, alt: f.name }))
-      const payload = { ...values, images }
-
       if (initialData) {
-        await api.patch(`/api/products/${initialData.id}`, payload)
+        await api.patch(`/api/products/${initialData.id}`, values)
         toast.success("Product updated successfully")
       } else {
-        await api.post("/api/products", payload)
+        await api.post("/api/products", values)
         toast.success("Product created successfully")
       }
 
@@ -190,7 +191,9 @@ export function ProductForm({
           counter++
           // Safety break
           if (counter > 50) {
-            uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`
+            uniqueSlug = `${baseSlug}-${Math.random()
+              .toString(36)
+              .substring(2, 6)}`
             isAvailable = true
           }
         }
@@ -205,15 +208,16 @@ export function ProductForm({
       form.setValue("slug", uniqueSlug)
 
       if (sample.images?.length) {
-        setFiles(
-          sample.images.map((image, index) => ({
-            id: `sample-product-image-${index}`,
-            name: image.alt || `Sample product image ${index + 1}`,
-            size: 0,
-            type: "image/webp",
+        form.setValue(
+          "images",
+          sample.images.map((image: any) => ({
             url: image.url,
+            alt: image.alt || "Sample product image",
           }))
         )
+        if (sample.thumbnailUrl) {
+          form.setValue("thumbnailUrl", sample.thumbnailUrl)
+        }
       }
 
       // Randomly pick a collection if available
@@ -307,38 +311,30 @@ export function ProductForm({
 
             <Card>
               <CardHeader>
-                <CardTitle>Images</CardTitle>
+                <CardTitle>Images & Media</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FileDropzone
-                  multiple
-                  maxFiles={8}
-                  accept={{ "image/*": [] }}
-                  value={files}
-                  onFilesChange={setFiles}
-                  className="min-h-72"
+                <FormField
+                  control={form.control}
+                  name="images"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <ProductImageManager
+                          images={field.value}
+                          thumbnailUrl={form.watch("thumbnailUrl")}
+                          onChange={(newImages, newThumbnail) => {
+                            field.onChange(newImages)
+                            if (newThumbnail) {
+                              form.setValue("thumbnailUrl", newThumbnail)
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {files.length > 1 && (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Image order</p>
-                    <div className="rounded-lg border bg-muted/20">
-                      {files.map((file, index) => (
-                        <div
-                          key={file.id}
-                          className="flex items-center gap-3 border-b px-3 py-2 last:border-b-0"
-                        >
-                          <GripVertical className="size-4 text-muted-foreground" />
-                          <span className="flex size-6 items-center justify-center rounded bg-background text-xs font-medium">
-                            {index + 1}
-                          </span>
-                          <span className="min-w-0 flex-1 truncate text-sm">
-                            {file.name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
@@ -437,7 +433,7 @@ export function ProductForm({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
-                  {form.watch("colors")?.map((color, index) => (
+                  {form.watch("colors")?.map((color: any, index: number) => (
                     <div
                       key={index}
                       className="grid gap-3 sm:grid-cols-[1fr_8rem_auto]"
@@ -472,7 +468,7 @@ export function ProductForm({
                         onClick={() => {
                           const newColors = form
                             .getValues("colors")
-                            ?.filter((_, i) => i !== index)
+                            ?.filter((_: any, i: number) => i !== index)
                           form.setValue("colors", newColors)
                         }}
                       >
@@ -796,7 +792,7 @@ export function ProductForm({
                               onCheckedChange={() => {
                                 const currentValues = field.value || []
                                 const newValue = currentValues.includes(size)
-                                  ? currentValues.filter((s) => s !== size)
+                                  ? currentValues.filter((s: any) => s !== size)
                                   : [...currentValues, size]
                                 field.onChange(newValue)
                               }}
@@ -923,21 +919,21 @@ export function ProductForm({
           </div>
         </div>
 
-        <div className="flex justify-end gap-4 border-t pt-6">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push(`/${lang}/admin/products`)}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading
-              ? "Saving..."
-              : initialData
-                ? "Save Changes"
-                : "Create Product"}
-          </Button>
+        <div className="sticky bottom-0 z-20 -mx-6 bg-background/80 px-6 py-4 backdrop-blur-md border-t">
+          <div className="flex items-center justify-end gap-3 max-w-[1400px] mx-auto">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {initialData ? "Update Product" : "Create Product"}
+            </Button>
+          </div>
         </div>
       </form>
     </Form>
