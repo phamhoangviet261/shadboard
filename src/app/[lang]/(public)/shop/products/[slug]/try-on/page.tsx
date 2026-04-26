@@ -4,13 +4,18 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { Camera, ChevronLeft, Info, Loader2 } from "lucide-react"
+import { Camera, ChevronLeft, Info, Loader2, Sparkles } from "lucide-react"
 
 import type { TryOnAdjustments } from "@/components/try-on/TryOnControls"
 import type { TryOnProduct } from "@/components/try-on/TryOnProductPicker"
 import type { PaginatedResponse, ProductType } from "@/types"
 
+import { RECOMMENDATION_RULES } from "@/lib/try-on/recommendation-utils"
+
+import { useFaceShape } from "@/hooks/useFaceShape"
+import { useVirtualTryOn } from "@/hooks/useVirtualTryOn"
 import { Button } from "@/components/ui/button"
+import { FaceShapePanel } from "@/components/try-on/FaceShapePanel"
 import { TryOnControls } from "@/components/try-on/TryOnControls"
 import { TryOnProductPicker } from "@/components/try-on/TryOnProductPicker"
 import { TryOnSnapshotPreview } from "@/components/try-on/TryOnSnapshotPreview"
@@ -19,6 +24,18 @@ import { VirtualTryOnCamera } from "@/components/try-on/VirtualTryOnCamera"
 export default function ProductVirtualTryOnPage() {
   const params = useParams()
   const slug = params.slug as string
+
+  // Core VTO State
+  const vt = useVirtualTryOn()
+  const { landmarks, camera } = vt
+
+  // Face Shape Analysis
+  const faceShape = useFaceShape({
+    landmarks,
+    isEnabled: !!camera.stream,
+  })
+
+  const recommendation = RECOMMENDATION_RULES[faceShape.shape]
 
   const [products, setProducts] = useState<TryOnProduct[]>([])
   const [selectedProduct, setSelectedProduct] = useState<TryOnProduct | null>(
@@ -51,6 +68,8 @@ export default function ProductVirtualTryOnPage() {
           price: p.price,
           imageUrl: p.thumbnailUrl || "/images/products/no-image.webp",
           slug: p.slug,
+          tags: p.tags,
+          description: p.description || "",
         }))
 
         setProducts(mappedProducts)
@@ -106,8 +125,11 @@ export default function ProductVirtualTryOnPage() {
               </Link>
             </Button>
             <div>
-              <h1 className="text-lg font-bold tracking-tight">
+              <h1 className="text-lg font-bold tracking-tight flex items-center gap-2">
                 Try On: {selectedProduct?.name || "Eyewear"}
+                {faceShape.isStable && (
+                  <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                )}
               </h1>
               <p className="text-[10px] text-neutral-500 uppercase tracking-widest leading-none">
                 Lensora Studio
@@ -131,6 +153,7 @@ export default function ProductVirtualTryOnPage() {
           {/* Main Camera View */}
           <div className="lg:col-span-8 flex flex-col gap-6">
             <VirtualTryOnCamera
+              vt={vt}
               productImage={selectedProduct?.imageUrl || null}
               adjustments={adjustments}
               onCapture={handleCapture}
@@ -153,8 +176,20 @@ export default function ProductVirtualTryOnPage() {
             </div>
           </div>
 
-          {/* Controls and Picker */}
+          {/* Controls and Recommendations */}
           <div className="lg:col-span-4 flex flex-col gap-8">
+            {/* Phase 2: Face Shape Results */}
+            {camera.stream && (
+              <FaceShapePanel
+                shape={faceShape.shape}
+                result={faceShape.result}
+                isAnalyzing={faceShape.isAnalyzing}
+                isStable={faceShape.isStable}
+                isManual={faceShape.isManual}
+                onOverride={faceShape.overrideShape}
+              />
+            )}
+
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4">
               <h3 className="text-sm font-medium uppercase tracking-wider text-neutral-400 mb-4 px-1">
                 Currently Trying
@@ -201,6 +236,7 @@ export default function ProductVirtualTryOnPage() {
                   products={products.filter((p) => p.slug !== slug)}
                   selectedId={selectedProduct?.id || null}
                   onSelect={(p) => setSelectedProduct(p)}
+                  recommendation={faceShape.isStable ? recommendation : null}
                 />
               )}
             </div>

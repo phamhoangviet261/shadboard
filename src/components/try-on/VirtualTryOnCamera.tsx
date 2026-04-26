@@ -11,13 +11,15 @@ import {
   UserX,
 } from "lucide-react"
 
-import { useVirtualTryOn } from "@/hooks/useVirtualTryOn"
+import type { UseVirtualTryOnReturn } from "@/hooks/useVirtualTryOn"
+
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { EyewearOverlayCanvas } from "./EyewearOverlayCanvas"
 
 interface VirtualTryOnCameraProps {
+  vt: UseVirtualTryOnReturn
   productImage: string | null
   adjustments: {
     scale: number
@@ -29,11 +31,11 @@ interface VirtualTryOnCameraProps {
 }
 
 export const VirtualTryOnCamera: React.FC<VirtualTryOnCameraProps> = ({
+  vt,
   productImage,
   adjustments,
   onCapture,
 }) => {
-  const vt = useVirtualTryOn()
   const { camera, faceLandmarker, transform, isDetecting, videoRef } = vt
   const [mirrored, setMirrored] = useState(true)
 

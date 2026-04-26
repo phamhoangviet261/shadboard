@@ -2,6 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 
+import type { NormalizedLandmark } from "@mediapipe/tasks-vision"
+import type { UseCameraReturn } from "./useCamera"
+import type { UseFaceLandmarkerReturn } from "./useFaceLandmarker"
+
 import { useCamera } from "./useCamera"
 import { useFaceLandmarker } from "./useFaceLandmarker"
 
@@ -11,14 +15,16 @@ export interface EyewearTransform {
   scale: number
   rotation: number
   width: number
+  landmarks: NormalizedLandmark[] | null
 }
 
 export interface UseVirtualTryOnReturn {
-  camera: ReturnType<typeof useCamera>
-  faceLandmarker: ReturnType<typeof useFaceLandmarker>
+  camera: UseCameraReturn
+  faceLandmarker: UseFaceLandmarkerReturn
   transform: EyewearTransform | null
   isDetecting: boolean
   videoRef: React.RefObject<HTMLVideoElement | null>
+  landmarks: NormalizedLandmark[] | null
 }
 
 export function useVirtualTryOn(): UseVirtualTryOnReturn {
@@ -26,6 +32,7 @@ export function useVirtualTryOn(): UseVirtualTryOnReturn {
   const faceLandmarker = useFaceLandmarker()
 
   const [transform, setTransform] = useState<EyewearTransform | null>(null)
+  const [landmarks, setLandmarks] = useState<NormalizedLandmark[] | null>(null)
   const [isDetecting, setIsDetecting] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -86,11 +93,14 @@ export function useVirtualTryOn(): UseVirtualTryOnReturn {
             scale: distance * 5, // Arbitrary multiplier, will need adjustment
             rotation: rotation,
             width: video.videoWidth,
+            landmarks: landmarks,
           })
+          setLandmarks(landmarks)
         }
       } else {
         setIsDetecting(false)
         setTransform(null)
+        setLandmarks(null)
       }
     }
 
@@ -122,5 +132,6 @@ export function useVirtualTryOn(): UseVirtualTryOnReturn {
     transform,
     isDetecting,
     videoRef,
+    landmarks,
   }
 }
