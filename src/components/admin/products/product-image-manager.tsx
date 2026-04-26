@@ -8,6 +8,7 @@ import {
   AlertCircle,
   GripVertical,
   ImageIcon,
+  Loader2,
   Plus,
   Star,
   Trash2,
@@ -17,6 +18,7 @@ import {
 
 import type { DropResult } from "@hello-pangea/dnd"
 
+import { uploadToCloudinary } from "@/lib/cloudinary-client"
 import {
   isLocalPreview,
   revokeImagePreviewUrl,
@@ -28,6 +30,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Progress } from "@/components/ui/progress"
 import {
   Tooltip,
   TooltipContent,
@@ -41,13 +44,17 @@ export interface ProductMediaItem {
   alt: string
   isLocal: boolean
   file?: File
+  publicId?: string
+  status?: "pending" | "uploading" | "success" | "error"
+  progress?: number
+  error?: string
 }
 
 interface ProductImageManagerProps {
-  images?: { url: string; alt?: string }[]
+  images?: { url: string; alt?: string; publicId?: string }[]
   thumbnailUrl?: string
   onChange: (
-    images: { url: string; alt: string }[],
+    images: { url: string; alt: string; publicId?: string }[],
     thumbnailUrl?: string
   ) => void
   maxImages?: number
@@ -66,31 +73,35 @@ export function ProductImageManager({
   // Initialize items from props
   useEffect(() => {
     const initialItems: ProductMediaItem[] = images.map((img, index) => ({
-      id: `existing-${index}-${img.url}`,
+      id: img.publicId || `existing-${index}-${img.url}`,
       url: img.url,
       alt: img.alt || "",
+      publicId: img.publicId,
       isLocal: isLocalPreview(img.url),
+      status: "success",
     }))
     setItems(initialItems)
   }, [images])
 
   const notifyChange = useCallback(
     (newItems: ProductMediaItem[], newThumbnail?: string) => {
-      const imagesToEmit: { url: string; alt: string }[] = newItems.map(
-        (item) => ({
+      const imagesToEmit = newItems
+        .filter((item) => item.status === "success" || !item.isLocal)
+        .map((item) => ({
           url: item.url,
           alt: item.alt,
-        })
-      )
+          publicId: item.publicId,
+        }))
       onChange(imagesToEmit, newThumbnail || thumbnailUrl)
     },
     [onChange, thumbnailUrl]
   )
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[]) => {
       const newItems: ProductMediaItem[] = []
 
+      // 1. Initial validation and local preview setup
       acceptedFiles.forEach((file) => {
         const validation = validateImageFile(file)
         if (!validation.valid) {
@@ -102,16 +113,70 @@ export function ProductImageManager({
 
         newItems.push({
           id: crypto.randomUUID(),
-          url: URL.createObjectURL(file),
+          url: URL.createObjectURL(file), // Temporary local preview
           alt: file.name,
           isLocal: true,
           file,
+          status: "pending",
+          progress: 0,
         })
       })
 
+      if (newItems.length === 0) return
+
       const updatedItems = [...items, ...newItems]
       setItems(updatedItems)
-      notifyChange(updatedItems)
+
+      // 2. Trigger uploads for each new item
+      newItems.forEach(async (item) => {
+        if (!item.file) return
+
+        setItems((current) =>
+          current.map((i) =>
+            i.id === item.id ? { ...i, status: "uploading" as const } : i
+          )
+        )
+
+        try {
+          const result = await uploadToCloudinary(item.file, (progress) => {
+            setItems((current) =>
+              current.map((i) => (i.id === item.id ? { ...i, progress } : i))
+            )
+          })
+
+          setItems((current) => {
+            const final = current.map((i) =>
+              i.id === item.id
+                ? {
+                    ...i,
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    status: "success" as const,
+                    isLocal: false,
+                    progress: 100,
+                  }
+                : i
+            )
+            // Notify change after EACH successful upload to keep form in sync
+            notifyChange(final)
+            return final
+          })
+        } catch (error) {
+          console.error("Upload failed:", error)
+          setItems((current) =>
+            current.map((i) =>
+              i.id === item.id
+                ? {
+                    ...i,
+                    status: "error" as const,
+                    error:
+                      error instanceof Error ? error.message : "Upload failed",
+                  }
+                : i
+            )
+          )
+        }
+      })
     },
     [items, maxImages, notifyChange]
   )
@@ -134,7 +199,7 @@ export function ProductImageManager({
 
     try {
       new URL(urlInput)
-    } catch {
+    } catch (_error) {
       return
     }
 
@@ -143,6 +208,7 @@ export function ProductImageManager({
       url: urlInput,
       alt: "Remote image",
       isLocal: false,
+      status: "success",
     }
 
     const updatedItems = [...items, newItem]
@@ -163,18 +229,29 @@ export function ProductImageManager({
 
     let newThumbnail = thumbnailUrl
     if (itemToRemove?.url === thumbnailUrl) {
-      const firstRemote = updatedItems.find((item) => !item.isLocal)
-      newThumbnail = firstRemote?.url || ""
+      const firstSuccess = updatedItems.find(
+        (item) => item.status === "success"
+      )
+      newThumbnail = firstSuccess?.url || ""
     }
 
     notifyChange(updatedItems, newThumbnail)
   }
 
   const handleSetThumbnail = (url: string) => {
-    if (isLocalPreview(url)) return
+    const targetItem = items.find((item) => item.url === url)
+    if (!targetItem || targetItem.status !== "success") return
 
-    const plainImages = items.map((item) => ({ url: item.url, alt: item.alt }))
-    onChange(plainImages, url)
+    onChange(
+      items
+        .filter((item) => item.status === "success")
+        .map((item) => ({
+          url: item.url,
+          alt: item.alt,
+          publicId: item.publicId,
+        })),
+      url
+    )
   }
 
   const onDragEnd = (result: DropResult) => {
@@ -188,7 +265,10 @@ export function ProductImageManager({
     notifyChange(reorderedItems)
   }
 
-  const hasLocalPreviews = items.some((item) => item.isLocal)
+  const pendingUploads = items.filter(
+    (item) => item.status === "uploading" || item.status === "pending"
+  ).length
+  const hasErrors = items.some((item) => item.status === "error")
 
   return (
     <div className="space-y-6">
@@ -216,25 +296,33 @@ export function ProductImageManager({
 
       <div className="flex items-center justify-between">
         <Label className="text-sm font-semibold">Product Gallery</Label>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setIsAddingUrl(!isAddingUrl)}
-          className="h-8 gap-1.5"
-        >
-          {isAddingUrl ? (
-            <>
-              <X className="size-3.5" />
-              Cancel
-            </>
-          ) : (
-            <>
-              <Plus className="size-3.5" />
-              Add by URL
-            </>
+        <div className="flex items-center gap-3">
+          {pendingUploads > 0 && (
+            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <Loader2 className="size-3 animate-spin" />
+              Uploading {pendingUploads}...
+            </div>
           )}
-        </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsAddingUrl(!isAddingUrl)}
+            className="h-8 gap-1.5"
+          >
+            {isAddingUrl ? (
+              <>
+                <X className="size-3.5" />
+                Cancel
+              </>
+            ) : (
+              <>
+                <Plus className="size-3.5" />
+                Add by URL
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {isAddingUrl && (
@@ -265,21 +353,13 @@ export function ProductImageManager({
         </div>
       )}
 
-      {hasLocalPreviews && (
-        <div className="flex items-start gap-3 rounded-xl border border-warning/20 bg-warning/5 p-4 text-warning-foreground">
+      {hasErrors && (
+        <div className="flex items-start gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-destructive-foreground">
           <AlertCircle className="mt-0.5 size-5 shrink-0" />
           <div className="space-y-1">
-            <p className="text-sm font-semibold">Local Previews Detected</p>
+            <p className="text-sm font-semibold">Upload Errors Detected</p>
             <p className="text-xs leading-relaxed opacity-90">
-              Images marked as{" "}
-              <Badge
-                variant="outline"
-                className="h-4 px-1 text-[10px] font-bold uppercase tracking-wider border-warning/30 bg-warning/10 text-warning-foreground"
-              >
-                Demo Preview
-              </Badge>{" "}
-              cannot be saved to the database yet. Please upload them to a
-              storage service or provide a remote URL to persist them.
+              Some images failed to upload. Please remove them and try again.
             </p>
           </div>
         </div>
@@ -311,8 +391,35 @@ export function ProductImageManager({
                           src={item.url}
                           alt={item.alt}
                           fill
-                          className="object-cover transition-transform group-hover:scale-105"
+                          className={cn(
+                            "object-cover transition-transform group-hover:scale-105",
+                            (item.status === "uploading" ||
+                              item.status === "pending") &&
+                              "opacity-50 blur-[1px]"
+                          )}
                         />
+
+                        {/* Status Overlays */}
+                        {item.status === "uploading" && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 p-3">
+                            <Progress
+                              value={item.progress}
+                              className="h-1.5 w-full"
+                            />
+                            <span className="mt-1.5 text-[10px] font-bold text-white drop-shadow-sm">
+                              {item.progress}%
+                            </span>
+                          </div>
+                        )}
+
+                        {item.status === "error" && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-destructive/10 p-2 text-center">
+                            <AlertCircle className="size-5 text-destructive" />
+                            <span className="mt-1 text-[9px] font-semibold leading-tight text-destructive-foreground drop-shadow-sm">
+                              Upload Failed
+                            </span>
+                          </div>
+                        )}
 
                         <div className="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
                           <TooltipProvider>
@@ -331,7 +438,7 @@ export function ProductImageManager({
                               <TooltipContent>Remove image</TooltipContent>
                             </Tooltip>
 
-                            {!item.isLocal && (
+                            {item.status === "success" && (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
@@ -370,12 +477,19 @@ export function ProductImageManager({
                               Primary
                             </Badge>
                           )}
-                          {item.isLocal && (
-                            <Badge
-                              variant="secondary"
-                              className="h-5 border-yellow-500/50 bg-yellow-500/10 px-1.5 text-[10px] font-bold uppercase text-yellow-700 dark:text-yellow-400"
-                            >
-                              Demo Preview
+                          {item.isLocal &&
+                            item.status !== "success" &&
+                            item.status !== "uploading" && (
+                              <Badge
+                                variant="secondary"
+                                className="h-5 border-yellow-500/50 bg-yellow-500/10 px-1.5 text-[10px] font-bold uppercase text-yellow-700 dark:text-yellow-400"
+                              >
+                                Demo Preview
+                              </Badge>
+                            )}
+                          {item.status === "success" && !item.isLocal && (
+                            <Badge className="h-5 border-emerald-500/50 bg-emerald-500/10 px-1.5 text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-400">
+                              Live
                             </Badge>
                           )}
                         </div>

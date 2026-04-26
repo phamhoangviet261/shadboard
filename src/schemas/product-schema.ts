@@ -21,6 +21,7 @@ const ProductAssetUrlSchema = z.string().refine(
 export const ProductImageSchema = z.object({
   url: ProductAssetUrlSchema,
   alt: z.string().optional(),
+  publicId: z.string().optional(),
 })
 
 export const ColorVariantSchema = z.object({

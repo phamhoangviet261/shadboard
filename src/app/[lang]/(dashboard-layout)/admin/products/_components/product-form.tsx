@@ -128,13 +128,14 @@ export function ProductForm({
   })
 
   const onSubmit = async (values: ProductCreateInput) => {
-    // Check for local previews
-    const hasLocalPreviews = values.images?.some((img: { url: string }) =>
-      isLocalPreview(img.url)
+    // Check for local previews that haven't been uploaded
+    const hasLocalPreviews = values.images?.some(
+      (img: { url: string; publicId?: string }) =>
+        isLocalPreview(img.url) && !img.publicId
     )
     if (hasLocalPreviews) {
       toast.error(
-        "Please provide remote URLs for all images before saving. Local previews cannot be persisted yet."
+        "Please wait for all images to finish uploading before saving."
       )
       return
     }
