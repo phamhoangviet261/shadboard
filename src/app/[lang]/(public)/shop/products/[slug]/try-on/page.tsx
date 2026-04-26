@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from "react"
+"use client"
+
+import { useEffect, useMemo, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { Camera, ChevronLeft, Info } from "lucide-react"
 
+import type { TryOnAdjustments } from "@/components/try-on/TryOnControls"
+import type { TryOnProduct } from "@/components/try-on/TryOnProductPicker"
+
+import { productsData } from "@/data/lensora/products"
+
+import { Button } from "@/components/ui/button"
 import { TryOnControls } from "@/components/try-on/TryOnControls"
-import {
-  TryOnProductPicker,
-  type TryOnProduct,
-} from "@/components/try-on/TryOnProductPicker"
+import { TryOnProductPicker } from "@/components/try-on/TryOnProductPicker"
 import { TryOnSnapshotPreview } from "@/components/try-on/TryOnSnapshotPreview"
 import { VirtualTryOnCamera } from "@/components/try-on/VirtualTryOnCamera"
-import { Button } from "@/components/ui/button"
-import { productsData } from "@/data/lensora/products"
 
 export default function ProductVirtualTryOnPage() {
   const params = useParams()
@@ -20,7 +24,7 @@ export default function ProductVirtualTryOnPage() {
   const [selectedProduct, setSelectedProduct] = useState<TryOnProduct | null>(
     null
   )
-  const [adjustments, setAdjustments] = useState({
+  const [adjustments, setAdjustments] = useState<TryOnAdjustments>({
     scale: 1.0,
     offsetX: 0,
     offsetY: 0,
@@ -29,14 +33,17 @@ export default function ProductVirtualTryOnPage() {
   const [snapshotUrl, setSnapshotUrl] = useState<string | null>(null)
   const [isSnapshotOpen, setIsSnapshotOpen] = useState(false)
 
-  // Map productsData to TryOnProduct type
-  const products: TryOnProduct[] = productsData.map((p) => ({
-    id: p.id,
-    name: p.name,
-    price: p.price,
-    imageUrl: p.thumbnailUrl || "",
-    slug: p.slug,
-  }))
+  const products = useMemo<TryOnProduct[]>(
+    () =>
+      productsData.map((p) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        imageUrl: p.thumbnailUrl || "",
+        slug: p.slug,
+      })),
+    []
+  )
 
   useEffect(() => {
     if (slug) {
@@ -135,11 +142,13 @@ export default function ProductVirtualTryOnPage() {
               </h3>
               <div className="flex items-center gap-4 p-3 bg-neutral-800/50 rounded-xl border border-neutral-700">
                 <div className="w-16 h-16 relative bg-neutral-900 rounded-lg overflow-hidden">
-                  {selectedProduct && (
-                    <img
+                  {selectedProduct?.imageUrl && (
+                    <Image
                       src={selectedProduct.imageUrl}
                       alt={selectedProduct.name}
-                      className="w-full h-full object-contain"
+                      fill
+                      sizes="64px"
+                      className="object-contain"
                     />
                   )}
                 </div>

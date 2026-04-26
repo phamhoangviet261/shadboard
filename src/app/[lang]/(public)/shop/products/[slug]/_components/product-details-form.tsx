@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Camera, Check, Truck } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
+import { Camera, Check, Truck } from "lucide-react"
 
 import type { ProductType } from "@/types"
 
@@ -18,7 +18,7 @@ interface ProductDetailsFormProps {
 export function ProductDetailsForm({ product }: ProductDetailsFormProps) {
   const params = useParams()
   const lang = params.lang as string
-  
+
   const [selectedColor, setSelectedColor] = useState(
     product.colors?.[0] || { name: "", hex: "" }
   )
@@ -63,10 +63,10 @@ export function ProductDetailsForm({ product }: ProductDetailsFormProps) {
         <Button size="lg" className="w-full text-base h-12">
           Add to Bag — ${product.price}
         </Button>
-        
-        <Button 
-          variant="outline" 
-          size="lg" 
+
+        <Button
+          variant="outline"
+          size="lg"
           className="w-full text-base h-12 border-neutral-200 hover:bg-neutral-50"
           asChild
         >

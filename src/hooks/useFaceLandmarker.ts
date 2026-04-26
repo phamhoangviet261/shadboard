@@ -45,9 +45,13 @@ export function useFaceLandmarker(): UseFaceLandmarkerReturn {
       )
 
       setFaceLandmarker(landmarker)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error initializing FaceLandmarker:", err)
-      setError(err.message || "Failed to initialize face detection")
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to initialize face detection"
+      )
     } finally {
       setIsLoading(false)
       isLoadingRef.current = false

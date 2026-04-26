@@ -1,31 +1,42 @@
-import React from "react"
-import { Maximize, Move, RotateCcw, RotateCcw as RotateIcon } from "lucide-react"
+import {
+  Maximize,
+  Move,
+  RotateCcw,
+  RotateCcw as RotateIcon,
+} from "lucide-react"
+
+import type { Dispatch, SetStateAction } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 
+export type TryOnAdjustments = {
+  scale: number
+  offsetX: number
+  offsetY: number
+  rotation: number
+}
+
 interface TryOnControlsProps {
-  adjustments: {
-    scale: number
-    offsetX: number
-    offsetY: number
-    rotation: number
-  }
-  setAdjustments: (adjustments: any) => void
+  adjustments: TryOnAdjustments
+  setAdjustments: Dispatch<SetStateAction<TryOnAdjustments>>
   onReset: () => void
 }
 
-export const TryOnControls: React.FC<TryOnControlsProps> = ({
+export function TryOnControls({
   adjustments,
   setAdjustments,
   onReset,
-}) => {
-  const handleChange = (key: string, value: number[]) => {
-    setAdjustments((prev: any) => ({
+}: TryOnControlsProps) {
+  const handleChange = (key: keyof TryOnAdjustments, value: number[]) => {
+    const [nextValue] = value
+    if (nextValue === undefined) return
+
+    setAdjustments((prev) => ({
       ...prev,
-      [key]: value[0],
+      [key]: nextValue,
     }))
   }
 
@@ -35,9 +46,9 @@ export const TryOnControls: React.FC<TryOnControlsProps> = ({
         <CardTitle className="text-sm font-medium uppercase tracking-wider text-neutral-400">
           Manual Adjustments
         </CardTitle>
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onReset}
           className="h-8 px-2 text-neutral-400 hover:text-white"
         >
@@ -52,14 +63,16 @@ export const TryOnControls: React.FC<TryOnControlsProps> = ({
               <Maximize className="w-3 h-3 mr-1.5" />
               Scale
             </Label>
-            <span className="text-[10px] tabular-nums text-neutral-400">{adjustments.scale.toFixed(2)}x</span>
+            <span className="text-[10px] tabular-nums text-neutral-400">
+              {adjustments.scale.toFixed(2)}x
+            </span>
           </div>
           <Slider
             value={[adjustments.scale]}
             min={0.5}
             max={2.0}
             step={0.01}
-            onValueChange={(v) => handleChange('scale', v)}
+            onValueChange={(v) => handleChange("scale", v)}
             className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
           />
         </div>
@@ -70,14 +83,16 @@ export const TryOnControls: React.FC<TryOnControlsProps> = ({
               <Move className="w-3 h-3 mr-1.5" />
               Vertical Offset
             </Label>
-            <span className="text-[10px] tabular-nums text-neutral-400">{adjustments.offsetY.toFixed(2)}</span>
+            <span className="text-[10px] tabular-nums text-neutral-400">
+              {adjustments.offsetY.toFixed(2)}
+            </span>
           </div>
           <Slider
             value={[adjustments.offsetY]}
             min={-0.5}
             max={0.5}
             step={0.01}
-            onValueChange={(v) => handleChange('offsetY', v)}
+            onValueChange={(v) => handleChange("offsetY", v)}
             className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
           />
         </div>
@@ -88,14 +103,16 @@ export const TryOnControls: React.FC<TryOnControlsProps> = ({
               <Move className="w-3 h-3 mr-1.5" />
               Horizontal Offset
             </Label>
-            <span className="text-[10px] tabular-nums text-neutral-400">{adjustments.offsetX.toFixed(2)}</span>
+            <span className="text-[10px] tabular-nums text-neutral-400">
+              {adjustments.offsetX.toFixed(2)}
+            </span>
           </div>
           <Slider
             value={[adjustments.offsetX]}
             min={-0.5}
             max={0.5}
             step={0.01}
-            onValueChange={(v) => handleChange('offsetX', v)}
+            onValueChange={(v) => handleChange("offsetX", v)}
             className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
           />
         </div>
@@ -106,18 +123,20 @@ export const TryOnControls: React.FC<TryOnControlsProps> = ({
               <RotateIcon className="w-3 h-3 mr-1.5" />
               Rotation
             </Label>
-            <span className="text-[10px] tabular-nums text-neutral-400">{adjustments.rotation}°</span>
+            <span className="text-[10px] tabular-nums text-neutral-400">
+              {adjustments.rotation}°
+            </span>
           </div>
           <Slider
             value={[adjustments.rotation]}
             min={-45}
             max={45}
             step={1}
-            onValueChange={(v) => handleChange('rotation', v)}
+            onValueChange={(v) => handleChange("rotation", v)}
             className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
           />
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

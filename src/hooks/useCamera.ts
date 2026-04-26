@@ -82,16 +82,21 @@ export function useCamera(): UseCameraReturn {
         }
 
         await getDevices()
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Error starting camera:", err)
+        const errorName =
+          typeof err === "object" && err !== null && "name" in err
+            ? String(err.name)
+            : ""
+
         if (
-          err.name === "NotAllowedError" ||
-          err.name === "PermissionDeniedError"
+          errorName === "NotAllowedError" ||
+          errorName === "PermissionDeniedError"
         ) {
           setError("PERMISSION_DENIED")
         } else if (
-          err.name === "NotFoundError" ||
-          err.name === "DevicesNotFoundError"
+          errorName === "NotFoundError" ||
+          errorName === "DevicesNotFoundError"
         ) {
           setError("NOT_FOUND")
         } else {
