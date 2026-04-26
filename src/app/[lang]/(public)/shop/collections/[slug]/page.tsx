@@ -1,11 +1,14 @@
 import Image from "next/image"
 import { notFound } from "next/navigation"
 
-import type { LocaleType } from "@/types"
+import type { LocaleType, ProductType } from "@/types"
 import type { Metadata } from "next"
 
 import { collectionsData } from "@/data/lensora/collections"
 import { productsData } from "@/data/lensora/products"
+
+import { db } from "@/lib/prisma"
+import { serializeProducts } from "@/lib/product-serialization"
 
 import { CollectionProductGrid } from "./_components/collection-product-grid"
 
@@ -15,6 +18,14 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
+
+  if (slug === "all") {
+    return {
+      title: "All Products — Lensora",
+      description: "Browse all available eyewear products.",
+    }
+  }
+
   const collection = collectionsData.find((c) => c.slug === slug)
   if (!collection) return {}
   return {
@@ -24,22 +35,53 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  return collectionsData
+  const params = collectionsData
     .filter((c) => c.status === "published")
     .map((c) => ({ slug: c.slug }))
+
+  return [...params, { slug: "all" }]
 }
 
 export default async function CollectionDetailPage({ params }: Props) {
   const { lang, slug } = await params
-  const collection = collectionsData.find((c) => c.slug === slug)
 
-  if (!collection || collection.status !== "published") {
-    notFound()
+  let collection
+  let collectionProducts
+
+  if (slug === "all") {
+    // Fetch all published products from database
+    const products = await db.product.findMany({
+      where: {
+        status: "published",
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+
+    collectionProducts = serializeProducts<ProductType>(products)
+
+    collection = {
+      id: "all",
+      name: "All Products",
+      slug: "all",
+      description: "Browse all available eyewear products.",
+      thumbnailUrl:
+        collectionProducts.length > 0 ? collectionProducts[0].thumbnailUrl : "",
+      status: "published" as const,
+    }
+  } else {
+    collection = collectionsData.find((c) => c.slug === slug)
+
+    if (!collection || collection.status !== "published") {
+      notFound()
+    }
+
+    collectionProducts = productsData.filter(
+      (p) => p.collectionId === collection!.id
+    )
   }
-
-  const collectionProducts = productsData.filter(
-    (p) => p.collectionId === collection.id
-  )
 
   return (
     <div>

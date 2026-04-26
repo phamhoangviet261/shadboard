@@ -1,28 +1,21 @@
-# Collection Management UI
+# Collections UI
 
-The Collection Management module allows administrators to curate and organize products into storefront themes.
+## Special Routes
 
-## Features
+### /collections/all
+The `/collections/all` route is a special virtual collection that displays all active products across the entire store.
 
-### Collection List
-- **Real-time Overview**: Lists all collections with their cover imagery and publishing status.
-- **Product Counts**: Automatically shows the number of active products assigned to each collection.
-- **Search**: Fast filtering of collections by name or slug.
-- **Actions**: Direct links to edit collections or view them on the storefront.
+- **Behavior**: It does not require a corresponding record in the `collections` table.
+- **Filtering**: Supports all standard product filters and sorting.
+- **SEO**: Automatically generates metadata with the title "All Products".
 
-### Manage Collections (Sheet)
-- **Inline Editing**: Create and edit collections within a slide-out sheet for a faster workflow.
-- **Form Validation**: Strict validation for required fields like Name and Slug.
-- **Imagery**: Support for setting collection cover images via URLs.
-- **Status Management**: Control visibility with Draft, Published, and Archived states.
+## Reserved Slugs
 
-## Components
+The following slugs are reserved and cannot be used when creating or editing collections:
 
-- `CollectionManager`: The main dashboard component handling the list and the management sheet.
+- `all`: Reserved for the "All Products" virtual collection.
 
-## API Integration
-
-- `GET /api/collections`: Fetch all active collections with product counts.
-- `POST /api/collections`: Create a new collection.
-- `PATCH /api/collections/[id]`: Update collection details or status.
-- `DELETE /api/collections/[id]`: Soft delete a collection.
+Manual verification steps for `all` slug:
+1. Go to Admin > Collections.
+2. Try to create a collection with slug `all`.
+3. Verify that the system prevents saving and displays a validation error: "Slug 'all' is reserved".

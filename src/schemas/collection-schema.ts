@@ -4,7 +4,12 @@ export const CollectionStatusSchema = z.enum(["draft", "published", "archived"])
 
 export const CollectionCreateSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  slug: z.string().min(1, "Slug is required"),
+  slug: z
+    .string()
+    .min(1, "Slug is required")
+    .refine((s) => s !== "all", {
+      message: "Slug 'all' is reserved",
+    }),
   description: z.string().optional(),
   thumbnailUrl: z.string().url().optional().nullable(),
   status: CollectionStatusSchema.default("draft"),

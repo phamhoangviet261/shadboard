@@ -14,6 +14,7 @@ interface StorefrontHeaderProps {
 }
 
 const navLinks = [
+  { label: "All Products", href: "/shop/collections/all" },
   { label: "Shop", href: "/shop" },
   { label: "Collections", href: "/shop/collections" },
   { label: "Virtual Try-On", href: "/shop/try-on" },
